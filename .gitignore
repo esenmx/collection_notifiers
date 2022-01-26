@@ -28,3 +28,4 @@
 .packages
 build/
 .vscode/
+coverage/

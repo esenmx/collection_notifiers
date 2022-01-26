@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 class SetNotifier<E> extends DelegatingSet<E>
     with ChangeNotifier
     implements ValueListenable<Set<E>> {
-  SetNotifier([Iterable elements = const []]) : super(Set<E>.from(elements));
+  SetNotifier([Iterable<E> elements = const []]) : super(Set<E>.of(elements));
 
   @override
   Set<E> get value => this;

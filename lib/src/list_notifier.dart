@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier
     implements List<E> {
-  ListNotifier([Iterable elements = const []]) : super(List<E>.from(elements));
+  ListNotifier([Iterable<E> elements = const []]) : super(List<E>.of(elements));
 
   @override
   void operator []=(int index, E value) {
@@ -40,8 +40,10 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void fillRange(int start, int end, [E? fillValue]) {
-    super.fillRange(start, end, fillValue);
-    notifyListeners();
+    if (start != end) {
+      super.fillRange(start, end, fillValue);
+      notifyListeners();
+    }
   }
 
   @override
@@ -54,8 +56,10 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void insertAll(int index, Iterable<E> iterable) {
-    super.insertAll(index, iterable);
-    notifyListeners();
+    if (iterable.isNotEmpty) {
+      super.insertAll(index, iterable);
+      notifyListeners();
+    }
   }
 
   @override

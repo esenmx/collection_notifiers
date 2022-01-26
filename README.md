@@ -1,35 +1,62 @@
-# Collection Notifiers
+# collection_notifiers
 
-`ChangeNotifier`/`ValueListenable` wrappers for collections with optimized notification.
+____
+
+The [collections](https://api.dart.dev/stable/dart-collection/dart-collection-library.html) wrapped
+with [ChangeNotifier](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html)
+& [ValueListenable](https://api.flutter.dev/flutter/foundation/ValueListenable-class.html) for optimized notification
+and simple syntax.
 
 ## Why?
 
-Since eliminating some unneeded rebuilds won't make any harm, collection notifiers behaves as syntax sugar most of the
-time.
+____
+It's a hassle when working with collections and updating the state. Most of the popular state management packages are
+not comes with a built-in solution.
 
-Also, the package aims to be simple with minimum dependency.
+`collection_notifiers` reducing the boilerplate and preventing the unneeded rebuilds most of the time. It's minimal with
+single dependency, [collection](https://pub.dev/packages/collection).
 
 ## Features
 
-Fully compatible and ease to use with `ValueListeableBuilder` or popular packages like `Riverpod`or `Provider`.
+____
+
+Fully compatible and ease to use
+with [ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html) or popular
+packages
+like [riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html)
+/ [provider](https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html) (`ChangeNotifierProvider`)
+.
 
 ## Implementations
 
 | Collections |   Status    | Implementation | Test Coverage |
 |-------------|:-----------:|---------------:|:-------------:|
-| Set         |  Completed  |           100% |      65%      |  
+| Set         |  Completed  |           100% |      96%      |  
 | List        | Lacks Tests |           100% |       ?       |
 | Map         |   Planned   |             0% |       ?       |
-| Stack       |   Planned   |             0% |       ?       |
 | Queue       |   Planned   |             0% |       ?       |
 | Hash Map    |   Planned   |             0% |       ?       |
 | Linked List | Not Planned |              - |       ?       |
 | Splay Tree  | Not Planned |              - |       ?       |
 | Hash Set    | Not Planned |              - |       ?       |
 
+### Element Equality
+
+____
+
 ## Notes
 
-* Keep in the mind, this package is `not concurrency` safe(yet). It's suggested to test your `State`
+____
+
+* Keep in the mind, this package is `not concurrency safe`, yet... It's suggested to test your `State`
   for `ConcurrentModificationError`s.
-* Operations that require deep collection equality to check differences, triggers the `notifyListener()` all the time
-  instead, since the check itself probably much more costly than rebuild itself.
+* Operations that require deep collection equality to check differences, triggers `notifyListener()` all time instead,
+  because check itself probably more costly than rebuild.
+
+### Mentions
+
+___
+
+There is a very similar package [listenable_collections](https://github.com/escamoteur/listenable_collections),
+but repo was a little inactive, and probably I'll choose different direction over time. So, I created a new repository.
+Thanks them, I borrowed some concepts.
