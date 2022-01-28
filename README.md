@@ -14,7 +14,7 @@ It's a hassle when working with collections and updating the state. Most of the 
 not comes with a built-in solution.
 
 `collection_notifiers` reducing the boilerplate and preventing the unneeded rebuilds most of the time. It's minimal with
-single dependency, [collection](https://pub.dev/packages/collection).
+a single dependency: [collection](https://pub.dev/packages/collection).
 
 ## Features
 
@@ -57,6 +57,6 @@ ____
 
 ___
 
-There is a very similar package [listenable_collections](https://github.com/escamoteur/listenable_collections),
-but repo was a little inactive, and probably I'll choose different direction over time. So, I created a new repository.
-Thanks them, I borrowed some concepts.
+There is a very similar package [listenable_collections](https://github.com/escamoteur/listenable_collections), but repo
+was a little inactive, and probably I'll choose different direction over time. So, I created a new repository. Thanks
+them, I borrowed some concepts.

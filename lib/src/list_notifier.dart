@@ -5,8 +5,11 @@ import 'package:flutter/foundation.dart';
 
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier
-    implements List<E> {
+    implements ValueListenable<List<E>> {
   ListNotifier([Iterable<E> elements = const []]) : super(List<E>.of(elements));
+
+  @override
+  List<E> get value => this;
 
   @override
   void operator []=(int index, E value) {
@@ -48,10 +51,8 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void insert(int index, E element) {
-    if (super[index] != element) {
-      super.insert(index, element);
-      notifyListeners();
-    }
+    super.insert(index, element);
+    notifyListeners();
   }
 
   @override
@@ -80,8 +81,10 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void removeRange(int start, int end) {
-    super.removeRange(start, end);
-    notifyListeners();
+    if (end > start) {
+      super.removeRange(start, end);
+      notifyListeners();
+    }
   }
 
   @override
@@ -102,12 +105,14 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
-    super.replaceRange(start, end, iterable);
-    notifyListeners();
+    if (end > start) {
+      super.replaceRange(start, end, iterable);
+      notifyListeners();
+    }
   }
 
   @override
-  void retainWhere(bool Function(E p1) test) {
+  void retainWhere(bool Function(E element) test) {
     final length = super.length;
     super.retainWhere(test);
     if (length != super.length) {
@@ -134,7 +139,7 @@ class ListNotifier<E> extends DelegatingList<E>
   }
 
   @override
-  void sort([int Function(E p1, E p2)? compare]) {
+  void sort([int Function(E a, E b)? compare]) {
     super.sort(compare);
     notifyListeners();
   }
