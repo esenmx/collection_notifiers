@@ -29,16 +29,16 @@ like [riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_ri
 
 ## Implementations
 
-| Collections |   Status    | Implementation | Test Coverage |
-|-------------|:-----------:|---------------:|:-------------:|
-| Set         |  Completed  |           100% |      96%      |  
-| List        | Lacks Tests |           100% |       ?       |
-| Map         |   Planned   |             0% |       ?       |
-| Queue       |   Planned   |             0% |       ?       |
-| Hash Map    |   Planned   |             0% |       ?       |
-| Linked List | Not Planned |              - |       ?       |
-| Splay Tree  | Not Planned |              - |       ?       |
-| Hash Set    | Not Planned |              - |       ?       |
+| Collections |    Status    | Implementation | Test Coverage |
+|-------------|:------------:|---------------:|:-------------:|
+| Set         |  Completed   |           100% |      96%      |  
+| List        |  Completed   |           100% |      96%      |
+| Map         | Implementing |             0% |      0%       |
+| Queue       |   Planned    |             0% |       ?       |
+| Hash Map    |   Planned    |             0% |       ?       |
+| Linked List | Not Planned  |              - |       ?       |
+| Splay Tree  | Not Planned  |              - |       ?       |
+| Hash Set    | Not Planned  |              - |       ?       |
 
 ### Element Equality
 

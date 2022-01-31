@@ -1,4 +1,10 @@
 library collection_notifiers;
 
-export 'src/list_notifier.dart';
-export 'src/set_notifier.dart';
+import 'dart:math' as math;
+
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+
+part 'src/list_notifier.dart';
+part 'src/map_notifier.dart';
+part 'src/set_notifier.dart';

@@ -165,6 +165,40 @@ void main() async {
       expect(list, {1, 2, 3});
     });
 
-    test('setAll', () {});
+    const testValue = [1, 2, 3];
+    test('setAll', () {
+      expect(() => list.setAll(1, testValue), throwsA(isA<RangeError>()));
+      list.addAll(testValue);
+      list.setAll(0, testValue);
+      listener.verifyCalledTwice;
+      expect(list, testValue);
+      list.setAll(2, [4]);
+      expect(list, [1, 2, 4]);
+      listener.verifyCalledOnce;
+    });
+
+    test('setRange', () {
+      list.addAll(testValue);
+      list.setRange(1, 2, [2, 3]);
+      listener.verifyCalledTwice;
+      expect(list, [1, 2, 3]);
+      list.setRange(0, 1, [3, 1], 1);
+      listener.verifyCalledOnce;
+      expect(list, [1, 2, 3]);
+      list.setRange(1, 1, [1, 2, 3]);
+      listener.verifyNotCalled;
+    });
+
+    test('shuffle', () {
+      list.addAll(bulk);
+      list.shuffle();
+      listener.verifyCalledTwice;
+    });
+
+    test('sort', () {
+      list.addAll(bulk);
+      list.sort((a, b) => a - b);
+      listener.verifyCalledTwice;
+    });
   });
 }

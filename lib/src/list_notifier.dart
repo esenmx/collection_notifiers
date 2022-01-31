@@ -1,7 +1,4 @@
-import 'dart:math' as math;
-
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+part of collection_notifiers;
 
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier
@@ -81,7 +78,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void removeRange(int start, int end) {
-    if (end > start) {
+    if (end != start) {
       super.removeRange(start, end);
       notifyListeners();
     }
@@ -105,7 +102,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
-    if (end > start) {
+    if (end != start) {
       super.replaceRange(start, end, iterable);
       notifyListeners();
     }
@@ -128,8 +125,10 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
-    super.setRange(start, end, iterable, skipCount);
-    notifyListeners();
+    if (end != start) {
+      super.setRange(start, end, iterable, skipCount);
+      notifyListeners();
+    }
   }
 
   @override

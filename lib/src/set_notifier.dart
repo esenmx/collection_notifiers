@@ -1,5 +1,4 @@
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+part of collection_notifiers;
 
 class SetNotifier<E> extends DelegatingSet<E>
     with ChangeNotifier
