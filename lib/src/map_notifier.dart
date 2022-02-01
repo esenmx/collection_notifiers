@@ -14,54 +14,71 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   }
 
   @override
-  // TODO: implement value
-  Map<K, V> get value => throw UnimplementedError();
+  Map<K, V> get value => this;
 
   @override
   void addAll(Map<K, V> other) {
-    // TODO: implement addAll
     super.addAll(other);
+    if (other.isNotEmpty) {
+      notifyListeners();
+    }
   }
 
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    // TODO: implement addEntries
     super.addEntries(entries);
+    if (entries.isNotEmpty) {
+      notifyListeners();
+    }
   }
 
   @override
   void clear() {
-    // TODO: implement clear
+    final isNotEmpty = super.isNotEmpty;
     super.clear();
+    if (isNotEmpty) {
+      notifyListeners();
+    }
   }
 
   @override
   V putIfAbsent(K key, V Function() ifAbsent) {
-    // TODO: implement putIfAbsent
-    return super.putIfAbsent(key, ifAbsent);
+    if (!super.containsKey(key)) {
+      super.putIfAbsent(key, ifAbsent);
+      notifyListeners();
+    }
+    return super[key]!;
   }
 
   @override
   V? remove(Object? key) {
-    // TODO: implement remove
-    return super.remove(key);
+    if (super.remove(key) != null) {
+      notifyListeners();
+    }
   }
 
   @override
-  void removeWhere(bool Function(K p1, V p2) test) {
-    // TODO: implement removeWhere
+  void removeWhere(bool Function(K key, V value) test) {
+    final length = super.length;
     super.removeWhere(test);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 
   @override
-  V update(K key, V Function(V p1) update, {V Function()? ifAbsent}) {
-    // TODO: implement update
-    return super.update(key, update, ifAbsent: ifAbsent);
+  V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
+    final value = this[key];
+    final newValue = super.update(key, update, ifAbsent: ifAbsent);
+    if (value != newValue) {
+      notifyListeners();
+    }
+    return newValue;
   }
 
   @override
-  void updateAll(V Function(K p1, V p2) update) {
-    // TODO: implement updateAll
+  void updateAll(V Function(K key, V value) update) {
     super.updateAll(update);
+    notifyListeners();
   }
 }

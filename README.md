@@ -1,6 +1,6 @@
 # collection_notifiers
 
-____
+___
 
 The [collections](https://api.dart.dev/stable/dart-collection/dart-collection-library.html) wrapped
 with [ChangeNotifier](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html)
@@ -9,49 +9,50 @@ and simple syntax.
 
 ## Why?
 
-____
-It's a hassle when working with collections and updating the state. Most of the popular state management packages are
-not comes with a built-in solution.
+___
+It's a hassle when working with collections and updating the state. Most of the popular state management packages do not
+come with a built-in solution.
 
 `collection_notifiers` reducing the boilerplate and preventing the unneeded rebuilds most of the time. It's minimal with
 a single dependency: [collection](https://pub.dev/packages/collection).
 
 ## Features
 
-____
+___
 
 Fully compatible and ease to use
 with [ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html) or popular
 packages
-like [riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html)
-/ [provider](https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html) (`ChangeNotifierProvider`)
+like [Riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html)
+/ [Provider](https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html) (`ChangeNotifierProvider`)
 .
 
 ## Implementations
 
-| Collections |    Status    | Implementation | Test Coverage |
-|-------------|:------------:|---------------:|:-------------:|
-| Set         |  Completed   |           100% |      96%      |  
-| List        |  Completed   |           100% |      96%      |
-| Map         | Implementing |             0% |      0%       |
-| Queue       |   Planned    |             0% |       ?       |
-| Hash Map    |   Planned    |             0% |       ?       |
-| Linked List | Not Planned  |              - |       ?       |
-| Splay Tree  | Not Planned  |              - |       ?       |
-| Hash Set    | Not Planned  |              - |       ?       |
+| Collections |    Status     | Implementation | Test Coverage |
+|-------------|:-------------:|---------------:|:-------------:|
+| Set         |   Completed   |           100% |      96%      |  
+| List        |   Completed   |           100% |      97%      |
+| Map         | Lacking Tests |           100% |      0%       |
+| Queue       |    Planned    |             0% |       ?       |
+| Hash Map    |    Planned    |             0% |       ?       |
+| Linked List |  Not Planned  |              - |       ?       |
+| Splay Tree  |  Not Planned  |              - |       ?       |
+| Hash Set    |  Not Planned  |              - |       ?       |
 
 ### Element Equality
 
-____
+___
 
 ## Notes
 
-____
+___
 
 * Keep in the mind, this package is `not concurrency safe`, yet... It's suggested to test your `State`
   for `ConcurrentModificationError`s.
 * Operations that require deep collection equality to check differences, triggers `notifyListener()` all time instead,
-  because check itself probably more costly than rebuild.
+  because check itself probably more costly than rebuild. Lately, this will be changed and calculation of differences
+  will be handled effectively.
 
 ### Mentions
 
