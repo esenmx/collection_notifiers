@@ -34,9 +34,8 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void clear() {
-    final isNotEmpty = super.isNotEmpty;
-    super.clear();
     if (isNotEmpty) {
+      super.clear();
       notifyListeners();
     }
   }
