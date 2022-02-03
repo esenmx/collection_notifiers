@@ -18,16 +18,23 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void addAll(Map<K, V> other) {
-    super.addAll(other);
-    if (other.isNotEmpty) {
-      notifyListeners();
-    }
+    addEntries(other.entries);
   }
 
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    super.addEntries(entries);
-    if (entries.isNotEmpty) {
+    final length = super.length;
+    bool hasChanged = false;
+    for (final entry in entries) {
+      if (this[entry.key] != entry.value) {
+        hasChanged = true;
+        this[entry.key] = entry.value;
+      }
+      if (length == entries.length) {
+        throw ConcurrentModificationError(entries);
+      }
+    }
+    if (hasChanged) {
       notifyListeners();
     }
   }
@@ -77,7 +84,20 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void updateAll(V Function(K key, V value) update) {
-    super.updateAll(update);
-    notifyListeners();
+    final length = super.length;
+    bool hasChanged = false;
+    for (final entry in super.entries) {
+      final newValue = update(entry.key, entry.value);
+      if (newValue != value) {
+        hasChanged = true;
+        this[entry.key] = newValue;
+      }
+      if (length != super.length) {
+        throw ConcurrentModificationError(this);
+      }
+    }
+    if (hasChanged) {
+      notifyListeners();
+    }
   }
 }
