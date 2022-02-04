@@ -40,8 +40,15 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void fillRange(int start, int end, [E? fillValue]) {
-    if (start != end) {
-      super.fillRange(start, end, fillValue);
+    RangeError.checkValidRange(start, end, length);
+    bool hasChanged = false;
+    for (int i = start; i < end; i++) {
+      if (super[i] != fillValue) {
+        hasChanged = true;
+        super[i] = fillValue!; // fixme test
+      }
+    }
+    if (hasChanged) {
       notifyListeners();
     }
   }
@@ -102,6 +109,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
+    // todo optimize
     if (end != start) {
       super.replaceRange(start, end, iterable);
       notifyListeners();
@@ -110,6 +118,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void retainWhere(bool Function(E element) test) {
+    // todo optimize
     final length = super.length;
     super.retainWhere(test);
     if (length != super.length) {
@@ -119,12 +128,14 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setAll(int index, Iterable<E> iterable) {
+    // todo optimize
     super.setAll(index, iterable);
     notifyListeners();
   }
 
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
+    // todo optimize
     if (end != start) {
       super.setRange(start, end, iterable, skipCount);
       notifyListeners();

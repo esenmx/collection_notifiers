@@ -2,8 +2,7 @@ import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
-import 'common/mocks.dart';
+import 'package:test_utils/test_utils.dart';
 
 void main() async {
   group('SetNotifier(elements)', () {
