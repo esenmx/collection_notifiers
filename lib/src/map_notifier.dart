@@ -25,10 +25,8 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   void addEntries(Iterable<MapEntry<K, V>> entries) {
     bool hasChanged = false;
     for (final entry in entries) {
-      if (this[entry.key] != entry.value) {
-        hasChanged = true;
-        this[entry.key] = entry.value;
-      }
+      hasChanged = hasChanged || this[entry.key] != entry.value;
+      this[entry.key] = entry.value;
     }
     if (hasChanged) {
       notifyListeners();
@@ -54,8 +52,10 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   V? remove(Object? key) {
-    if (super.remove(key) != null) {
+    final value = super.remove(key);
+    if (value != null) {
       notifyListeners();
+      return value;
     }
     return null;
   }
@@ -84,10 +84,8 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     bool hasChanged = false;
     for (final entry in super.entries) {
       final newValue = update(entry.key, entry.value);
-      if (newValue != value) {
-        hasChanged = true;
-        this[entry.key] = newValue;
-      }
+      hasChanged = hasChanged || newValue != entry.value;
+      this[entry.key] = newValue;
     }
     if (hasChanged) {
       notifyListeners();

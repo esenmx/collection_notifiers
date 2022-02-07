@@ -3,7 +3,7 @@ part of collection_notifiers;
 class SetNotifier<E> extends DelegatingSet<E>
     with ChangeNotifier
     implements ValueListenable<Set<E>> {
-  SetNotifier([Iterable<E> elements = const []]) : super(Set<E>.of(elements));
+  SetNotifier([Iterable<E> base = const []]) : super(Set<E>.of(base));
 
   @override
   Set<E> get value => this;
@@ -19,9 +19,11 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void addAll(Iterable<E> elements) {
-    final length = super.length;
-    super.addAll(elements);
-    if (length != super.length) {
+    bool hasChanged = false;
+    for (final element in elements) {
+      hasChanged = hasChanged || super.add(element);
+    }
+    if (hasChanged) {
       notifyListeners();
     }
   }
@@ -45,9 +47,11 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void removeAll(Iterable<Object?> elements) {
-    final length = super.length;
-    super.removeAll(elements);
-    if (length != super.length) {
+    bool hasChanged = false;
+    for (final element in elements) {
+      hasChanged = hasChanged || super.remove(element);
+    }
+    if (hasChanged) {
       notifyListeners();
     }
   }

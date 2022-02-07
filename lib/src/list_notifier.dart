@@ -3,7 +3,7 @@ part of collection_notifiers;
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier
     implements ValueListenable<List<E>> {
-  ListNotifier([Iterable<E> elements = const []]) : super(List<E>.of(elements));
+  ListNotifier([Iterable<E> base = const []]) : super(List<E>.of(base));
 
   @override
   List<E> get value => this;
@@ -43,10 +43,8 @@ class ListNotifier<E> extends DelegatingList<E>
     RangeError.checkValidRange(start, end, length);
     bool hasChanged = false;
     for (int i = start; i < end; i++) {
-      if (super[i] != fillValue) {
-        hasChanged = true;
-        super[i] = fillValue!; // fixme test
-      }
+      hasChanged = hasChanged || super[i] != fillValue;
+      super[i] = fillValue as E;
     }
     if (hasChanged) {
       notifyListeners();
@@ -61,6 +59,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void insertAll(int index, Iterable<E> iterable) {
+    RangeError.checkValueInInterval(index, 0, length, "index");
     if (iterable.isNotEmpty) {
       super.insertAll(index, iterable);
       notifyListeners();
@@ -144,13 +143,17 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void shuffle([math.Random? random]) {
-    super.shuffle(random);
-    notifyListeners();
+    if (isNotEmpty) {
+      super.shuffle(random);
+      notifyListeners();
+    }
   }
 
   @override
   void sort([int Function(E a, E b)? compare]) {
-    super.sort(compare);
-    notifyListeners();
+    if (isNotEmpty) {
+      super.sort(compare);
+      notifyListeners();
+    }
   }
 }
