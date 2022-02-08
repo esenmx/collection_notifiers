@@ -24,18 +24,23 @@ like [Riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_ri
 
 ## Implementations
 
-| Collections |    Status     | Implementation | Test Coverage |
-|-------------|:-------------:|---------------:|:-------------:|
-| Set         |   Completed   |           100% |      96%      |  
-| List        |   Completed   |           100% |      97%      |
-| Map         | Lacking Tests |           100% |      0%       |
-| Queue       |    Planned    |             0% |       ?       |
-| Hash Map    |    Planned    |             0% |       ?       |
-| Linked List |  Not Planned  |              - |       ?       |
-| Splay Tree  |  Not Planned  |              - |       ?       |
-| Hash Set    |  Not Planned  |              - |       ?       |
+| Collection Name |     Status      | NotifierName |
+|-----------------|:---------------:|:------------:|
+| Set             |  **Completed**  | SetNotifier  |  
+| List            |  Needs Tweaks   | ListNotifier |
+| Map             |  Lacking Tests  | MapNotifier  |
+| Queue           |     Planned     |              |
+| Hash Map        |     Planned     |              |
+| Linked List     |   Not Planned   |              |
+| Splay Tree      |   Not Planned   |              |
+| Hash Set        |   Not Planned   |              |
 
 ### Element Equality
+
+Element equation([== operator](https://api.dart.dev/stable/2.13.4/dart-core/Object/operator_equals.html)) must be
+handled by you at outside the package. For that case, code generation([freezed](https://pub.dev/packages/freezed)
+, [built_value](https://pub.dev/packages/built_value) etc.) or [equatable](https://pub.dev/packages/equatable) strongly
+recommended.
 
 ## Notes
 
