@@ -24,16 +24,16 @@ like [Riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_ri
 
 ## Implementations
 
-| Collection Name |     Status      | NotifierName |
-|-----------------|:---------------:|:------------:|
-| Set             |  **Completed**  | SetNotifier  |  
-| List            |  Needs Tweaks   | ListNotifier |
-| Map             |  Lacking Tests  | MapNotifier  |
-| Queue           |     Planned     |              |
-| Hash Map        |     Planned     |              |
-| Linked List     |   Not Planned   |              |
-| Splay Tree      |   Not Planned   |              |
-| Hash Set        |   Not Planned   |              |
+| Collection Name |    Status     |   NotifierName    |
+|-----------------|:-------------:|:-----------------:|
+| Set             | **Completed** |    SetNotifier    |  
+| List            | Needs Tweaks  |   ListNotifier    |
+| Map             | Lacking Tests |    MapNotifier    |
+| Queue           |    Planned    |   QueueNotifier   |
+| SplayTree       |    Triage     | SplayTreeNotifier |
+| LinkedList      |    Triage     |         -         |
+| HashMap         |  Not Planned  |         -         |
+| HashSet         |  Not Planned  |                   |
 
 ### Element Equality
 
