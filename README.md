@@ -1,19 +1,42 @@
 # collection_notifiers
 
-The [collections](https://api.dart.dev/stable/dart-collection/dart-collection-library.html) wrapped
+The wrapped [collections](https://api.dart.dev/stable/dart-collection/dart-collection-library.html)
 with [ChangeNotifier](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html)
-& [ValueListenable](https://api.flutter.dev/flutter/foundation/ValueListenable-class.html) for optimized notification
-and simpler/efficient syntax.
+& [ValueListenable](https://api.flutter.dev/flutter/foundation/ValueListenable-class.html) interface for optimized
+notification and simpler/efficient syntax.
 
 ## Why?
 
 It's a hassle when working with collections and updating the state. Most of the popular state management packages do not
-come with a built-in solution.
+come with a built-in solution for collections.
 
-`collection_notifiers` eliminating the boilerplate and unneeded rebuilds by calculating the difference very
-**efficiently**. It's minimal with a single dependency: [collection](https://pub.dev/packages/collection).
+`collection_notifiers` **eliminating the boilerplate and unneeded rebuilds by calculating the difference very
+efficiently**.
 
-So what will you get is, having significant advantages while paying no cost.
+Riverpod only:
+
+```dart
+final setNotifier = StateProvider < Set<E>((ref) => <E>{});
+
+/// Always triggers setState
+onChanged: (value) {
+  ref.read(setProvider.state).update((state) {
+    return state..add(value);
+  });
+}
+```
+
+Riverpod with `collection_notifiers`:
+
+```dart
+final setNotifier = ChangeNotifierProvider<Set<E>>((ref) => SetNotifier<E>());
+
+/// Does not trigger setState if there is no change
+onChaged: ref.read(setNotifier).add
+```
+
+So what you have is, having significant advantages while paying no cost, because `collection_notifiers` is also **
+minimal**.
 
 ## Features
 
@@ -46,7 +69,7 @@ recommended.
 
 ## Notes
 
-* `collection_notifiers` do not handle any `Exception` because it may cause misleading development experience and sneaky
+* `collection_notifiers` do not handle any `Exception` because it may cause confusing development experience and sneaky
   bugs.
 * Methods with overridden logic, always mimics default implementation effectively. Hence, no extra `Exception` is also
   produced.
