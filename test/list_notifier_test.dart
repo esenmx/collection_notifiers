@@ -7,7 +7,7 @@ void main() async {
   group('ListNotifier(elements)', () {
     test('.new', () {
       final listener = VoidListener();
-      final list = ListNotifier(bulk)..addListener(listener);
+      final list = ListNotifier<int>(bulk)..addListener(listener);
       expect(list.value, bulk);
       listener.verifyNotCalled;
     });
@@ -18,7 +18,7 @@ void main() async {
     late ListNotifier<int> list;
     setUp(() {
       listener = VoidListener();
-      list = ListNotifier()..addListener(listener);
+      list = ListNotifier<int>()..addListener(listener);
     });
     tearDownAll(() {
       list.dispose();
@@ -69,6 +69,8 @@ void main() async {
       list.fillRange(0, 2, 2);
       expect(list, [2, 2, 1]);
       listener.verifyCalledOnce;
+      list.fillRange(0, 2, 2);
+      listener.verifyNotCalled;
     });
 
     test('insert', () {

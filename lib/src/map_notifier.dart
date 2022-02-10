@@ -62,9 +62,12 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    final length = super.length;
-    super.removeWhere(test);
-    if (length != super.length) {
+    bool hasChanged = false;
+    final toRemove = entries.where((e) => test(e.key, e.value)).toList();
+    for (final key in toRemove) {
+      hasChanged = super.remove(key) != null || hasChanged;
+    }
+    if (hasChanged) {
       notifyListeners();
     }
   }

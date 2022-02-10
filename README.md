@@ -13,30 +13,25 @@ come with a built-in solution for collections.
 `collection_notifiers` **eliminating the boilerplate and unneeded rebuilds by calculating the difference very
 efficiently**.
 
-Riverpod only:
+Typical comparison would be:
+
+Riverpod:
 
 ```dart
-final setNotifier = StateProvider < Set<E>((ref) => <E>{});
-
+final setProvider = StateProvider((ref) => <E>{});
 /// Always triggers setState
-onChanged: (value) {
-  ref.read(setProvider.state).update((state) {
-    return state..add(value);
-  });
-}
+ref.read(setProvider.state).update((state) => state..add(value));
 ```
 
 Riverpod with `collection_notifiers`:
 
 ```dart
-final setNotifier = ChangeNotifierProvider<Set<E>>((ref) => SetNotifier<E>());
-
+final setProvider = ChangeNotifierProvider((ref) => SetNotifier<E>());
 /// Does not trigger setState if there is no change
-onChaged: ref.read(setNotifier).add
+ref.read(setProvider).add(value);
 ```
 
-So what you have is, having significant advantages while paying no cost, because `collection_notifiers` is also **
-minimal**.
+So what you have is, having significant advantages while paying no real cost.
 
 ## Features
 
@@ -49,16 +44,14 @@ via `ChangeNotifierProvider`.
 
 ## Implementations
 
-| Collection Name |    Status     |   Notifier Name   |
-|-----------------|:-------------:|:-----------------:|
-| Set             | **Completed** |    SetNotifier    |  
-| List            | Needs Tweaks  |   ListNotifier    |
-| Map             | Lacking Tests |    MapNotifier    |
-| Queue           |    Planned    |   QueueNotifier   |
-| SplayTree       |    Triage     | SplayTreeNotifier |
-| LinkedList      |    Triage     |         -         |
-| HashMap         |  Not Planned  |         -         |
-| HashSet         |  Not Planned  |                   |
+| Collection |     Status      |   Notifier    |
+|------------|:---------------:|:-------------:|
+| Set        |  **Completed**  |  SetNotifier  |  
+| List       | Tweaks Required | ListNotifier  |
+| Map        |  Lacking Tests  |  MapNotifier  |
+| Queue      |    Incoming     | QueueNotifier |
+
+Ask if there is any specific collection you need, pull requests are also welcome!
 
 ### Element Equality
 

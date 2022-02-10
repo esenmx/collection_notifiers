@@ -8,7 +8,7 @@ void main() async {
   group('SetNotifier(elements)', () {
     test('.new', () {
       final listener = VoidListener();
-      final set = SetNotifier([1, 1])..addListener(listener);
+      final set = SetNotifier<int>([1, 1])..addListener(listener);
       expect(set, {1});
       verifyZeroInteractions(listener);
     });
@@ -19,7 +19,7 @@ void main() async {
     late SetNotifier<int> set;
     setUp(() {
       listener = VoidListener();
-      set = SetNotifier()..addListener(listener);
+      set = SetNotifier<int>()..addListener(listener);
     });
     tearDownAll(() {
       set.dispose();
