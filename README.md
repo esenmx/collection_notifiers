@@ -20,7 +20,8 @@ Riverpod:
 ```dart
 final setProvider = StateProvider((ref) => <E>{});
 /// Always triggers setState
-ref.read(setProvider.state).update((state) => state..add(value));
+onAdd: (value) => ref.read(setProvider.state).update((state) => state..add(value));
+onRemove: (value) => ref.read(setProvider.state).update((state) => state..remove(value));
 ```
 
 Riverpod with `collection_notifiers`:
@@ -28,15 +29,15 @@ Riverpod with `collection_notifiers`:
 ```dart
 final setProvider = ChangeNotifierProvider((ref) => SetNotifier<E>());
 /// Does not trigger setState if there is no change
-ref.read(setProvider).add(value);
+/// suitable for referential assignment
+onAdd: ref.read(setProvider).add;
+onRemove: ref.read(setProvider).remove;
 ```
 
 So what you have is, having significant advantages while paying no real cost.
 
-## Features
-
-Fully compatible and ease to use
-with [ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html) or popular
+It's fully compatible and ease to use with 
+[ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html) or popular
 packages
 like [Riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html)
 / [Provider](https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html)
@@ -47,7 +48,7 @@ via `ChangeNotifierProvider`.
 | Collection |     Status      |   Notifier    |
 |------------|:---------------:|:-------------:|
 | Set        |  **Completed**  |  SetNotifier  |  
-| List       | Tweaks Required | ListNotifier  |
+| List       | May Be Optimize | ListNotifier  |
 | Map        |  Lacking Tests  |  MapNotifier  |
 | Queue      |    Incoming     | QueueNotifier |
 
