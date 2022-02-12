@@ -20,8 +20,9 @@ Riverpod:
 ```dart
 final setProvider = StateProvider((ref) => <E>{});
 /// Always triggers setState
-onAdd: (value) => ref.read(setProvider.state).update((state) => state..add(value));
-onRemove: (value) => ref.read(setProvider.state).update((state) => state..remove(value));
+/// Always creates shallow copies
+onAdd: (value) => ref.read(setProvider.state).update((state) => <E>{...state, value});
+onRemove: (value) => ref.read(setProvider.state).update((state) => <E>{...state..remove(value)});
 ```
 
 Riverpod with `collection_notifiers`:
@@ -29,7 +30,8 @@ Riverpod with `collection_notifiers`:
 ```dart
 final setProvider = ChangeNotifierProvider((ref) => SetNotifier<E>());
 /// Does not trigger setState if there is no change
-/// suitable for referential assignment
+/// Never creates shallow copies
+/// Possible for referential assignment
 onAdd: ref.read(setProvider).add;
 onRemove: ref.read(setProvider).remove;
 ```
