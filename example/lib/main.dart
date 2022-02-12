@@ -17,13 +17,17 @@ class App extends StatelessWidget {
   }
 }
 
-final notifier = ChangeNotifierProvider.autoDispose((ref) => SetNotifier<int>());
+final setNotifier = ChangeNotifierProvider.autoDispose((ref) => SetNotifier<int>());
+final listProvider = ChangeNotifierProvider((ref) => ListNotifier<int>([1]));
+final mapProvider = ChangeNotifierProvider((ref) => MapNotifier<String, int>({'a' : 1}));
 
 class Home extends ConsumerWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(mapProvider)['a'] = 1;
+    ref.read(listProvider)[0] = 1;
     return Scaffold(
       body: ListView(
         children: ListTile.divideTiles(
@@ -31,12 +35,12 @@ class Home extends ConsumerWidget {
           tiles: List.generate(10, (index) => index).map((e) {
             return CheckboxListTile(
               title: Text(e.toString()),
-              value: ref.watch(notifier).contains(e),
+              value: ref.watch(setNotifier).contains(e),
               onChanged: (value) {
                 if (value == true) {
-                  ref.read(notifier).add(e);
+                  ref.read(setNotifier).add(e);
                 } else {
-                  ref.read(notifier).remove(e);
+                  ref.read(setNotifier).remove(e);
                 }
               },
             );

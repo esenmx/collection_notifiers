@@ -3,7 +3,7 @@ part of collection_notifiers;
 class MapNotifier<K, V> extends DelegatingMap<K, V>
     with ChangeNotifier
     implements ValueListenable<Map<K, V>> {
-  MapNotifier(Map<K, V> base) : super(base);
+  MapNotifier([Map<K, V> base = const {}]) : super(Map<K, V>.of(base));
 
   @override
   void operator []=(K key, V value) {
