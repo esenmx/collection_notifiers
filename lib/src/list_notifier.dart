@@ -108,7 +108,6 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
-    // todo may optimized
     super.replaceRange(start, end, iterable);
     if (end != start && iterable.isNotEmpty) {
       notifyListeners();
@@ -117,7 +116,6 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void retainWhere(bool Function(E element) test) {
-    // todo may optimized
     final length = super.length;
     super.retainWhere(test);
     if (length != super.length) {
@@ -127,7 +125,6 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setAll(int index, Iterable<E> iterable) {
-    // todo may optimized
     super.setAll(index, iterable);
     if (iterable.isNotEmpty) {
       notifyListeners();
@@ -136,7 +133,6 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
-    // todo may optimized
     super.setRange(start, end, iterable, skipCount);
     if (end != start && iterable.isNotEmpty) {
       notifyListeners();

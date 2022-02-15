@@ -1,13 +1,13 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
   group('SetNotifier(elements)', () {
-    test('.new', () {
+    test('new', () {
+      final elements = Generator.randElements(1000);
       final listener = VoidListener();
-      final set = SetNotifier<int>([1, 1])..addListener(listener);
-      expect(set, {1});
+      final set = SetNotifier<int>(elements)..addListener(listener);
+      expect(set, elements.toSet());
       verifyZeroInteractions(listener);
     });
   });
@@ -23,9 +23,7 @@ void main() async {
       notifier.dispose();
     });
 
-    final bulk = <int>[1, 2, 2, 3, 3, 3];
-
-    test('.add', () {
+    test('add', () {
       expect(true, notifier.add(1));
       listener.verifyCalledOnce;
       expect(notifier, {1});
@@ -42,55 +40,76 @@ void main() async {
       listener.verifyCalledTwice;
     });
 
-    test('.addAll', () {
-      notifier.addAll(bulk);
+    test('addAll', () {
+      notifier.addAll(Generator.seqElements(1000));
       listener.verifyCalledOnce;
-      expect(notifier, {1, 2, 3});
+      expect(notifier, Generator.seqElements(1000));
+
+      notifier.addAll(Generator.seqOddElements(500));
+      notifier.addAll(Generator.seqEvenElements(500));
+      listener.verifyNotCalled;
     });
 
-    test('.clear', () {
+    test('clear', () {
       notifier.clear();
       listener.verifyNotCalled;
       expect(true, notifier.isEmpty);
+
       notifier.add(1);
       notifier.clear();
       listener.verifyCalledTwice;
+      expect(true, notifier.isEmpty);
     });
 
     test('remove', () {
       expect(false, notifier.remove(4));
       listener.verifyNotCalled;
-      notifier.addAll(bulk);
-      expect(true, notifier.remove(1));
+
+      notifier.addAll(Generator.seqElements(1000));
+      expect(true, notifier.remove(999));
       listener.verifyCalledTwice;
-      expect(notifier, {3, 2});
+      expect(notifier, Generator.seqElements(999));
     });
 
     test('removeAll', () {
-      notifier.removeAll([4, 5, 6]);
+      notifier.removeAll([1, 2, 3]);
       listener.verifyNotCalled;
-      notifier.addAll(bulk);
-      notifier.removeAll([3, 4]);
-      expect(true, setEquals({1, 2}, notifier));
+
+      notifier.addAll(Generator.seqElements(1000));
+      expect(notifier, Generator.seqElements(1000));
+      notifier.removeAll(Generator.seqEvenElements(2000));
+      expect(notifier, Generator.seqOddElements(500));
       listener.verifyCalledTwice;
     });
 
     test('removeWhere', () {
-      notifier.addAll(bulk);
       notifier.removeWhere((element) => element % 2 == 0);
-      expect(notifier, {1, 3});
+      listener.verifyNotCalled;
+
+      notifier.addAll(Generator.seqElements(1000));
+      notifier.removeWhere((element) => element % 2 == 0);
+      expect(notifier, Generator.seqOddElements(500));
       listener.verifyCalledTwice;
-      notifier.removeWhere((element) => element > 5);
+
+      notifier.removeWhere((element) => element > 999);
       listener.verifyNotCalled;
     });
 
     test('retainAll', () {
-      notifier.addAll(List.generate(10, (index) => index));
-      notifier.retainAll(bulk);
-      listener.verifyCalledTwice;
-      expect(notifier, {1, 2, 3});
-      notifier.retainAll(bulk);
+      notifier.retainAll(Generator.seqElements(10));
       listener.verifyNotCalled;
+
+      notifier.addAll(Generator.seqElements(1000));
+      notifier.retainAll(Generator.seqEvenElements(500));
+      listener.verifyCalledTwice;
+      expect(notifier, Generator.seqEvenElements(500));
+
+      notifier.retainAll(Generator.seqEvenElements(500));
+      listener.verifyNotCalled;
+
+      notifier.retainAll(Generator.seqOddElements(500));
+      listener.verifyCalledOnce;
+      expect(notifier.isEmpty, true);
     });
   });
 }

@@ -120,6 +120,12 @@ void main() async {
       notifier.removeWhere((key, value) => value != true);
       listener.verifyCalledThrice;
       expect(notifier.length, 500);
+
+      notifier.updateAll((key, value) => key % 5 == 0 ? null : value);
+      listener.verifyCalledOnce;
+      notifier.removeWhere((key, value) => value == null);
+      listener.verifyCalledOnce;
+      expect(notifier.length, 400);
     });
   });
 }
