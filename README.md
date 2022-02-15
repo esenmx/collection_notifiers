@@ -66,7 +66,7 @@ via `ChangeNotifierProvider`.
 |------------|:---------------:|:-------------:|
 | Set        |  **Completed**  |  SetNotifier  |  
 | List       | May Be Optimize | ListNotifier  |
-| Map        |  Lacking Tests  |  MapNotifier  |
+| Map        |  **Completed**  |  MapNotifier  |
 | Queue      |    Incoming     | QueueNotifier |
 
 Ask if there is any specific collection you need, pull requests are also welcome!

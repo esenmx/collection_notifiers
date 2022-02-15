@@ -6,15 +6,15 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   MapNotifier([Map<K, V> base = const {}]) : super(Map<K, V>.of(base));
 
   @override
+  Map<K, V> get value => this;
+
+  @override
   void operator []=(K key, V value) {
-    if (this[key] != value) {
-      this[key] = value;
+    if (super[key] != value) {
+      super[key] = value;
       notifyListeners();
     }
   }
-
-  @override
-  Map<K, V> get value => this;
 
   @override
   void addAll(Map<K, V> other) {
@@ -25,8 +25,8 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   void addEntries(Iterable<MapEntry<K, V>> entries) {
     bool hasChanged = false;
     for (final entry in entries) {
-      hasChanged = hasChanged || this[entry.key] != entry.value;
-      this[entry.key] = entry.value;
+      hasChanged = hasChanged || super[entry.key] != entry.value;
+      super[entry.key] = entry.value;
     }
     if (hasChanged) {
       notifyListeners();
@@ -62,19 +62,18 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    bool hasChanged = false;
     final toRemove = entries.where((e) => test(e.key, e.value)).toList();
-    for (final key in toRemove) {
-      hasChanged = super.remove(key) != null || hasChanged;
+    for (final entry in toRemove) {
+      super.remove(entry.key);
     }
-    if (hasChanged) {
+    if (toRemove.isNotEmpty) {
       notifyListeners();
     }
   }
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
-    final value = this[key];
+    final value = super[key];
     final newValue = super.update(key, update, ifAbsent: ifAbsent);
     if (value != newValue) {
       notifyListeners();
@@ -88,7 +87,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     for (final entry in super.entries) {
       final newValue = update(entry.key, entry.value);
       hasChanged = hasChanged || newValue != entry.value;
-      this[entry.key] = newValue;
+      super[entry.key] = newValue;
     }
     if (hasChanged) {
       notifyListeners();

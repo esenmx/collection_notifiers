@@ -1,7 +1,5 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
@@ -16,82 +14,82 @@ void main() async {
 
   group('SetNotifier', () {
     late VoidListener listener;
-    late SetNotifier<int> set;
+    late SetNotifier<int> notifier;
     setUp(() {
       listener = VoidListener();
-      set = SetNotifier<int>()..addListener(listener);
+      notifier = SetNotifier<int>()..addListener(listener);
     });
     tearDownAll(() {
-      set.dispose();
+      notifier.dispose();
     });
 
     final bulk = <int>[1, 2, 2, 3, 3, 3];
 
     test('.add', () {
-      expect(true, set.add(1));
+      expect(true, notifier.add(1));
       listener.verifyCalledOnce;
-      expect(set, {1});
+      expect(notifier, {1});
 
-      expect(false, set.add(1));
+      expect(false, notifier.add(1));
       listener.verifyNotCalled;
 
-      expect(true, set.add(2));
+      expect(true, notifier.add(2));
       listener.verifyCalledOnce;
-      expect(set, {1, 2});
+      expect(notifier, {1, 2});
 
-      expect(true, set.add(3));
-      expect(true, set.add(4));
+      expect(true, notifier.add(3));
+      expect(true, notifier.add(4));
       listener.verifyCalledTwice;
     });
 
     test('.addAll', () {
-      set.addAll(bulk);
+      notifier.addAll(bulk);
       listener.verifyCalledOnce;
-      expect(set, {1, 2, 3});
+      expect(notifier, {1, 2, 3});
     });
 
     test('.clear', () {
-      set.clear();
+      notifier.clear();
       listener.verifyNotCalled;
-      expect(true, set.isEmpty);
-      set.add(1);
-      set.clear();
+      expect(true, notifier.isEmpty);
+      notifier.add(1);
+      notifier.clear();
       listener.verifyCalledTwice;
     });
 
     test('remove', () {
-      expect(false, set.remove(4));
+      expect(false, notifier.remove(4));
       listener.verifyNotCalled;
-      set.addAll(bulk);
-      expect(true, set.remove(1));
+      notifier.addAll(bulk);
+      expect(true, notifier.remove(1));
       listener.verifyCalledTwice;
-      expect(set, {3, 2});
+      expect(notifier, {3, 2});
     });
 
     test('removeAll', () {
-      set.removeAll([4, 5, 6]);
+      notifier.removeAll([4, 5, 6]);
       listener.verifyNotCalled;
-      set.addAll(bulk);
-      set.removeAll([3, 4]);
-      expect(true, setEquals({1, 2}, set));
+      notifier.addAll(bulk);
+      notifier.removeAll([3, 4]);
+      expect(true, setEquals({1, 2}, notifier));
       listener.verifyCalledTwice;
     });
 
     test('removeWhere', () {
-      set.addAll(bulk);
-      set.removeWhere((element) => element % 2 == 0);
-      expect(set, {1, 3});
+      notifier.addAll(bulk);
+      notifier.removeWhere((element) => element % 2 == 0);
+      expect(notifier, {1, 3});
       listener.verifyCalledTwice;
-      set.removeWhere((element) => element > 5);
+      notifier.removeWhere((element) => element > 5);
       listener.verifyNotCalled;
     });
 
     test('retainAll', () {
-      set.addAll(List.generate(10, (index) => index));
-      set.retainAll(bulk);
+      notifier.addAll(List.generate(10, (index) => index));
+      notifier.retainAll(bulk);
       listener.verifyCalledTwice;
-      expect(set, {1, 2, 3});
-      set.retainAll(bulk);
+      expect(notifier, {1, 2, 3});
+      notifier.retainAll(bulk);
       listener.verifyNotCalled;
     });
   });
