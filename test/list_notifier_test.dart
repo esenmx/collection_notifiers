@@ -2,7 +2,7 @@ import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
-  group('ListNotifier(elements)', () {
+  group('ListNotifier.of', () {
     test('.new', () {
       final elements = Generator.randElements(10);
       final listener = VoidListener();

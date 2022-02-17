@@ -2,7 +2,7 @@ import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
-  group('MapNotifier(elements)', () {
+  group('MapNotifier.of', () {
     test('.new', () {
       final listener = VoidListener();
       MapNotifier({1: true}).addListener(listener);
