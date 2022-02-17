@@ -10,55 +10,70 @@ class QueueNotifier<E> extends DelegatingQueue<E>
 
   @override
   void addAll(Iterable<E> iterable) {
-    // TODO: implement addAll
     super.addAll(iterable);
+    if (iterable.isNotEmpty) {
+      notifyListeners();
+    }
   }
 
   @override
   void addFirst(E value) {
-    // TODO: implement addFirst
     super.addFirst(value);
+    notifyListeners();
   }
 
   @override
   void addLast(E value) {
-    // TODO: implement addLast
     super.addLast(value);
+    notifyListeners();
   }
 
   @override
   void clear() {
-    // TODO: implement clear
-    super.clear();
+    if (super.isNotEmpty) {
+      super.clear();
+      notifyListeners();
+    }
   }
 
   @override
   bool remove(Object? object) {
-    // TODO: implement remove
-    return super.remove(object);
+    if (super.remove(object)) {
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
   @override
   E removeFirst() {
-    // TODO: implement removeFirst
-    return super.removeFirst();
+    final element = super.removeFirst();
+    notifyListeners();
+    return element;
   }
 
   @override
   E removeLast() {
-    // TODO: implement removeLast
-    return super.removeLast();
+    final element = super.removeLast();
+    notifyListeners();
+    return element;
   }
 
   @override
-  void removeWhere(bool Function(E p1) test) {
-    // TODO: implement removeWhere
+  void removeWhere(bool Function(E element) test) {
+    final length = super.length;
     super.removeWhere(test);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 
   @override
-  void retainWhere(bool Function(E p1) test) {
-    // TODO: implement retainWhere
+  void retainWhere(bool Function(E element) test) {
+    final length = super.length;
     super.retainWhere(test);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 }

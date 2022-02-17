@@ -67,7 +67,7 @@ So what you have is, having significant advantages while paying no real cost.
 | Set        |    **Completed**    |  SetNotifier  |  
 | List       | Not Optimized Fully | ListNotifier  |
 | Map        |    **Completed**    |  MapNotifier  |
-| Queue      |      Incoming       | QueueNotifier |
+| Queue      |    Lacking Tests    | QueueNotifier |
 
 Ask if there is any specific collection you need, pull requests are also welcome!
 
