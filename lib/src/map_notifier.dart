@@ -23,12 +23,12 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    bool hasChanged = false;
+    bool shouldNotify = false;
     for (final entry in entries) {
-      hasChanged = hasChanged || super[entry.key] != entry.value;
+      shouldNotify = shouldNotify || super[entry.key] != entry.value;
       super[entry.key] = entry.value;
     }
-    if (hasChanged) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -83,13 +83,13 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void updateAll(V Function(K key, V value) update) {
-    bool hasChanged = false;
+    bool shouldNotify = false;
     for (final entry in super.entries) {
       final newValue = update(entry.key, entry.value);
-      hasChanged = hasChanged || newValue != entry.value;
+      shouldNotify = shouldNotify || newValue != entry.value;
       super[entry.key] = newValue;
     }
-    if (hasChanged) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }

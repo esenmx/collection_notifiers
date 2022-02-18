@@ -2,6 +2,7 @@ name: collection_notifiers
 description: ChangeNotifier/ValueListenable wrappers for collections with optimized notification
 version: 1.0.0
 homepage: http://mehmetesen.com
+repository: https://github.com/esenmx/collection_notifiers/
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

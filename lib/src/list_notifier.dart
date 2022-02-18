@@ -42,12 +42,12 @@ class ListNotifier<E> extends DelegatingList<E>
   void fillRange(int start, int end, [E? fillValue]) {
     final E nonNullFillValue = fillValue as E;
     RangeError.checkValidRange(start, end, length);
-    bool hasChanged = false;
+    bool shouldNotify = false;
     for (int i = start; i < end; i++) {
-      hasChanged = hasChanged || super[i] != fillValue;
+      shouldNotify = shouldNotify || super[i] != fillValue;
       super[i] = nonNullFillValue;
     }
-    if (hasChanged) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }
