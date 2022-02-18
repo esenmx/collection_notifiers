@@ -17,9 +17,12 @@ class App extends StatelessWidget {
   }
 }
 
-final setNotifier = ChangeNotifierProvider.autoDispose((ref) => SetNotifier<int>([1, 1, 1]));
-final listProvider = ChangeNotifierProvider((ref) => ListNotifier<int>([1, 2, 3]));
-final mapProvider = ChangeNotifierProvider((ref) => MapNotifier<String, int>({'a': 1}));
+final setNotifier =
+    ChangeNotifierProvider.autoDispose((ref) => SetNotifier<int>([1, 1, 1]));
+final listProvider =
+    ChangeNotifierProvider((ref) => ListNotifier<int>([1, 2, 3]));
+final mapProvider =
+    ChangeNotifierProvider((ref) => MapNotifier<String, int>({'a': 1}));
 
 class Home extends ConsumerWidget {
   const Home({Key? key}) : super(key: key);
