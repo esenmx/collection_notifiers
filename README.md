@@ -1,15 +1,14 @@
 <p align="center">
-<a href="https://github.com/esenmx/collection_notifiers/actions"><img src="https://github.com/rrousselGit/river_pod/workflows/Build/badge.svg" alt="Build Status"></a>
+<a href="https://pub.dev/packages/collection_notifiers"><img src="https://img.shields.io/pub/v/collection_notifiers.svg" alt="Build Status"></a>
+<a href="https://github.com/esenmx/collection_notifiers/actions"><img src="https://github.com/esenmx/collection_notifiers/workflows/Build/badge.svg" alt="Build Status"></a>
 <a href="https://codecov.io/gh/esenmx/collection_notifiers"><img src="https://codecov.io/gh/esenmx/collection_notifiers/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="https://github.com/esenmx/collection_notifiers"><img src="https://img.shields.io/github/stars/esenmx/collection_notifiers.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 
 <p align="center">
 
-Wrapped [collections](https://api.dart.dev/stable/dart-collection/dart-collection-library.html)
-with [ChangeNotifier](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html)
-& [ValueListenable](https://api.flutter.dev/flutter/foundation/ValueListenable-class.html) interface for optimized
-rebuilds and better syntax.
+Wrapped [collections][collections] with [ChangeNotifier][ChangeNotifier] & [ValueListenable][ValueListenable] 
+interface for optimized rebuilds and better syntax.
 
 ## Why?
 It's a hassle when working with collections and updating the state. Most of the popular state management packages do not
@@ -19,10 +18,7 @@ come with a built-in solution for collections.
 calculating the difference _very efficiently_.**
 
 It's fully compatible and ease to use with
-[ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html) or popular
-packages
-like [Riverpod](https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html)
-/ [Provider](https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html)
+[ValueListenableBuilder][ValueListenableBuilder] or popular packages like [Riverpod][Riverpod] / [Provider][Provider]
 via `ChangeNotifierProvider`.
 
 Typical comparison would be:
@@ -83,8 +79,8 @@ Ask if there is any specific collection you need, pull requests are also welcome
 ## Element Equality
 
 Element equation([== operator](https://api.dart.dev/stable/2.13.4/dart-core/Object/operator_equals.html)) must be
-handled by you beforehand. For that case, code generation([freezed](https://pub.dev/packages/freezed), 
-[built_value](https://pub.dev/packages/built_value) etc.) or [equatable](https://pub.dev/packages/equatable) are strongly
+handled by you beforehand. For that case, code generation([freezed][freezed],[built_value][built_value] etc.) or
+[equatable][equatable] are strongly
 recommended.
 
 ## Notes
@@ -98,3 +94,17 @@ recommended.
 
 There is a very similar package [listenable_collections](https://github.com/escamoteur/listenable_collections), but repo
 was a little inactive, and probably I'll choose different path over the time. Thanks them, I borrowed some concepts.
+
+[//]: # (Links)
+
+[collections]: https://api.dart.dev/stable/dart-collection/dart-collection-library.html
+[ChangeNotifier]: https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html
+[ValueListenable]: https://api.flutter.dev/flutter/foundation/ValueListenable-class.html
+[ValueListenableBuilder]: https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html
+[Riverpod]: https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html
+[Provider]: https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html
+[== operator]: https://api.dart.dev/stable/2.13.4/dart-core/Object/operator_equals.html
+[freezed]: https://pub.dev/packages/freezed
+[built_value]: https://pub.dev/packages/built_value
+[equatable]: https://pub.dev/packages/equatable
+[listenable_collections]: https://github.com/escamoteur/listenable_collections
