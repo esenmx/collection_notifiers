@@ -1,7 +1,7 @@
 name: collection_notifiers
 description: ChangeNotifier/ValueListenable wrappers for collections with optimized notification
-version: 0.0.1
-homepage: mehmetesen.com
+version: 1.0.0
+homepage: http://mehmetesen.com
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
