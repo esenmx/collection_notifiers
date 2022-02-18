@@ -11,10 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.0'
           channel: 'stable'
+
       - name: Install Dependencies
         run: flutter pub get
 
@@ -27,6 +29,8 @@ jobs:
       - name: Run Tests
         run: flutter test --coverage
 
-      - name: Upload to Codecov
-        run: curl -s https://codecov.io/bash
-        shell: bash
+      - uses: codecov/codecov-action@v2
+        with:
+          #files: coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
