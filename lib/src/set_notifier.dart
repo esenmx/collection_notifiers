@@ -19,11 +19,11 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void addAll(Iterable<E> elements) {
-    bool hasChanged = false;
+    bool shouldNotify = false;
     for (final e in elements) {
-      hasChanged = super.add(e) || hasChanged;
+      shouldNotify = super.add(e) || shouldNotify;
     }
-    if (hasChanged) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -47,11 +47,11 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void removeAll(Iterable<Object?> elements) {
-    bool hasChanged = false;
+    bool shouldNotify = false;
     for (final e in elements) {
-      hasChanged = super.remove(e) || hasChanged;
+      shouldNotify = super.remove(e) || shouldNotify;
     }
-    if (hasChanged) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }

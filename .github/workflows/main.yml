@@ -25,4 +25,8 @@ jobs:
         run: flutter analyze
 
       - name: Run Tests
-        run: flutter test
+        run: flutter test --coverage
+
+      - name: Upload to Codecov
+        run: curl -s https://codecov.io/bash
+        shell: bash
