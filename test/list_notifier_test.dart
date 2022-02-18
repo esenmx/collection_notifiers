@@ -76,7 +76,7 @@ void main() async {
       listener.verifyCalledTwice;
       notifier.fillRange(0, 100, 1);
       listener.verifyNotCalled;
-      expect(notifier, Generator.seqElements(100, 1));
+      expect(notifier, List<int>.filled(100, 1));
 
       notifier.fillRange(0, 2, 2);
       listener.verifyCalledOnce;
