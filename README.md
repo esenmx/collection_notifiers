@@ -14,8 +14,8 @@ interface for optimized rebuilds and better syntax.
 It's a hassle when working with collections and updating the state. Most of the popular state management packages do not
 come with a built-in solution for collections.
 
-**`collection_notifiers` reduces the boilerplate that required update the state while eliminating _unneeded rebuilds_ by 
-calculating the difference _very efficiently_.**
+`collection_notifiers` **reduces the boilerplate** that required update the state, _**eliminates unneeded rebuilds**_
+by calculating the difference _**very efficiently**_.
 
 It's fully compatible and ease to use with
 [ValueListenableBuilder][ValueListenableBuilder] or popular packages like [Riverpod][Riverpod] / [Provider][Provider]
@@ -23,47 +23,51 @@ via `ChangeNotifierProvider`.
 
 Typical comparison would be:
 
-Riverpod:
-
+##### Riverpod
+- Always triggers `setState`
+- Always creates shallow copies
+- Verbose syntax
 ```dart
 final setProvider = StateProvider((ref) => <E>{});
-/// Always triggers [setState]
-/// Always creates shallow copies
-/// Verbose syntax
+```
+```dart
 onAdd: (value) => ref.read(setProvider.state).update((state) {
   return <E>{...state, value};
 });
 onRemove: (value) => ref.read(setProvider.state).update((state) {
-  return <E>{...state..remove(value);
+  return <E>{...state..remove(value)};
 });
 ```
 
-Riverpod with `collection_notifiers`:
-
+##### Riverpod with `collection_notifiers`:
+- Does not trigger `setState` if there is no change
+- Never creates shallow copies
+- Terse syntax
 ```dart
 final setProvider = ChangeNotifierProvider((ref) => SetNotifier<E>());
-/// Does not trigger [setState] if there is no change
-/// Never creates shallow copies
-/// Terse syntax
+```
+```dart
 onAdd: ref.read(setProvider).add;
 onRemove: ref.read(setProvider).remove;
 ```
 
-Operators are also overridden:
+Operators are also overridden, `List`:
 ```dart
 final listProvider = ChangeNotifierProvider((ref) => ListNotifier([1]));
-...
+```
+```dart
 ref.read(listProvider)[0] = 1; // won't trigger setState
 ```
 
-Similarly:
+Similarly, the `Map`:
 ```dart
 final mapProvider = ChangeNotifierProvider((ref) => MapNotifier({'a' : 1}));
-...
+```
+```dart
 ref.read(mapProvider)['a'] = 1; // won't trigger setState
 ```
 
-So what you have is, having significant advantages while paying no real cost.
+So at the end, what you have is significant advantages while paying no real cost.
 
 ## Implementations
 
