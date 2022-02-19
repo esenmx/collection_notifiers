@@ -19,11 +19,9 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void addAll(Iterable<E> elements) {
-    bool shouldNotify = false;
-    for (final e in elements) {
-      shouldNotify = super.add(e) || shouldNotify;
-    }
-    if (shouldNotify) {
+    final length = super.length;
+    super.addAll(elements);
+    if (length != super.length) {
       notifyListeners();
     }
   }
@@ -47,31 +45,37 @@ class SetNotifier<E> extends DelegatingSet<E>
 
   @override
   void removeAll(Iterable<Object?> elements) {
-    bool shouldNotify = false;
-    for (final e in elements) {
-      shouldNotify = super.remove(e) || shouldNotify;
-    }
-    if (shouldNotify) {
+    final length = super.length;
+    super.removeAll(elements);
+    if (length != super.length) {
       notifyListeners();
     }
   }
 
   @override
   void removeWhere(bool Function(E e) test) {
-    /// Avoiding [LazyIterable] for preventing [ConcurrentModificationError]
-    final toRemove = where((e) => test(e)).toList();
-    removeAll(toRemove);
+    final length = super.length;
+    super.removeWhere(test);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 
   @override
   void retainAll(Iterable<Object?> elements) {
-    /// Converting to [Set] for constant [contains] operations
-    final toRetain = elements.toSet();
-    removeWhere((e) => !toRetain.contains(e));
+    final length = super.length;
+    super.retainAll(elements);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 
   @override
   void retainWhere(bool Function(E e) test) {
-    removeWhere((e) => !test(e));
+    final length = super.length;
+    super.retainWhere(test);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 }
