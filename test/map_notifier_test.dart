@@ -29,6 +29,10 @@ void main() async {
 
       notifier[1] = true;
       listener.verifyNotCalled;
+
+      notifier[1] = null;
+      notifier[2] = null;
+      listener.verifyCalledTwice;
     });
 
     test('addAll', () {
@@ -81,6 +85,11 @@ void main() async {
       notifier.remove('a');
       listener.verifyNotCalled;
       expect(notifier.isEmpty, true);
+
+      notifier[1] = null;
+      listener.verifyCalledOnce;
+      notifier.remove(1);
+      listener.verifyCalledOnce;
     });
 
     test('removeWhere', () {

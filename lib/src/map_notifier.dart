@@ -10,7 +10,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void operator []=(K key, V value) {
-    if (super[key] != value) {
+    if (!super.containsKey(key) || super[key] != value) {
       super[key] = value;
       notifyListeners();
     }
@@ -52,8 +52,8 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   V? remove(Object? key) {
-    final value = super.remove(key);
-    if (value != null) {
+    if (super.containsKey(key)) {
+      final value = super.remove(key);
       notifyListeners();
       return value;
     }
@@ -62,11 +62,9 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    final toRemove = entries.where((e) => test(e.key, e.value)).toList();
-    for (final entry in toRemove) {
-      super.remove(entry.key);
-    }
-    if (toRemove.isNotEmpty) {
+    final length = super.length;
+    super.removeWhere(test);
+    if (length != super.length) {
       notifyListeners();
     }
   }
