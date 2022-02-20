@@ -1,7 +1,7 @@
 .PHONY: test publish dry
 
 test:
-	flutter test
+	flutter test --coverage
 
 dry:
 	flutter pub publish --dry-run

@@ -33,6 +33,9 @@ void main() async {
 
       notifier[0] = 1;
       listener.verifyNotCalled;
+
+      notifier.value[0] = 2;
+      listener.verifyCalledOnce;
     });
 
     test('.add', () {

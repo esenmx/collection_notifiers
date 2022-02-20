@@ -7,7 +7,7 @@ void main() async {
       final elements = Generator.randElements(1000);
       final listener = VoidListener();
       final set = SetNotifier<int>(elements)..addListener(listener);
-      expect(set, elements.toSet());
+      expect(set.value, elements.toSet());
       verifyZeroInteractions(listener);
     });
   });
@@ -108,6 +108,23 @@ void main() async {
       listener.verifyNotCalled;
 
       notifier.retainAll(Generator.seqOddElements(500));
+      listener.verifyCalledOnce;
+      expect(notifier.isEmpty, true);
+    });
+
+    test('retainWhere', () {
+      notifier.retainWhere((element) => element % 2 == 0);
+      listener.verifyNotCalled;
+
+      notifier.addAll(Generator.seqElements(1000));
+      notifier.retainWhere((element) => element % 2 == 0);
+      expect(notifier, Generator.seqEvenElements(500));
+      listener.verifyCalledTwice;
+
+      notifier.retainWhere((element) => element % 2 == 0);
+      listener.verifyNotCalled;
+
+      notifier.retainWhere((element) => element > 998);
       listener.verifyCalledOnce;
       expect(notifier.isEmpty, true);
     });
