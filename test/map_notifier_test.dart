@@ -5,7 +5,9 @@ void main() async {
   group('MapNotifier.of', () {
     test('.new', () {
       final listener = VoidListener();
-      MapNotifier({1: true}).addListener(listener);
+      final notifier = MapNotifier({1: true})..addListener(listener);
+      expect(notifier, {1: true});
+      expect(notifier.value, {1: true});
       listener.verifyNotCalled;
       verifyNoMoreInteractions(listener);
     });
@@ -33,6 +35,9 @@ void main() async {
       notifier[1] = null;
       notifier[2] = null;
       listener.verifyCalledTwice;
+
+      notifier.value[1] = true;
+      listener.verifyCalledOnce;
     });
 
     test('addAll', () {

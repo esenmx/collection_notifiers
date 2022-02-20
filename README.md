@@ -54,16 +54,12 @@ onRemove: ref.read(setProvider).remove;
 Operators are also overridden, `List`:
 ```dart
 final listProvider = ChangeNotifierProvider((ref) => ListNotifier([1]));
-```
-```dart
 ref.read(listProvider)[0] = 1; // won't trigger setState
 ```
 
 Similarly, the `Map`:
 ```dart
 final mapProvider = ChangeNotifierProvider((ref) => MapNotifier({'a' : 1}));
-```
-```dart
 ref.read(mapProvider)['a'] = 1; // won't trigger setState
 ```
 
