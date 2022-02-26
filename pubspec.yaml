@@ -1,5 +1,5 @@
 name: collection_notifiers
-description: Collection Notifiers for better performance and syntax
+description: Collections with implementation of ValueListenable/ChangeNotifier for minimum rebuild and sugared syntax
 version: 1.0.1
 homepage: http://mehmetesen.com
 repository: https://github.com/esenmx/collection_notifiers/
