@@ -9,7 +9,7 @@ void main() async {
       expect(notifier, {1: true});
       expect(notifier.value, {1: true});
       listener.verifyNotCalled;
-      verifyNoMoreInteractions(listener);
+      verifyZeroInteractions(listener);
     });
   });
 

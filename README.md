@@ -14,7 +14,7 @@ interface for optimized rebuilds and better syntax.
 It's a hassle when working with collections and updating the state. Most of the popular state management packages do not
 come with a built-in solution for collections.
 
-`collection_notifiers` **reduces the boilerplate** that required update the state, _**eliminates unneeded rebuilds**_
+`collection_notifiers` **reduces the boilerplate** that required to update the state, _**eliminates unneeded rebuilds**_
 by calculating the difference _**very efficiently**_.
 
 It's fully compatible and ease to use with
@@ -25,7 +25,7 @@ Typical comparison would be:
 
 ##### Riverpod
 - Always triggers `setState`
-- Always creates shallow copies
+- Always creates shallow/deep copies
 - Verbose syntax
 ```dart
 final setProvider = StateProvider((ref) => <E>{});
@@ -41,7 +41,7 @@ onRemove: (value) => ref.read(setProvider.state).update((state) {
 
 ##### Riverpod with `collection_notifiers`:
 - Does not trigger `setState` if there is no change
-- Never creates shallow copies
+- Never creates shallow/deep copies
 - Terse syntax
 ```dart
 final setProvider = ChangeNotifierProvider((ref) => SetNotifier<E>());

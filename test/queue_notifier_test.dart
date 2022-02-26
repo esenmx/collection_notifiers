@@ -9,7 +9,7 @@ void main() async {
       final list = QueueNotifier<int>(elements)..addListener(listener);
       expect(list.value, elements);
       listener.verifyNotCalled;
-      verifyNoMoreInteractions(listener);
+      verifyZeroInteractions(listener);
     });
   });
 
