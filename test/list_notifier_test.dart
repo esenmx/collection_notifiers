@@ -1,10 +1,12 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
   group('ListNotifier.of', () {
     test('.new', () {
-      final elements = Generator.randElements(10);
+      final elements = 10.rangeRand();
       final listener = VoidListener();
       final list = ListNotifier<int>(elements)..addListener(listener);
       expect(list.value, elements);
@@ -50,12 +52,12 @@ void main() async {
     });
 
     test('.addAll', () {
-      notifier.addAll(Generator.seqElements(100));
-      expect(notifier, Generator.seqElements(100));
+      notifier.addAll(100.range());
+      expect(notifier, 100.range());
       listener.verifyCalledOnce;
 
-      notifier.addAll(Generator.seqElements(100));
-      notifier.addAll(Generator.seqElements(100));
+      notifier.addAll(100.range());
+      notifier.addAll(100.range());
       listener.verifyCalledTwice;
     });
 
@@ -74,7 +76,7 @@ void main() async {
       expect(() => notifier.fillRange(0, 0), throwsA(isA<TypeError>()));
       expect(() => notifier.fillRange(0, 1, 0), throwsA(isA<RangeError>()));
 
-      notifier.addAll(Generator.seqElements(100));
+      notifier.addAll(100.range());
       notifier.fillRange(0, 100, 1);
       listener.verifyCalledTwice;
       notifier.fillRange(0, 100, 1);
@@ -88,7 +90,7 @@ void main() async {
     });
 
     test('insert', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       listener.verifyCalledOnce;
 
       notifier.insert(2, 1);
@@ -106,42 +108,42 @@ void main() async {
       expect(() => notifier.insertAll(5, []), isA<void>());
       expect(() => notifier.insertAll(5, [1]), throwsA(isA<RangeError>()));
 
-      notifier.insertAll(0, Generator.seqElements(1000));
-      expect(notifier, Generator.seqElements(1000));
+      notifier.insertAll(0, 1000.range());
+      expect(notifier, 1000.range());
       listener.verifyCalledOnce;
 
       notifier.insertAll(1, []);
       listener.verifyNotCalled;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
     });
 
     test('remove', () {
       expect(false, notifier.remove(0));
       listener.verifyNotCalled;
 
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       expect(true, notifier.remove(1));
       listener.verifyCalledTwice;
 
-      expect(notifier, Generator.seqElements(1000)..remove(1));
+      expect(notifier, 1000.range()..remove(1));
     });
 
     test('removeAt', () {
       expect(() => notifier.removeAt(2), throwsA(isA<RangeError>()));
 
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       notifier
         ..removeAt(999)
         ..removeAt(998);
-      expect(notifier, Generator.seqElements(998));
+      expect(notifier, 998.range());
       listener.verifyCalledThrice;
     });
 
     test('removeRange', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       notifier.removeRange(500, 1000);
       listener.verifyCalledTwice;
-      expect(notifier, Generator.seqElements(500));
+      expect(notifier, 500.range());
 
       notifier.removeRange(500, 500);
       listener.verifyNotCalled;
@@ -161,9 +163,9 @@ void main() async {
     });
 
     test('removeWhere', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       notifier.removeWhere((element) => element % 2 == 1);
-      expect(notifier, Generator.seqEvenElements(500));
+      expect(notifier, 500.rangeEven());
       listener.verifyCalledTwice;
 
       notifier.removeWhere((element) => element > 1000);
@@ -171,7 +173,7 @@ void main() async {
     });
 
     test('replaceRange', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       notifier.replaceRange(0, notifier.length, [1, 2, 3]);
       listener.verifyCalledTwice;
       expect(notifier, [1, 2, 3]);
@@ -185,8 +187,8 @@ void main() async {
     });
 
     test('retainWhere', () {
-      notifier.addAll(Generator.seqElements(1000));
-      final retain = Generator.seqOddElements(500);
+      notifier.addAll(1000.range());
+      final retain = 500.rangeOdd();
       notifier.retainWhere(retain.contains);
       listener.verifyCalledTwice;
       expect(notifier, retain);
@@ -199,13 +201,13 @@ void main() async {
     test('setAll', () {
       expect(() => notifier.setAll(1, [1]), throwsA(isA<RangeError>()));
 
-      notifier.addAll(Generator.seqElements(500));
-      notifier.setAll(0, Generator.seqOddElements(500));
+      notifier.addAll(500.range());
+      notifier.setAll(0, 500.rangeOdd());
       listener.verifyCalledTwice;
-      expect(notifier, Generator.seqOddElements(500));
+      expect(notifier, 500.rangeOdd());
 
       notifier.setAll(0, [2]);
-      expect(notifier, Generator.seqOddElements(500)..[0] = 2);
+      expect(notifier, 500.rangeOdd()..[0] = 2);
       listener.verifyCalledOnce;
     });
 
@@ -222,13 +224,13 @@ void main() async {
     });
 
     test('shuffle', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       notifier.shuffle();
       listener.verifyCalledTwice;
     });
 
     test('sort', () {
-      notifier.addAll(Generator.randElements(1000));
+      notifier.addAll(1000.rangeRand());
       notifier.sort((a, b) => a - b);
       listener.verifyCalledTwice;
     });

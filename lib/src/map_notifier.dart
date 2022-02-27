@@ -18,17 +18,18 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void addAll(Map<K, V> other) {
-    addEntries(other.entries);
+    final length = super.length;
+    super.addAll(other);
+    if (length != super.length) {
+      notifyListeners();
+    }
   }
 
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    bool shouldNotify = false;
-    for (final entry in entries) {
-      shouldNotify = shouldNotify || super[entry.key] != entry.value;
-      super[entry.key] = entry.value;
-    }
-    if (shouldNotify) {
+    final length = super.length;
+    super.addEntries(entries);
+    if (length != super.length) {
       notifyListeners();
     }
   }
