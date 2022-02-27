@@ -1,13 +1,16 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
   group('MapNotifier.of', () {
     test('.new', () {
       final listener = VoidListener();
-      final notifier = MapNotifier({1: true})..addListener(listener);
-      expect(notifier, {1: true});
-      expect(notifier.value, {1: true});
+      final base = Map.fromEntries(100.rangeEntryRand());
+      final notifier = MapNotifier(base)..addListener(listener);
+      expect(notifier, base);
+      expect(notifier.value, base);
       listener.verifyNotCalled;
       verifyZeroInteractions(listener);
     });
@@ -41,8 +44,8 @@ void main() async {
     });
 
     test('addAll', () {
-      notifier.addAll(Map.fromEntries(Generator.seqEntries(1000)));
-      notifier.addAll(Map.fromEntries(Generator.seqEvenEntries(500)));
+      notifier.addAll(Map.fromEntries(1000.rangeEntry()));
+      notifier.addAll(Map.fromEntries(500.rangeEntryEven()));
       listener.verifyCalledOnce;
 
       notifier.addAll({1000: true});
@@ -51,8 +54,8 @@ void main() async {
     });
 
     test('addEntries', () {
-      notifier.addEntries(Generator.seqEntries(1000));
-      notifier.addEntries(Generator.seqOddEntries(500));
+      notifier.addEntries(1000.rangeEntry());
+      notifier.addEntries(500.rangeEntryOdd());
       listener.verifyCalledOnce;
 
       notifier.addEntries(const [MapEntry(1001, true)]);
@@ -65,7 +68,7 @@ void main() async {
       listener.verifyNotCalled;
       expect(notifier.isEmpty, true);
 
-      notifier.addEntries(Generator.seqEntries(1000));
+      notifier.addEntries(1000.rangeEntry());
       expect(notifier.length, 1000);
       notifier.clear();
       listener.verifyCalledTwice;
@@ -98,8 +101,8 @@ void main() async {
     });
 
     test('removeWhere', () {
-      notifier.addEntries(Generator.seqEvenEntries(100));
-      notifier.addEntries(Generator.seqOddEntries(100, false));
+      notifier.addEntries(100.rangeEntryEven());
+      notifier.addEntries(100.rangeEntryOdd(false));
       listener.verifyCalledTwice;
       expect(notifier.length, 200);
 
@@ -129,7 +132,7 @@ void main() async {
       notifier.updateAll((key, value) => false);
       listener.verifyNotCalled;
 
-      notifier.addEntries(Generator.seqEntries(1000));
+      notifier.addEntries(1000.rangeEntry());
       notifier.updateAll((key, value) => key % 2 != 0);
       notifier.removeWhere((key, value) => value != true);
       listener.verifyCalledThrice;

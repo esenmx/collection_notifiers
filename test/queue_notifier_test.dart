@@ -1,10 +1,12 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test_utils/test_utils.dart';
 
 void main() async {
   group('QueueNotifier.of', () {
     test('.new', () {
-      final elements = Generator.randElements(10);
+      final elements = 10.rangeRand();
       final listener = VoidListener();
       final list = QueueNotifier<int>(elements)..addListener(listener);
       expect(list.value, elements);
@@ -25,13 +27,13 @@ void main() async {
     });
 
     test('addAll', () {
-      notifier.addAll(Generator.seqElements(500));
+      notifier.addAll(500.range());
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(500));
+      expect(notifier, 500.range());
 
-      notifier.addAll(Generator.seqElements(500, 500));
+      notifier.addAll(500.range(500));
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
     });
 
     test('addFirst', () {
@@ -59,26 +61,26 @@ void main() async {
       listener.verifyNotCalled;
       expect(notifier.isEmpty, true);
 
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
       notifier.clear();
       listener.verifyCalledOnce;
       expect(notifier.isEmpty, true);
     });
 
     test('remove', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
 
       expect(notifier.remove(999), true);
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(999));
+      expect(notifier, 999.range());
 
       expect(notifier.remove(999), false);
       listener.verifyNotCalled;
-      expect(notifier, Generator.seqElements(999));
+      expect(notifier, 999.range());
     });
 
     test('removeFirst', () {
@@ -114,13 +116,13 @@ void main() async {
     });
 
     test('removeWhere', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
 
       notifier.removeWhere((element) => element % 2 == 0);
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqOddElements(500));
+      expect(notifier, 500.rangeOdd());
 
       notifier.removeWhere((element) => element % 2 == 1);
       listener.verifyCalledOnce;
@@ -131,17 +133,17 @@ void main() async {
     });
 
     test('retainWhere', () {
-      notifier.addAll(Generator.seqElements(1000));
+      notifier.addAll(1000.range());
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqElements(1000));
+      expect(notifier, 1000.range());
 
       notifier.retainWhere((element) => element % 2 == 0);
       listener.verifyCalledOnce;
-      expect(notifier, Generator.seqEvenElements(500));
+      expect(notifier, 500.rangeEven());
 
       notifier.retainWhere((element) => element % 2 == 0);
       listener.verifyNotCalled;
-      expect(notifier, Generator.seqEvenElements(500));
+      expect(notifier, 500.rangeEven());
 
       notifier.retainWhere((element) => element % 2 == 1);
       listener.verifyCalledOnce;
