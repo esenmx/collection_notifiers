@@ -1,4 +1,5 @@
-import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:example/src/riverpod.dart';
+import 'package:example/src/value_listenable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,36 +18,33 @@ class App extends StatelessWidget {
   }
 }
 
-final setNotifier =
-    ChangeNotifierProvider.autoDispose((ref) => SetNotifier<int>([1, 1, 1]));
-final listProvider =
-    ChangeNotifierProvider((ref) => ListNotifier<int>([1, 2, 3]));
-final mapProvider =
-    ChangeNotifierProvider((ref) => MapNotifier<String, int>({'a': 1}));
-
-class Home extends ConsumerWidget {
+class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: ListTile.divideTiles(
-          context: context,
-          tiles: List.generate(10, (index) => index).map((e) {
-            return CheckboxListTile(
-              title: Text(e.toString()),
-              value: ref.watch(setNotifier).contains(e),
-              onChanged: (value) {
-                if (value == true) {
-                  ref.read(setNotifier).add(e);
-                } else {
-                  ref.read(setNotifier).remove(e);
-                }
-              },
-            );
-          }),
-        ).toList(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            child: const Text('Riverpod Example'),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const RiverpodPage();
+              }));
+            },
+          ),
+          ElevatedButton(
+            child: const Text('ValueListenable Example'),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const ValueListenablePage();
+              }));
+            },
+          ),
+        ],
       ),
     );
   }
