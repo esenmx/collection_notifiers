@@ -11,7 +11,7 @@ class RiverpodPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text('Riverpod Example')),
+      appBar: AppBar(title: const Text('Riverpod Example')),
       body: ListView(
         children: ListTile.divideTiles(
           context: context,
