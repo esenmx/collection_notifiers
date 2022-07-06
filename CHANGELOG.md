@@ -1,3 +1,9 @@
+## 1.0.3
+
+* improved docs
+* version bumps
+* simplified example
+
 ## 1.0.2
 
 * `length` based `MapNotifier.addAll/addEntries()` check
