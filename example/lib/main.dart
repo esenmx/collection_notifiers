@@ -1,12 +1,8 @@
-import 'package:example/src/riverpod.dart';
-import 'package:example/src/value_listenable.dart';
+import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(const ProviderScope(child: App()));
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -18,33 +14,40 @@ class App extends StatelessWidget {
   }
 }
 
+final notifier = SetNotifier<int>();
+
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ElevatedButton(
-            child: const Text('Riverpod Example'),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return const RiverpodPage();
-              }));
-            },
-          ),
-          ElevatedButton(
-            child: const Text('ValueListenable Example'),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return const ValueListenablePage();
-              }));
-            },
-          ),
-        ],
+      appBar: AppBar(title: const Text('Example')),
+      body: ValueListenableBuilder<Set<int>>(
+        valueListenable: notifier,
+        builder: (context, value, child) {
+          return ListView(
+            children: [
+              ...ListTile.divideTiles(
+                context: context,
+                tiles: List.generate(20, (index) {
+                  return CheckboxListTile(
+                    value: value.contains(index),
+                    title: Text(index.toString()),
+                    onChanged: (arg) {
+                      if (arg == true) {
+                        notifier.add(index);
+                      } else {
+                        // this is also legit
+                        value.remove(index);
+                      }
+                    },
+                  );
+                }),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
