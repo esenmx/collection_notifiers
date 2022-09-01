@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   flutter:
@@ -14,8 +14,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '2.10.0'
-          channel: 'stable'
+          flutter-version: "3.0.3"
+          channel: "stable"
 
       - name: Install Dependencies
         run: flutter pub get
