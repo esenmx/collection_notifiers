@@ -13,7 +13,7 @@ interface for optimized rebuilds and better syntax.
 
 - Best possible syntax, minimum amount of code
 
-- Huge performance benefits with medium/large collections
+- Huge performance benefits for medium/large collections
 
 - Fully compatible with [ValueListenableBuilder][ValueListenableBuilder] and [Riverpod][Riverpod] / [Provider][Provider]
 
@@ -42,7 +42,7 @@ onRemove: (value) => ref.read(setProvider.state).update((state) {
 
 ### Riverpod/Provider with `collection_notifiers`
 
-- Triggers setState `only if there is a real change`
+- Triggers `setState only when needed`
 - Creates `zero copy`
 - `Terse` syntax
 
@@ -95,7 +95,7 @@ recommended.
 - Methods with overridden logic, always mimics default implementation. Hence, no additional `Exception` is
   also produced.
   
-- Methods that requires collection equalities(like `sort()`, `shuffle()` etc...) always triggers setState.
+- Methods that requires collection equalities(like `sort()`, `shuffle()` etc...) always trigger setState.
 
 [//]: # (Links)
 
@@ -105,8 +105,6 @@ recommended.
 [ValueListenableBuilder]: https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html
 [Riverpod]: https://pub.dev/documentation/flutter_riverpod/latest/flutter_riverpod/ChangeNotifierProvider-class.html
 [Provider]: https://pub.dev/documentation/provider/latest/provider/ChangeNotifierProvider-class.html
-[== operator]: https://api.dart.dev/stable/2.13.4/dart-core/Object/operator_equals.html
 [freezed]: https://pub.dev/packages/freezed
 [built_value]: https://pub.dev/packages/built_value
 [equatable]: https://pub.dev/packages/equatable
-[listenable_collections]: https://github.com/escamoteur/listenable_collections
