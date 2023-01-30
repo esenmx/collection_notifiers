@@ -1,3 +1,7 @@
+## 1.0.4
+
+`SetNotifier.invert()` method added
+
 ## 1.0.3
 
 * improved docs

@@ -130,5 +130,19 @@ void main() async {
       listener.verifyCalledOnce;
       expect(notifier.isEmpty, true);
     });
+
+    test('invert', () {
+      notifier.invert(42);
+      listener.verifyCalledOnce;
+      expect(notifier, {42});
+
+      notifier.invert(42);
+      expect(notifier, isEmpty);
+      listener.verifyCalledOnce;
+
+      notifier.invert(42);
+      listener.verifyCalledOnce;
+      expect(notifier, {42});
+    });
   });
 }
