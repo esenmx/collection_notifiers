@@ -78,4 +78,16 @@ class SetNotifier<E> extends DelegatingSet<E>
       notifyListeners();
     }
   }
+
+  ///
+  /// Extras
+  ///
+
+  // Removes if value exists, add if not. Useful for checkbox like widgets
+  bool invert(E element) {
+    if (contains(element)) {
+      return remove(element);
+    }
+    return add(element);
+  }
 }
