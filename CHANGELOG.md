@@ -5,7 +5,7 @@
 
 ## 1.0.4
 
-`SetNotifier.invert(element)` method added
+* `SetNotifier.invert(element)` method added
 
 ## 1.0.3
 
