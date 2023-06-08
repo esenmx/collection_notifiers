@@ -13,6 +13,8 @@ class ListNotifier<E> extends DelegatingList<E>
     if (super[index] != value) {
       super[index] = value;
       notifyListeners();
+    } else {
+      super[index] = value;
     }
   }
 
@@ -84,8 +86,9 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void removeRange(int start, int end) {
+    final length = super.length;
     super.removeRange(start, end);
-    if (end != start) {
+    if (length != super.length) {
       notifyListeners();
     }
   }
@@ -141,7 +144,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void shuffle([math.Random? random]) {
-    if (isNotEmpty) {
+    if (length > 1) {
       super.shuffle(random);
       notifyListeners();
     }
@@ -149,7 +152,7 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void sort([int Function(E a, E b)? compare]) {
-    if (isNotEmpty) {
+    if (length > 1) {
       super.sort(compare);
       notifyListeners();
     }
