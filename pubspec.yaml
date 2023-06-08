@@ -1,6 +1,6 @@
 name: collection_notifiers
 description: Collections with implementation of ChangeNotifier/ValueListenable for minimum rebuild and better syntax
-version: 1.0.4
+version: 1.0.5
 repository: https://github.com/esenmx/collection_notifiers/
 
 environment:
