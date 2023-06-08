@@ -1,12 +1,13 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   runApp(const App());
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class App extends StatelessWidget {
 final notifier = SetNotifier<int>();
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,5 +51,29 @@ class Home extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class _SnippetHelper extends ConsumerStatefulWidget {
+  const _SnippetHelper({super.key});
+
+  @override
+  ConsumerState<_SnippetHelper> createState() => _SnippetHelperState();
+}
+
+class _SnippetHelperState extends ConsumerState<_SnippetHelper> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  final list = [];
+
+  void before(Object element) {
+    // ...
+    setState(() {
+      list.add(element);
+    });
+    // ...
   }
 }

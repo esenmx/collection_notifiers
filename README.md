@@ -11,15 +11,13 @@ interface for optimized rebuilds and better syntax.
 
 ## Features
 
-- Best possible syntax, minimum amount of code
-
 - Huge performance benefits for medium/large collections
+
+- Best possible syntax, minimum amount of code
 
 - Fully compatible with [ValueListenableBuilder][ValueListenableBuilder] and [Riverpod][Riverpod] / [Provider][Provider]
 
 - Dead simple to use
-
-- Lightweight
 
 ### Riverpod/Provider without `collection_notifiers`
 
@@ -58,14 +56,16 @@ onRemove: ref.read(setProvider).remove; // does not create copy
 Operators are also overridden, `List`:
 
 ```dart
-final listProvider = ChangeNotifierProvider((ref) => ListNotifier([1]));
+final listProvider = ChangeNotifierProvider((ref) => ListNotifier([0]));
+ref.read(listProvider)[0] = 1; // will trigger setState
 ref.read(listProvider)[0] = 1; // won't trigger setState
 ```
 
 Similarly, the `Map`:
 
 ```dart
-final mapProvider = ChangeNotifierProvider((ref) => MapNotifier({'a' : 1}));
+final mapProvider = ChangeNotifierProvider((ref) => MapNotifier());
+ref.read(mapProvider)['a'] = 1; // will trigger setState
 ref.read(mapProvider)['a'] = 1; // won't trigger setState
 ```
 
@@ -74,18 +74,17 @@ ref.read(mapProvider)['a'] = 1; // won't trigger setState
 | Collection |               Status               |   Notifier    |
 |------------|:----------------------------------:|:-------------:|
 | Set        |           **Completed**            |  SetNotifier  |  
-| List       | **Completed**(_see notes_) | ListNotifier  |
+| List       |     **Completed**(_see notes_)     | ListNotifier  |
 | Map        |           **Completed**            |  MapNotifier  |
 | Queue      |           **Completed**            | QueueNotifier |
 
-_Open issue if there is any specific collection/method you need._
+_Open an issue if there is any specific collection/method you need._
 
 ## Element Equality
 
 Element equation([== operator](https://api.dart.dev/stable/2.13.4/dart-core/Object/operator_equals.html)) must be
 handled by you beforehand. For that case, code generation([freezed][freezed], [built_value][built_value] etc.) or
-[equatable][equatable] are highly
-recommended.
+[equatable][equatable] are highly recommended.
 
 ## Notes
 

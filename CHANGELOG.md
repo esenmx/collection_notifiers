@@ -1,6 +1,11 @@
+## 1.0.5
+* `MapNotifier.addAll` length-based comparison fix
+* `MapNotifier`, `ListNotifier` operators improvements
+* Support for wider range of dependencies 
+
 ## 1.0.4
 
-`SetNotifier.invert()` method added
+`SetNotifier.invert(element)` method added
 
 ## 1.0.3
 
