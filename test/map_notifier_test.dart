@@ -47,6 +47,10 @@ void main() async {
       notifier.addAll(Map.fromEntries(1000.rangeEntry()));
       notifier.addAll(Map.fromEntries(500.rangeEntryEven()));
       listener.verifyCalledOnce;
+      notifier.addAll(Map.fromEntries(500.rangeEntryEven(false)));
+      listener.verifyCalledOnce;
+      notifier.addAll(Map.fromEntries(500.rangeEntryEven(false)));
+      listener.verifyNotCalled;
 
       notifier.addAll({1000: true});
       listener.verifyCalledOnce;

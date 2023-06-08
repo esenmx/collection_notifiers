@@ -13,14 +13,21 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     if (!super.containsKey(key) || super[key] != value) {
       super[key] = value;
       notifyListeners();
+    } else {
+      super[key] = value;
     }
   }
 
   @override
   void addAll(Map<K, V> other) {
-    final length = super.length;
-    super.addAll(other);
-    if (length != super.length) {
+    bool shouldUpdate = false;
+    for (final entry in other.entries) {
+      if (!shouldUpdate && super[entry.key] != entry.value) {
+        shouldUpdate = true;
+      }
+      super[entry.key] = entry.value;
+    }
+    if (shouldUpdate) {
       notifyListeners();
     }
   }
