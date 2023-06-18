@@ -4,19 +4,18 @@ version: 1.0.5
 repository: https://github.com/esenmx/collection_notifiers/
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
-  flutter: ">=3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  collection: ">=1.16.0 <2.0.0"
+  collection: ^1.17.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  mockito: ">=5.0.0 <6.0.0"
+  flutter_lints: ^2.0.1
+  mockito: ^5.4.2
   test_utils:
     git:
       url: https://github.com/esenmx/test_utils
