@@ -120,15 +120,15 @@ void main() async {
       listener.verifyCalledOnce;
       expect(notifier, 1000.range());
 
-      notifier.removeWhere((element) => element % 2 == 0);
+      notifier.removeWhere((element) => element.isEven);
       listener.verifyCalledOnce;
       expect(notifier, 500.rangeOdd());
 
-      notifier.removeWhere((element) => element % 2 == 1);
+      notifier.removeWhere((element) => element.isOdd);
       listener.verifyCalledOnce;
       expect(notifier, []);
 
-      notifier.removeWhere((element) => element % 2 == 1);
+      notifier.removeWhere((element) => element.isOdd);
       listener.verifyNotCalled;
     });
 
@@ -137,19 +137,19 @@ void main() async {
       listener.verifyCalledOnce;
       expect(notifier, 1000.range());
 
-      notifier.retainWhere((element) => element % 2 == 0);
+      notifier.retainWhere((element) => element.isEven);
       listener.verifyCalledOnce;
       expect(notifier, 500.rangeEven());
 
-      notifier.retainWhere((element) => element % 2 == 0);
+      notifier.retainWhere((element) => element.isEven);
       listener.verifyNotCalled;
       expect(notifier, 500.rangeEven());
 
-      notifier.retainWhere((element) => element % 2 == 1);
+      notifier.retainWhere((element) => element.isOdd);
       listener.verifyCalledOnce;
       expect(notifier, []);
 
-      notifier.retainWhere((element) => element % 2 == 1);
+      notifier.retainWhere((element) => element.isOdd);
       listener.verifyNotCalled;
     });
   });

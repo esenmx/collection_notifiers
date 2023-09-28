@@ -1,4 +1,4 @@
-part of collection_notifiers;
+part of '../collection_notifiers.dart';
 
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier

@@ -1,4 +1,4 @@
-part of collection_notifiers;
+part of '../collection_notifiers.dart';
 
 class MapNotifier<K, V> extends DelegatingMap<K, V>
     with ChangeNotifier

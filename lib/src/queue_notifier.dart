@@ -1,4 +1,4 @@
-part of collection_notifiers;
+part of '../collection_notifiers.dart';
 
 class QueueNotifier<E> extends DelegatingQueue<E>
     with ChangeNotifier
