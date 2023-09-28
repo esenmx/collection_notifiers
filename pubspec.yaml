@@ -1,21 +1,22 @@
 name: collection_notifiers
 description: Collections with implementation of ChangeNotifier/ValueListenable for minimum rebuild and better syntax
-version: 1.0.5
+version: 1.1.0
 repository: https://github.com/esenmx/collection_notifiers/
+homepage: https://mehmetesen.com/
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
+  collection:
   flutter:
     sdk: flutter
-  collection: ^1.17.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
-  mockito: ^5.4.2
+  lint:
+  mockito:
   test_utils:
     git:
       url: https://github.com/esenmx/test_utils
