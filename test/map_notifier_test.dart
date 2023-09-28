@@ -94,7 +94,7 @@ void main() async {
       notifier.remove(1);
       listener.verifyCalledTwice;
       notifier.remove(1);
-      notifier.remove('a');
+      notifier.remove(123);
       listener.verifyNotCalled;
       expect(notifier.isEmpty, true);
 
@@ -120,8 +120,10 @@ void main() async {
     });
 
     test('update', () {
-      expect(() => notifier.update(1, (value) => false),
-          throwsA(isA<ArgumentError>()));
+      expect(
+        () => notifier.update(1, (value) => false),
+        throwsA(isA<ArgumentError>()),
+      );
       listener.verifyNotCalled;
       notifier.update(1, (value) => false, ifAbsent: () => true);
       listener.verifyCalledOnce;

@@ -1,4 +1,4 @@
-part of collection_notifiers;
+part of '../collection_notifiers.dart';
 
 class SetNotifier<E> extends DelegatingSet<E>
     with ChangeNotifier

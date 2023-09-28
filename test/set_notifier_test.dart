@@ -85,11 +85,11 @@ void main() async {
     });
 
     test('removeWhere', () {
-      notifier.removeWhere((element) => element % 2 == 0);
+      notifier.removeWhere((element) => element.isEven);
       listener.verifyNotCalled;
 
       notifier.addAll(1000.range());
-      notifier.removeWhere((element) => element % 2 == 0);
+      notifier.removeWhere((element) => element.isEven);
       expect(notifier, 500.rangeOdd());
       listener.verifyCalledTwice;
 
@@ -115,15 +115,15 @@ void main() async {
     });
 
     test('retainWhere', () {
-      notifier.retainWhere((element) => element % 2 == 0);
+      notifier.retainWhere((element) => element.isEven);
       listener.verifyNotCalled;
 
       notifier.addAll(1000.range());
-      notifier.retainWhere((element) => element % 2 == 0);
+      notifier.retainWhere((element) => element.isEven);
       expect(notifier, 500.rangeEven());
       listener.verifyCalledTwice;
 
-      notifier.retainWhere((element) => element % 2 == 0);
+      notifier.retainWhere((element) => element.isEven);
       listener.verifyNotCalled;
 
       notifier.retainWhere((element) => element > 998);

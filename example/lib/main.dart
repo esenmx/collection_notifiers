@@ -55,7 +55,7 @@ class Home extends StatelessWidget {
 }
 
 class _SnippetHelper extends ConsumerStatefulWidget {
-  const _SnippetHelper({super.key});
+  const _SnippetHelper();
 
   @override
   ConsumerState<_SnippetHelper> createState() => _SnippetHelperState();

@@ -164,7 +164,7 @@ void main() async {
 
     test('removeWhere', () {
       notifier.addAll(1000.range());
-      notifier.removeWhere((element) => element % 2 == 1);
+      notifier.removeWhere((element) => element.isOdd);
       expect(notifier, 500.rangeEven());
       listener.verifyCalledTwice;
 
@@ -179,7 +179,9 @@ void main() async {
       expect(notifier, [1, 2, 3]);
 
       expect(
-          () => notifier.replaceRange(4, 5, {1}), throwsA(isA<RangeError>()));
+        () => notifier.replaceRange(4, 5, {1}),
+        throwsA(isA<RangeError>()),
+      );
       listener.verifyNotCalled;
 
       notifier.replaceRange(1, 1, [1, 2]);
