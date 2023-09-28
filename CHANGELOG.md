@@ -1,3 +1,8 @@
+## 1.1.0
+* Dart 3 upgrade
+* Removed dependency constraints
+* Updated lints with code reformat
+
 ## 1.0.5
 * `MapNotifier.addAll` length-based comparison fix
 * `MapNotifier`, `ListNotifier` operators improvements
