@@ -7,31 +7,40 @@ on:
     branches: [master]
 
 jobs:
-  flutter:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Flutter action
-        uses: subosito/flutter-action@v2.10.0
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.3.10"
+          flutter-version: "3.24.x"
           channel: "stable"
+          cache: true
 
-      - name: Install Dependencies
+      - name: Verify Flutter installation
+        run: flutter --version
+
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Check Format
-        run: flutter format --set-exit-if-changed .
+      - name: Verify dependencies
+        run: flutter pub get --offline
 
-      - name: Analyze
+      - name: Check formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze code
         run: flutter analyze
 
-      - name: Run Tests
+      - name: Run tests with coverage
         run: flutter test --coverage
 
-      - uses: codecov/codecov-action@v2
+      - uses: actions/checkout@main
+      - uses: codecov/codecov-action@v5
         with:
-          #files: coverage/lcov.info
-          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
