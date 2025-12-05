@@ -1,10 +1,39 @@
 part of '../collection_notifiers.dart';
 
+/// A [Map] implementation that notifies listeners when modified.
+///
+/// Extends [DelegatingMap] and mixes in [ChangeNotifier] to provide
+/// reactive map updates compatible with [ValueListenableBuilder] and
+/// state management solutions like Riverpod and Provider.
+///
+/// {@macro collection_notifiers.notification_behavior}
+///
+/// ## Example
+///
+/// ```dart
+/// final settings = MapNotifier<String, bool>({'darkMode': false});
+///
+/// // Listen to changes
+/// settings.addListener(() => print('Settings changed: $settings'));
+///
+/// settings['darkMode'] = true;   // Notifies: {darkMode: true}
+/// settings['darkMode'] = true;   // No notification (value unchanged)
+/// settings['sound'] = true;      // Notifies: {darkMode: true, sound: true}
+/// settings.remove('sound');      // Notifies: {darkMode: true}
+/// ```
 class MapNotifier<K, V> extends DelegatingMap<K, V>
     with ChangeNotifier
     implements ValueListenable<Map<K, V>> {
+  /// Creates a [MapNotifier] optionally initialized with [base] entries.
+  ///
+  /// The [base] map is copied, so changes to the original do not affect
+  /// this notifier.
   MapNotifier([Map<K, V> base = const {}]) : super(Map<K, V>.of(base));
 
+  /// Returns this map as the listenable value.
+  ///
+  /// Implements [ValueListenable.value] by returning `this`, allowing
+  /// direct use with [ValueListenableBuilder].
   @override
   Map<K, V> get value => this;
 
@@ -20,7 +49,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void addAll(Map<K, V> other) {
-    bool shouldUpdate = false;
+    var shouldUpdate = false;
     for (final entry in other.entries) {
       if (!shouldUpdate && super[entry.key] != entry.value) {
         shouldUpdate = true;
@@ -89,7 +118,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   void updateAll(V Function(K key, V value) update) {
-    bool shouldNotify = false;
+    var shouldNotify = false;
     for (final entry in super.entries) {
       final newValue = update(entry.key, entry.value);
       shouldNotify = shouldNotify || newValue != entry.value;

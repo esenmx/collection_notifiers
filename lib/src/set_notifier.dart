@@ -1,10 +1,41 @@
 part of '../collection_notifiers.dart';
 
+/// A [Set] implementation that notifies listeners when modified.
+///
+/// Extends [DelegatingSet] and mixes in [ChangeNotifier] to provide
+/// reactive set updates compatible with [ValueListenableBuilder] and
+/// state management solutions like Riverpod and Provider.
+///
+/// {@macro collection_notifiers.notification_behavior}
+///
+/// ## Example
+///
+/// ```dart
+/// final selectedIds = SetNotifier<int>();
+///
+/// // Listen to changes
+/// selectedIds.addListener(() => print('Selection: $selectedIds'));
+///
+/// selectedIds.add(1);        // Notifies: {1}
+/// selectedIds.add(2);        // Notifies: {1, 2}
+/// selectedIds.add(1);        // No notification (already exists)
+/// selectedIds.remove(1);     // Notifies: {2}
+/// selectedIds.invert(2);     // Notifies: {} (toggles off)
+/// selectedIds.invert(3);     // Notifies: {3} (toggles on)
+/// ```
 class SetNotifier<E> extends DelegatingSet<E>
     with ChangeNotifier
     implements ValueListenable<Set<E>> {
+  /// Creates a [SetNotifier] optionally initialized with [base] elements.
+  ///
+  /// The [base] iterable is copied, so changes to the original do not affect
+  /// this notifier.
   SetNotifier([Iterable<E> base = const []]) : super(Set<E>.of(base));
 
+  /// Returns this set as the listenable value.
+  ///
+  /// Implements [ValueListenable.value] by returning `this`, allowing
+  /// direct use with [ValueListenableBuilder].
   @override
   Set<E> get value => this;
 
@@ -79,11 +110,29 @@ class SetNotifier<E> extends DelegatingSet<E>
     }
   }
 
-  /// Removes if value exists, adds if not. Useful for checkbox like widgets
+  /// Toggles an element's presence in the set.
+  ///
+  /// If [element] exists, removes it and returns `false`.
+  /// If [element] does not exist, adds it and returns `true`.
+  ///
+  /// This is useful for checkbox-like UI patterns:
+  ///
+  /// ```dart
+  /// final selected = SetNotifier<int>();
+  ///
+  /// CheckboxListTile(
+  ///   value: selected.contains(itemId),
+  ///   onChanged: (_) => selected.invert(itemId),
+  /// )
+  /// ```
+  ///
+  /// Returns `true` if the element was added, `false` if removed.
   bool invert(E element) {
     if (contains(element)) {
-      return remove(element);
+      remove(element);
+      return false;
     }
-    return add(element);
+    add(element);
+    return true;
   }
 }

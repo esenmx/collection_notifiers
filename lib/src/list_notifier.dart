@@ -1,10 +1,44 @@
 part of '../collection_notifiers.dart';
 
+/// A [List] implementation that notifies listeners when modified.
+///
+/// Extends [DelegatingList] and mixes in [ChangeNotifier] to provide
+/// reactive list updates compatible with [ValueListenableBuilder] and
+/// state management solutions like Riverpod and Provider.
+///
+/// {@template collection_notifiers.notification_behavior}
+/// ## Notification Behavior
+///
+/// Methods only call [notifyListeners] when the collection actually changes.
+/// This prevents unnecessary widget rebuilds.
+/// {@endtemplate}
+///
+/// ## Example
+///
+/// ```dart
+/// final todos = ListNotifier<String>(['Buy milk', 'Walk dog']);
+///
+/// // Listen to changes
+/// todos.addListener(() => print('List changed: $todos'));
+///
+/// todos.add('Call mom');      // Notifies: [Buy milk, Walk dog, Call mom]
+/// todos.removeAt(0);          // Notifies: [Walk dog, Call mom]
+/// todos[0] = 'Walk dog';      // No notification (value unchanged)
+/// todos[0] = 'Feed dog';      // Notifies: [Feed dog, Call mom]
+/// ```
 class ListNotifier<E> extends DelegatingList<E>
     with ChangeNotifier
     implements ValueListenable<List<E>> {
+  /// Creates a [ListNotifier] optionally initialized with [base] elements.
+  ///
+  /// The [base] iterable is copied, so changes to the original do not affect
+  /// this notifier.
   ListNotifier([Iterable<E> base = const []]) : super(List<E>.of(base));
 
+  /// Returns this list as the listenable value.
+  ///
+  /// Implements [ValueListenable.value] by returning `this`, allowing
+  /// direct use with [ValueListenableBuilder].
   @override
   List<E> get value => this;
 
@@ -42,10 +76,10 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void fillRange(int start, int end, [E? fillValue]) {
-    final E nonNullFillValue = fillValue as E;
+    final nonNullFillValue = fillValue as E;
     RangeError.checkValidRange(start, end, length);
-    bool shouldNotify = false;
-    for (int i = start; i < end; i++) {
+    var shouldNotify = false;
+    for (var i = start; i < end; i++) {
       shouldNotify = shouldNotify || super[i] != fillValue;
       super[i] = nonNullFillValue;
     }
@@ -112,7 +146,7 @@ class ListNotifier<E> extends DelegatingList<E>
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
     super.replaceRange(start, end, iterable);
-    if (end != start && iterable.isNotEmpty) {
+    if (end != start || iterable.isNotEmpty) {
       notifyListeners();
     }
   }
@@ -137,7 +171,7 @@ class ListNotifier<E> extends DelegatingList<E>
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
     super.setRange(start, end, iterable, skipCount);
-    if (end != start && iterable.isNotEmpty) {
+    if (end != start) {
       notifyListeners();
     }
   }

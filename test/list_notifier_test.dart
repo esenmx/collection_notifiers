@@ -1,240 +1,370 @@
+import 'dart:math';
+
+import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:test_utils/test_utils.dart';
 
-void main() async {
-  group('ListNotifier.of', () {
-    test('.new', () {
-      final elements = 10.rangeRand();
-      final listener = VoidListener();
-      final list = ListNotifier<int>(elements)..addListener(listener);
-      expect(list.value, elements);
-      listener.verifyNotCalled;
-      verifyZeroInteractions(listener);
-    });
-  });
+import 'utils.dart';
 
+void main() {
   group('ListNotifier', () {
     late VoidListener listener;
     late ListNotifier<int> notifier;
+
     setUp(() {
       listener = VoidListener();
-      notifier = ListNotifier<int>()..addListener(listener);
-    });
-    tearDownAll(() {
-      notifier.dispose();
+      notifier = ListNotifier<int>()..addListener(listener.call);
     });
 
-    test('operator[]=', () {
-      notifier.add(1);
-      notifier[0] = 1;
-      listener.verifyCalledOnce;
+    tearDown(() => notifier.dispose());
 
-      expect(() => notifier[1] = 2, throwsA(isA<RangeError>()));
+    group('constructor', () {
+      test('creates empty list by default', () {
+        check(notifier).isEmpty();
+        check(notifier.value).isEmpty();
+        listener.verifyNotCalled;
+      });
 
-      notifier[0] = 1;
-      listener.verifyNotCalled;
+      test('copies initial elements', () {
+        final source = [1, 2, 3];
+        final list = ListNotifier<int>(source);
+        addTearDown(list.dispose);
 
-      notifier.value[0] = 2;
-      listener.verifyCalledOnce;
+        check(list.value).deepEquals([1, 2, 3]);
+        source.add(4);
+        check(list.value).deepEquals([1, 2, 3]); // Not affected by source
+      });
     });
 
-    test('.add', () {
-      notifier.add(1);
-      listener.verifyCalledOnce;
-      expect(notifier, [1]);
+    group('operator[]=', () {
+      test('notifies when value changes', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
 
-      notifier.add(2);
-      notifier.add(2);
-      listener.verifyCalledTwice;
-      expect(notifier, [1, 2, 2]);
+        notifier[0] = 2;
+        listener.verifyCalledOnce;
+        check(notifier[0]).equals(2);
+      });
+
+      test('does not notify when value is same', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
+
+        notifier[0] = 1;
+        listener.verifyNotCalled;
+      });
+
+      test('throws RangeError for invalid index', () {
+        check(() => notifier[0] = 1).throws<RangeError>();
+      });
     });
 
-    test('.addAll', () {
-      notifier.addAll(100.range());
-      expect(notifier, 100.range());
-      listener.verifyCalledOnce;
+    group('add', () {
+      test('notifies on add', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1]);
 
-      notifier.addAll(100.range());
-      notifier.addAll(100.range());
-      listener.verifyCalledTwice;
+        notifier.add(1); // Duplicates allowed
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 1]);
+      });
     });
 
-    test('.clear', () {
-      notifier.clear();
-      listener.verifyNotCalled;
-      expect(true, notifier.isEmpty);
+    group('addAll', () {
+      test('notifies when adding non-empty iterable', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 2, 3]);
+      });
 
-      notifier.add(1);
-      notifier.clear();
-      listener.verifyCalledTwice;
-      expect(true, notifier.isEmpty);
+      test('does not notify when adding empty iterable', () {
+        notifier.addAll([]);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('fillRange', () {
-      expect(() => notifier.fillRange(0, 0), throwsA(isA<TypeError>()));
-      expect(() => notifier.fillRange(0, 1, 0), throwsA(isA<RangeError>()));
+    group('clear', () {
+      test('notifies when clearing non-empty list', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.addAll(100.range());
-      notifier.fillRange(0, 100, 1);
-      listener.verifyCalledTwice;
-      notifier.fillRange(0, 100, 1);
-      listener.verifyNotCalled;
-      expect(notifier, List<int>.filled(100, 1));
+        notifier.clear();
+        listener.verifyCalledOnce;
+        check(notifier).isEmpty();
+      });
 
-      notifier.fillRange(0, 2, 2);
-      listener.verifyCalledOnce;
-      notifier.fillRange(0, 2, 2);
-      listener.verifyNotCalled;
+      test('does not notify when clearing empty list', () {
+        notifier.clear();
+        listener.verifyNotCalled;
+      });
     });
 
-    test('insert', () {
-      notifier.addAll(1000.range());
-      listener.verifyCalledOnce;
+    group('fillRange', () {
+      test('notifies when values change', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.insert(2, 1);
-      expect(notifier.length, 1001);
-      expect(notifier[2], 1);
-      listener.verifyCalledOnce;
+        notifier.fillRange(0, 3, 0);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([0, 0, 0]);
+      });
 
-      notifier.insert(2, 1);
-      expect(notifier.length, 1002);
-      expect(notifier[2], 1);
-      listener.verifyCalledOnce;
+      test('does not notify when filling with same values', () {
+        notifier.addAll([1, 1, 1]);
+        listener.verifyCalledOnce;
+
+        notifier.fillRange(0, 3, 1);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('insertAll', () {
-      expect(() => notifier.insertAll(5, []), isA<void>());
-      expect(() => notifier.insertAll(5, [1]), throwsA(isA<RangeError>()));
+    group('insert', () {
+      test('notifies on insert', () {
+        notifier.insert(0, 1);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1]);
 
-      notifier.insertAll(0, 1000.range());
-      expect(notifier, 1000.range());
-      listener.verifyCalledOnce;
-
-      notifier.insertAll(1, []);
-      listener.verifyNotCalled;
-      expect(notifier, 1000.range());
+        notifier.insert(0, 2);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([2, 1]);
+      });
     });
 
-    test('remove', () {
-      expect(false, notifier.remove(0));
-      listener.verifyNotCalled;
+    group('insertAll', () {
+      test('notifies when inserting non-empty iterable', () {
+        notifier.insertAll(0, [1, 2]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 2]);
+      });
 
-      notifier.addAll(1000.range());
-      expect(true, notifier.remove(1));
-      listener.verifyCalledTwice;
-
-      expect(notifier, 1000.range()..remove(1));
+      test('does not notify when inserting empty iterable', () {
+        notifier.insertAll(0, []);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('removeAt', () {
-      expect(() => notifier.removeAt(2), throwsA(isA<RangeError>()));
+    group('remove', () {
+      test('notifies when element is removed', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.addAll(1000.range());
-      notifier
-        ..removeAt(999)
-        ..removeAt(998);
-      expect(notifier, 998.range());
-      listener.verifyCalledThrice;
+        check(notifier.remove(2)).isTrue();
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 3]);
+      });
+
+      test('does not notify when element not found', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(notifier.remove(4)).isFalse();
+        listener.verifyNotCalled;
+      });
     });
 
-    test('removeRange', () {
-      notifier.addAll(1000.range());
-      notifier.removeRange(500, 1000);
-      listener.verifyCalledTwice;
-      expect(notifier, 500.range());
+    group('removeAt', () {
+      test('notifies on removeAt', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.removeRange(500, 500);
-      listener.verifyNotCalled;
+        check(notifier.removeAt(1)).equals(2);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 3]);
+      });
 
-      notifier.removeRange(2, notifier.length);
-      expect(notifier, [0, 1]);
-      listener.verifyCalledOnce;
+      test('throws RangeError for invalid index', () {
+        check(() => notifier.removeAt(0)).throws<RangeError>();
+      });
     });
 
-    test('removeLast', () {
-      notifier.addAll([1, 2]);
-      expect(2, notifier.removeLast());
-      listener.verifyCalledTwice;
-      expect(1, notifier.removeLast());
-      listener.verifyCalledOnce;
-      expect(() => notifier.removeLast(), throwsA(isA<RangeError>()));
+    group('removeRange', () {
+      test('notifies when range is removed', () {
+        notifier.addAll([1, 2, 3, 4, 5]);
+        listener.verifyCalledOnce;
+
+        notifier.removeRange(1, 4);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 5]);
+      });
+
+      test('does not notify for empty range', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.removeRange(1, 1);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('removeWhere', () {
-      notifier.addAll(1000.range());
-      notifier.removeWhere((element) => element.isOdd);
-      expect(notifier, 500.rangeEven());
-      listener.verifyCalledTwice;
+    group('removeLast', () {
+      test('notifies on removeLast', () {
+        notifier.addAll([1, 2]);
+        listener.verifyCalledOnce;
 
-      notifier.removeWhere((element) => element > 1000);
-      listener.verifyNotCalled;
+        check(notifier.removeLast()).equals(2);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1]);
+      });
+
+      test('throws on empty list', () {
+        check(() => notifier.removeLast()).throws<RangeError>();
+      });
     });
 
-    test('replaceRange', () {
-      notifier.addAll(1000.range());
-      notifier.replaceRange(0, notifier.length, [1, 2, 3]);
-      listener.verifyCalledTwice;
-      expect(notifier, [1, 2, 3]);
+    group('removeWhere', () {
+      test('notifies when elements are removed', () {
+        notifier.addAll([1, 2, 3, 4]);
+        listener.verifyCalledOnce;
 
-      expect(
-        () => notifier.replaceRange(4, 5, {1}),
-        throwsA(isA<RangeError>()),
-      );
-      listener.verifyNotCalled;
+        notifier.removeWhere((e) => e.isEven);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 3]);
+      });
 
-      notifier.replaceRange(1, 1, [1, 2]);
-      listener.verifyNotCalled;
+      test('does not notify when no elements match', () {
+        notifier.addAll([1, 3, 5]);
+        listener.verifyCalledOnce;
+
+        notifier.removeWhere((e) => e.isEven);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('retainWhere', () {
-      notifier.addAll(1000.range());
-      final retain = 500.rangeOdd();
-      notifier.retainWhere(retain.contains);
-      listener.verifyCalledTwice;
-      expect(notifier, retain);
+    group('replaceRange', () {
+      test('notifies when range is replaced', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.retainWhere(retain.contains);
-      listener.verifyNotCalled;
-      expect(notifier, retain);
+        notifier.replaceRange(1, 2, [4, 5]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 4, 5, 3]);
+      });
+
+      test('notifies when replacing with empty (deletion)', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.replaceRange(1, 2, []);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 3]);
+      });
+
+      test('notifies when inserting via empty range', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.replaceRange(1, 1, [4, 5]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 4, 5, 2, 3]);
+      });
+
+      test('does not notify for empty range with empty replacement', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.replaceRange(1, 1, []);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('setAll', () {
-      expect(() => notifier.setAll(1, [1]), throwsA(isA<RangeError>()));
+    group('retainWhere', () {
+      test('notifies when elements are removed', () {
+        notifier.addAll([1, 2, 3, 4]);
+        listener.verifyCalledOnce;
 
-      notifier.addAll(500.range());
-      notifier.setAll(0, 500.rangeOdd());
-      listener.verifyCalledTwice;
-      expect(notifier, 500.rangeOdd());
+        notifier.retainWhere((e) => e.isOdd);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 3]);
+      });
 
-      notifier.setAll(0, [2]);
-      expect(notifier, 500.rangeOdd()..[0] = 2);
-      listener.verifyCalledOnce;
+      test('does not notify when all elements retained', () {
+        notifier.addAll([1, 3, 5]);
+        listener.verifyCalledOnce;
+
+        notifier.retainWhere((e) => e.isOdd);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('setRange', () {
-      notifier.addAll([1, 2, 3]);
-      notifier.setRange(1, 2, [2, 3]);
-      listener.verifyCalledTwice;
-      expect(notifier, [1, 2, 3]);
-      notifier.setRange(0, 1, [3, 1], 1);
-      listener.verifyCalledOnce;
-      expect(notifier, [1, 2, 3]);
-      notifier.setRange(1, 1, [1, 2, 3]);
-      listener.verifyNotCalled;
+    group('setAll', () {
+      test('notifies when setting elements', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setAll(0, [4, 5]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([4, 5, 3]);
+      });
+
+      test('does not notify for empty iterable', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setAll(0, []);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('shuffle', () {
-      notifier.addAll(1000.range());
-      notifier.shuffle();
-      listener.verifyCalledTwice;
+    group('setRange', () {
+      test('notifies when range is set', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setRange(0, 2, [4, 5]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([4, 5, 3]);
+      });
+
+      test('does not notify for empty range', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setRange(1, 1, [4, 5]);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('sort', () {
-      notifier.addAll(1000.rangeRand());
-      notifier.sort((a, b) => a - b);
-      listener.verifyCalledTwice;
+    group('shuffle', () {
+      test('notifies when shuffling list with multiple elements', () {
+        notifier.addAll(List.generate(100, (i) => i));
+        listener.verifyCalledOnce;
+
+        notifier.shuffle(Random(42));
+        listener.verifyCalledOnce;
+      });
+
+      test('does not notify for single element list', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
+
+        notifier.shuffle();
+        listener.verifyNotCalled;
+      });
+
+      test('does not notify for empty list', () {
+        notifier.shuffle();
+        listener.verifyNotCalled;
+      });
+    });
+
+    group('sort', () {
+      test('notifies when sorting', () {
+        notifier.addAll([3, 1, 2]);
+        listener.verifyCalledOnce;
+
+        notifier.sort();
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 2, 3]);
+      });
+
+      test('does not notify for single element list', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
+
+        notifier.sort();
+        listener.verifyNotCalled;
+      });
     });
   });
 }

@@ -1,12 +1,47 @@
 part of '../collection_notifiers.dart';
 
+/// A [Queue] implementation that notifies listeners when modified.
+///
+/// Extends [DelegatingQueue] and mixes in [ChangeNotifier] to provide
+/// reactive queue updates compatible with [ValueListenableBuilder] and
+/// state management solutions like Riverpod and Provider.
+///
+/// {@macro collection_notifiers.notification_behavior}
+///
+/// ## Example
+///
+/// ```dart
+/// final tasks = QueueNotifier<String>();
+///
+/// // Listen to changes
+/// tasks.addListener(() => print('Queue: $tasks'));
+///
+/// tasks.addLast('Task 1');   // Notifies: [Task 1]
+/// tasks.addLast('Task 2');   // Notifies: [Task 1, Task 2]
+/// tasks.addFirst('Urgent');  // Notifies: [Urgent, Task 1, Task 2]
+/// tasks.removeFirst();       // Notifies: [Task 1, Task 2]
+/// ```
 class QueueNotifier<E> extends DelegatingQueue<E>
     with ChangeNotifier
     implements ValueListenable<Queue<E>> {
+  /// Creates a [QueueNotifier] optionally initialized with [base] elements.
+  ///
+  /// The [base] iterable is copied, so changes to the original do not affect
+  /// this notifier.
   QueueNotifier([Iterable<E> base = const []]) : super(Queue<E>.of(base));
 
+  /// Returns this queue as the listenable value.
+  ///
+  /// Implements [ValueListenable.value] by returning `this`, allowing
+  /// direct use with [ValueListenableBuilder].
   @override
   Queue<E> get value => this;
+
+  @override
+  void add(E value) {
+    super.add(value);
+    notifyListeners();
+  }
 
   @override
   void addAll(Iterable<E> iterable) {
