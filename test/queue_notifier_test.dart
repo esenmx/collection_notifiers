@@ -1,156 +1,189 @@
+import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:test_utils/test_utils.dart';
 
-void main() async {
-  group('QueueNotifier.of', () {
-    test('.new', () {
-      final elements = 10.rangeRand();
-      final listener = VoidListener();
-      final list = QueueNotifier<int>(elements)..addListener(listener);
-      expect(list.value, elements);
-      listener.verifyNotCalled;
-      verifyZeroInteractions(listener);
-    });
-  });
+import 'utils.dart';
 
+void main() {
   group('QueueNotifier', () {
     late VoidListener listener;
     late QueueNotifier<int> notifier;
+
     setUp(() {
       listener = VoidListener();
-      notifier = QueueNotifier<int>()..addListener(listener);
-    });
-    tearDownAll(() {
-      notifier.dispose();
+      notifier = QueueNotifier<int>()..addListener(listener.call);
     });
 
-    test('addAll', () {
-      notifier.addAll(500.range());
-      listener.verifyCalledOnce;
-      expect(notifier, 500.range());
+    tearDown(() => notifier.dispose());
 
-      notifier.addAll(500.range(500));
-      listener.verifyCalledOnce;
-      expect(notifier, 1000.range());
+    group('constructor', () {
+      test('creates empty queue by default', () {
+        check(notifier.length).equals(0);
+        check(notifier.value.length).equals(0);
+        listener.verifyNotCalled;
+      });
+
+      test('copies initial elements', () {
+        final source = [1, 2, 3];
+        final queue = QueueNotifier<int>(source);
+        addTearDown(queue.dispose);
+
+        check(queue.value.toList()).deepEquals([1, 2, 3]);
+        source.add(4);
+        check(queue.value.toList()).deepEquals([1, 2, 3]); // Not affected
+      });
     });
 
-    test('addFirst', () {
-      notifier.addFirst(1);
-      listener.verifyCalledOnce;
-      expect(notifier, [1]);
+    group('add', () {
+      test('notifies on add', () {
+        notifier.add(1);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1]);
 
-      notifier.addFirst(2);
-      listener.verifyCalledOnce;
-      expect(notifier, [2, 1]);
+        notifier.add(2);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 2]);
+      });
     });
 
-    test('addLast', () {
-      notifier.addLast(1);
-      listener.verifyCalledOnce;
-      expect(notifier, [1]);
+    group('addAll', () {
+      test('notifies when adding non-empty iterable', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 2, 3]);
+      });
 
-      notifier.addLast(2);
-      listener.verifyCalledOnce;
-      expect(notifier, [1, 2]);
+      test('does not notify when adding empty iterable', () {
+        notifier.addAll(<int>[]);
+        listener.verifyNotCalled;
+      });
     });
 
-    test('clear', () {
-      notifier.clear();
-      listener.verifyNotCalled;
-      expect(notifier.isEmpty, true);
+    group('addFirst', () {
+      test('notifies on addFirst', () {
+        notifier.addFirst(1);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1]);
 
-      notifier.addAll(1000.range());
-      listener.verifyCalledOnce;
-      expect(notifier, 1000.range());
-      notifier.clear();
-      listener.verifyCalledOnce;
-      expect(notifier.isEmpty, true);
+        notifier.addFirst(2);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([2, 1]);
+      });
     });
 
-    test('remove', () {
-      notifier.addAll(1000.range());
-      listener.verifyCalledOnce;
-      expect(notifier, 1000.range());
+    group('addLast', () {
+      test('notifies on addLast', () {
+        notifier.addLast(1);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1]);
 
-      expect(notifier.remove(999), true);
-      listener.verifyCalledOnce;
-      expect(notifier, 999.range());
-
-      expect(notifier.remove(999), false);
-      listener.verifyNotCalled;
-      expect(notifier, 999.range());
+        notifier.addLast(2);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 2]);
+      });
     });
 
-    test('removeFirst', () {
-      notifier.addAll([1, 2]);
-      listener.verifyCalledOnce;
-      expect(notifier, [1, 2]);
+    group('clear', () {
+      test('notifies when clearing non-empty queue', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      expect(notifier.removeFirst(), 1);
-      listener.verifyCalledOnce;
-      expect(notifier, [2]);
+        notifier.clear();
+        listener.verifyCalledOnce;
+        check(notifier.length).equals(0);
+      });
 
-      expect(notifier.removeFirst(), 2);
-      listener.verifyCalledOnce;
-      expect(notifier, []);
-
-      expect(() => notifier.removeFirst(), throwsA(isA<StateError>()));
+      test('does not notify when clearing empty queue', () {
+        notifier.clear();
+        listener.verifyNotCalled;
+      });
     });
 
-    test('removeLast', () {
-      notifier.addAll([1, 2]);
-      listener.verifyCalledOnce;
-      expect(notifier, [1, 2]);
+    group('remove', () {
+      test('notifies when element is removed', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      expect(notifier.removeLast(), 2);
-      listener.verifyCalledOnce;
-      expect(notifier, [1]);
+        check(notifier.remove(2)).isTrue();
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 3]);
+      });
 
-      expect(notifier.removeLast(), 1);
-      listener.verifyCalledOnce;
-      expect(notifier, []);
+      test('does not notify when element not found', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      expect(() => notifier.removeLast(), throwsA(isA<StateError>()));
+        check(notifier.remove(4)).isFalse();
+        listener.verifyNotCalled;
+      });
     });
 
-    test('removeWhere', () {
-      notifier.addAll(1000.range());
-      listener.verifyCalledOnce;
-      expect(notifier, 1000.range());
+    group('removeFirst', () {
+      test('notifies on removeFirst', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.removeWhere((element) => element.isEven);
-      listener.verifyCalledOnce;
-      expect(notifier, 500.rangeOdd());
+        check(notifier.removeFirst()).equals(1);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([2, 3]);
+      });
 
-      notifier.removeWhere((element) => element.isOdd);
-      listener.verifyCalledOnce;
-      expect(notifier, []);
-
-      notifier.removeWhere((element) => element.isOdd);
-      listener.verifyNotCalled;
+      test('throws on empty queue', () {
+        check(() => notifier.removeFirst()).throws<StateError>();
+      });
     });
 
-    test('retainWhere', () {
-      notifier.addAll(1000.range());
-      listener.verifyCalledOnce;
-      expect(notifier, 1000.range());
+    group('removeLast', () {
+      test('notifies on removeLast', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
 
-      notifier.retainWhere((element) => element.isEven);
-      listener.verifyCalledOnce;
-      expect(notifier, 500.rangeEven());
+        check(notifier.removeLast()).equals(3);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 2]);
+      });
 
-      notifier.retainWhere((element) => element.isEven);
-      listener.verifyNotCalled;
-      expect(notifier, 500.rangeEven());
+      test('throws on empty queue', () {
+        check(() => notifier.removeLast()).throws<StateError>();
+      });
+    });
 
-      notifier.retainWhere((element) => element.isOdd);
-      listener.verifyCalledOnce;
-      expect(notifier, []);
+    group('removeWhere', () {
+      test('notifies when elements are removed', () {
+        notifier.addAll([1, 2, 3, 4]);
+        listener.verifyCalledOnce;
 
-      notifier.retainWhere((element) => element.isOdd);
-      listener.verifyNotCalled;
+        notifier.removeWhere((int e) => e.isEven);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 3]);
+      });
+
+      test('does not notify when no elements match', () {
+        notifier.addAll([1, 3, 5]);
+        listener.verifyCalledOnce;
+
+        notifier.removeWhere((int e) => e.isEven);
+        listener.verifyNotCalled;
+      });
+    });
+
+    group('retainWhere', () {
+      test('notifies when elements are removed', () {
+        notifier.addAll([1, 2, 3, 4]);
+        listener.verifyCalledOnce;
+
+        notifier.retainWhere((int e) => e.isOdd);
+        listener.verifyCalledOnce;
+        check(notifier.toList()).deepEquals([1, 3]);
+      });
+
+      test('does not notify when all elements retained', () {
+        notifier.addAll([1, 3, 5]);
+        listener.verifyCalledOnce;
+
+        notifier.retainWhere((int e) => e.isOdd);
+        listener.verifyNotCalled;
+      });
     });
   });
 }

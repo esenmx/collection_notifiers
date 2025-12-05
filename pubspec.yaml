@@ -1,25 +1,28 @@
 name: collection_notifiers
-description: Collections with implementation of ChangeNotifier/ValueListenable for minimum rebuild and better syntax
-version: 1.1.0
+description: >-
+  Reactive collection wrappers (List, Map, Set, Queue) with ChangeNotifier
+  and ValueListenable support for efficient Flutter UI rebuilds.
+version: 2.0.0
 repository: https://github.com/esenmx/collection_notifiers/
 homepage: https://mehmetesen.com/
+topics:
+  - state-management
+  - flutter
+  - collections
+  - change-notifier
+  - value-listenable
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  collection: ">=1.17.0 <2.0.0"
+  collection: ">=1.19.0 <2.0.0"
   flutter:
     sdk: flutter
 
 dev_dependencies:
+  checks: ^0.3.1
   flutter_test:
     sdk: flutter
-  lint:
-  mockito:
-  test_utils:
-    git:
-      url: https://github.com/esenmx/test_utils
-      ref: main
-
-flutter:
+  mockito: ^5.6.1
+  very_good_analysis: ^10.0.0
