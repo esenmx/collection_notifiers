@@ -315,12 +315,4 @@ selected.invert(1);  // returns true if added, false if removed
 
 ---
 
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">
-  Made with 💙 for the Flutter community
-</p>
+Made with 💙 for the Flutter community
