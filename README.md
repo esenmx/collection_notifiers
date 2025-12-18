@@ -1,8 +1,6 @@
 # collection_notifiers
 
 [![Pub Version](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers)
-[![Build Status](https://github.com/esenmx/collection_notifiers/workflows/Build/badge.svg)](https://github.com/esenmx/collection_notifiers/actions)
-[![codecov](https://codecov.io/gh/esenmx/collection_notifiers/branch/master/graph/badge.svg)](https://codecov.io/gh/esenmx/collection_notifiers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 > **Reactive collections for Flutter** — Lists, Sets, Maps, and Queues that automatically rebuild your UI when they change.
@@ -58,7 +56,42 @@ final selectedIds = SetNotifier<int>();
 final settings = MapNotifier<String, bool>({'darkMode': false});
 ```
 
-### 2. Use with ValueListenableBuilder
+### 2. Connect to your UI
+
+#### Option A: Using flutter_hooks (Recommended)
+
+This package is designed to work perfectly with [flutter_hooks](https://pub.dev/packages/flutter_hooks). The `useValueListenable` hook automatically handles subscription and disposal:
+
+```dart
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:collection_notifiers/collection_notifiers.dart';
+
+class TodoList extends HookWidget {
+  final todos = ListNotifier<String>(['Buy milk']);
+
+  @override
+  Widget build(BuildContext context) {
+    // 🪄 Automatically rebuilds when collection changes
+    final items = useValueListenable(todos);
+    
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) => Text(items[index]),
+    );
+  }
+}
+```
+
+**Why we recommend hooks:**
+
+- ✂️ **Zero Boilerplate**: No `ValueListenableBuilder` nesting
+- 🔄 **Auto-Dispose**: Subscriptions are managed automatically
+- 🧼 **Cleaner Code**: Reads like synchronous code
+- 🧩 **Composable**: Easy to combine with other hooks
+
+#### Option B: Using ValueListenableBuilder
+
+If you're not using hooks, use the standard `ValueListenableBuilder`:
 
 ```dart
 ValueListenableBuilder<List<String>>(
@@ -183,6 +216,8 @@ todos.sort((a, b) => a.priority.compareTo(b.priority));
 
 ## 🔌 State Management Integration
 
+> **Pro Tip:** As mentioned in the Quick Start, we strongly recommend using [flutter_hooks](https://pub.dev/packages/flutter_hooks) via the `useValueListenable` hook for the cleanest, most idiomatic code.
+
 ### With Riverpod
 
 ```dart
@@ -195,7 +230,6 @@ class TodoList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final todos = ref.watch(todosProvider);
-    
     return ListView.builder(
       itemCount: todos.length,
       itemBuilder: (context, i) => ListTile(
@@ -298,21 +332,17 @@ void dispose() {
 
 ---
 
-## 📖 Migration from 2.x
+## 📖 Migration from 1.x
 
-**Breaking change:** `SetNotifier.invert()` return value changed:
+**Breaking change:** `SetNotifier.invert()` return value changed in 2.0.0:
 
 - Now returns `true` if element was **added**
 - Now returns `false` if element was **removed**
 
 ```dart
-// v2.x
+// v1.x
 selected.invert(1);  // returned result of add() or remove()
 
-// v3.x  
+// v2.x
 selected.invert(1);  // returns true if added, false if removed
 ```
-
----
-
-Made with 💙 for the Flutter community

@@ -45,9 +45,7 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart' show ValueListenableBuilder;
 import 'package:flutter/foundation.dart' show ChangeNotifier, ValueListenable;
-import 'package:flutter/material.dart' show ValueListenableBuilder;
 import 'package:flutter/widgets.dart' show ValueListenableBuilder;
 
 part 'src/list_notifier.dart';
