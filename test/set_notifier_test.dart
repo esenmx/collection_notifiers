@@ -1,5 +1,6 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils.dart';
@@ -214,6 +215,41 @@ void main() {
           ..invert(1); // Add
         listener.verifyCalledThrice;
         check(notifier).unorderedEquals([1]);
+      });
+    });
+
+    group('listener lifecycle', () {
+      test('removeListener stops the removed listener from firing', () {
+        final second = VoidListener();
+        notifier
+          ..addListener(second.call)
+          ..add(1);
+        listener.verifyCalledOnce;
+        second.verifyCalledOnce;
+
+        notifier
+          ..removeListener(second.call)
+          ..add(2);
+        listener.verifyCalledOnce;
+        second.verifyNotCalled;
+      });
+
+      test('re-entrant mutation inside a listener does not throw', () {
+        notifier
+          ..addListener(() {
+            if (!notifier.contains(-1)) {
+              notifier.add(-1);
+            }
+          })
+          ..add(1);
+        check(notifier.contains(-1)).isTrue();
+      });
+    });
+
+    group('dispose', () {
+      test('mutating after dispose throws FlutterError', () {
+        final n = SetNotifier<int>([1])..dispose();
+        check(() => n.add(2)).throws<FlutterError>();
       });
     });
   });

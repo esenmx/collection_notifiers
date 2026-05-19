@@ -1,5 +1,6 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils.dart';
@@ -91,6 +92,17 @@ void main() {
         listener.verifyCalledOnce;
 
         notifier.addAll({'a': 1, 'b': 2});
+        listener.verifyNotCalled;
+      });
+
+      test('notifies when adding a new key whose value is null', () {
+        notifier.addAll({'a': null});
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals({'a': null});
+      });
+
+      test('does not notify on empty input', () {
+        notifier.addAll(<String, int?>{});
         listener.verifyNotCalled;
       });
     });
@@ -244,6 +256,40 @@ void main() {
       test('does not notify on empty map', () {
         notifier.updateAll((key, value) => (value ?? 0) * 2);
         listener.verifyNotCalled;
+      });
+    });
+
+    group('listener lifecycle', () {
+      test('removeListener stops the removed listener from firing', () {
+        final second = VoidListener();
+        notifier.addListener(second.call);
+
+        notifier['a'] = 1;
+        listener.verifyCalledOnce;
+        second.verifyCalledOnce;
+
+        notifier.removeListener(second.call);
+        notifier['b'] = 2;
+        listener.verifyCalledOnce;
+        second.verifyNotCalled;
+      });
+
+      test('re-entrant mutation inside a listener does not throw', () {
+        notifier.addListener(() {
+          if (!notifier.containsKey('echo')) {
+            notifier['echo'] = 99;
+          }
+        });
+
+        notifier['a'] = 1;
+        check(notifier['echo']).equals(99);
+      });
+    });
+
+    group('dispose', () {
+      test('mutating after dispose throws FlutterError', () {
+        final n = MapNotifier<String, int>({'a': 1})..dispose();
+        check(() => n['b'] = 2).throws<FlutterError>();
       });
     });
   });

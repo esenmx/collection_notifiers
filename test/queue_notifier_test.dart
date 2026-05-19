@@ -1,5 +1,6 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils.dart';
@@ -183,6 +184,64 @@ void main() {
 
         notifier.retainWhere((e) => e.isOdd);
         listener.verifyNotCalled;
+      });
+    });
+
+    group('listener lifecycle', () {
+      test('removeListener stops the removed listener from firing', () {
+        final second = VoidListener();
+        notifier
+          ..addListener(second.call)
+          ..add(1);
+        listener.verifyCalledOnce;
+        second.verifyCalledOnce;
+
+        notifier
+          ..removeListener(second.call)
+          ..add(2);
+        listener.verifyCalledOnce;
+        second.verifyNotCalled;
+      });
+
+      test('re-entrant mutation inside a listener does not throw', () {
+        var fired = 0;
+        notifier
+          ..addListener(() {
+            fired++;
+            if (notifier.length < 3) {
+              notifier.addLast(notifier.length);
+            }
+          })
+          ..addLast(0);
+        check(notifier.length).equals(3);
+        check(fired).isGreaterThan(0);
+      });
+    });
+
+    group('dispose', () {
+      test('mutating after dispose throws FlutterError', () {
+        final n = QueueNotifier<int>([1])..dispose();
+        check(() => n.add(2)).throws<FlutterError>();
+      });
+    });
+
+    group('null elements', () {
+      test('add/addFirst/addLast/remove work with null values', () {
+        final n = QueueNotifier<int?>();
+        final l = VoidListener();
+        n.addListener(l.call);
+        addTearDown(n.dispose);
+
+        n.addLast(null);
+        l.verifyCalledOnce;
+        check(n.toList()).deepEquals([null]);
+
+        n.addFirst(null);
+        l.verifyCalledOnce;
+        check(n.length).equals(2);
+
+        check(n.remove(null)).isTrue();
+        l.verifyCalledOnce;
       });
     });
   });

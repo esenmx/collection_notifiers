@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.0.2
+
+- fix: `ListNotifier.fillRange` now runs `RangeError.checkValidRange` before the
+  `fillValue` cast and short-circuits on empty ranges, so an empty no-op call
+  no longer crashes when `fillValue` is omitted.
+- fix: `MapNotifier.addAll` no longer skips notification when a new key is
+  added with a `null` value (false-negative on `super[key] != value` for
+  absent keys with null defaults).
+- fix: `ListNotifier.operator []=` and `MapNotifier.operator []=` no longer
+  write the same value back when the value is unchanged.
+- fix: `MapNotifier.putIfAbsent` returns the value from the underlying
+  `putIfAbsent` call instead of re-reading via `super[key]!`.
+- test: expanded coverage with dispose semantics, `removeListener`,
+  re-entrant listener mutation, null-element handling, and
+  `ValueListenableBuilder` rebuild integration.
+- chore: added `issue_tracker` to `pubspec.yaml`.
+
 ## 2.0.1
 
 - docs: Promoted `flutter_hooks` as the recommended pattern.
