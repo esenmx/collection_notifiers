@@ -1,23 +1,17 @@
 # Changelog
 
+## 2.0.1
+
+- docs: Promoted `flutter_hooks` as the recommended pattern.
+- docs: Fixed version migration documentation and cleaned up README.
+
 ## 2.0.0
 
-### Breaking Changes
-
-- `SetNotifier.invert()` now returns `true` when element is added, `false` when removed (previously returned the result of `add()`/`remove()`)
-
-### Bug Fixes
-
-- Fixed `QueueNotifier.add()` not triggering notifications (was missing override)
-- Fixed `ListNotifier.replaceRange()` not notifying when replacing with empty iterable (deletion)
-- Fixed `ListNotifier.setRange()` notification logic
-
-### Improvements
-
-- Enhanced documentation, example app, and test suite
-- Dart 3 upgrade
-- Removed dependency constraints
-- Updated lints with code reformat
+- **Breaking:** `SetNotifier.invert()` now returns `true` when added, `false` when removed.
+- fix: `QueueNotifier.add()` not triggering notifications.
+- fix: `ListNotifier` notification logic for `replaceRange()` and `setRange()`.
+- docs: Enhanced example app and test suite.
+- chore: Dart 3 upgrade and lint updates.
 
 ## 1.1.0
 
