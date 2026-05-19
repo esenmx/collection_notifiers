@@ -366,6 +366,82 @@ void main() {
       });
     });
 
+    group('length setter', () {
+      test('notifies when length grows (nullable element type)', () {
+        final n = ListNotifier<int?>();
+        final l = VoidListener();
+        n.addListener(l.call);
+        addTearDown(n.dispose);
+
+        n.length = 3;
+        l.verifyCalledOnce;
+        check(n).deepEquals([null, null, null]);
+      });
+
+      test('notifies when length shrinks', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.length = 1;
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1]);
+      });
+
+      test('does not notify when length is unchanged', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.length = 3;
+        listener.verifyNotCalled;
+      });
+    });
+
+    group('first setter', () {
+      test('notifies when first changes', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.first = 99;
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([99, 2, 3]);
+      });
+
+      test('does not notify when first is the same', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.first = 1;
+        listener.verifyNotCalled;
+      });
+
+      test('throws StateError on empty list', () {
+        check(() => notifier.first = 1).throws<StateError>();
+      });
+    });
+
+    group('last setter', () {
+      test('notifies when last changes', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.last = 99;
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 2, 99]);
+      });
+
+      test('does not notify when last is the same', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.last = 3;
+        listener.verifyNotCalled;
+      });
+
+      test('throws StateError on empty list', () {
+        check(() => notifier.last = 1).throws<StateError>();
+      });
+    });
+
     group('sort', () {
       test('notifies when sorting', () {
         notifier.addAll([3, 1, 2]);
