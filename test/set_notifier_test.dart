@@ -132,7 +132,7 @@ void main() {
         notifier.addAll([1, 2, 3, 4]);
         listener.verifyCalledOnce;
 
-        notifier.removeWhere((int e) => e.isEven);
+        notifier.removeWhere((e) => e.isEven);
         listener.verifyCalledOnce;
         check(notifier).unorderedEquals([1, 3]);
       });
@@ -141,7 +141,7 @@ void main() {
         notifier.addAll([1, 3, 5]);
         listener.verifyCalledOnce;
 
-        notifier.removeWhere((int e) => e.isEven);
+        notifier.removeWhere((e) => e.isEven);
         listener.verifyNotCalled;
       });
     });
@@ -175,7 +175,7 @@ void main() {
         notifier.addAll([1, 2, 3, 4]);
         listener.verifyCalledOnce;
 
-        notifier.retainWhere((int e) => e.isOdd);
+        notifier.retainWhere((e) => e.isOdd);
         listener.verifyCalledOnce;
         check(notifier).unorderedEquals([1, 3]);
       });
@@ -184,7 +184,7 @@ void main() {
         notifier.addAll([1, 3, 5]);
         listener.verifyCalledOnce;
 
-        notifier.retainWhere((int e) => e.isOdd);
+        notifier.retainWhere((e) => e.isOdd);
         listener.verifyNotCalled;
       });
     });
