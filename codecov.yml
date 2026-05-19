@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 2%
+        informational: true
+    patch:
+      default:
+        target: 80%
+        threshold: 5%
+        informational: true
+
+comment:
+  layout: "header, diff, files"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "example/**"

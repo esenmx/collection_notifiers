@@ -1,6 +1,9 @@
 # collection_notifiers
 
 [![Pub Version](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers)
+[![CI](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml/badge.svg)](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/esenmx/collection_notifiers/branch/master/graph/badge.svg)](https://codecov.io/gh/esenmx/collection_notifiers)
+[![pub points](https://img.shields.io/pub/points/collection_notifiers)](https://pub.dev/packages/collection_notifiers/score)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 > **Reactive collections for Flutter** — Lists, Sets, Maps, and Queues that automatically rebuild your UI when they change.

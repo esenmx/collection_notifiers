@@ -1,0 +1,46 @@
+name: Bug report
+description: Something is broken in collection_notifiers
+title: "[bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear, concise description of the bug.
+      placeholder: |
+        I called `ListNotifier.fillRange(0, 0)` and got a TypeError.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: A minimal Dart snippet that reproduces the issue.
+      render: dart
+      placeholder: |
+        final n = ListNotifier<int>([1, 2, 3]);
+        n.fillRange(0, 0); // crashes
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: package-version
+    attributes:
+      label: collection_notifiers version
+      placeholder: 2.0.2
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Output of `flutter doctor -v`.
+      render: shell
+    validations:
+      required: true
