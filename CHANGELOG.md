@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+- feat: `ListNotifier` now notifies listeners for the `length=`, `first=`,
+  and `last=` setters. Previously these inherited from `DelegatingList`
+  and mutated silently. If you depend on silence here, audit call sites.
+
 ## 2.0.2
 
 - fix: `ListNotifier.fillRange` now runs `RangeError.checkValidRange` before the

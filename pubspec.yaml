@@ -2,7 +2,7 @@ name: collection_notifiers
 description: >-
   Reactive collection wrappers (List, Map, Set, Queue) with ChangeNotifier
   and ValueListenable support for efficient Flutter UI rebuilds.
-version: 2.0.2
+version: 2.1.0
 repository: https://github.com/esenmx/collection_notifiers/
 homepage: https://mehmetesen.com/
 issue_tracker: https://github.com/esenmx/collection_notifiers/issues

@@ -43,6 +43,37 @@ class ListNotifier<E> extends DelegatingList<E>
   List<E> get value => this;
 
   @override
+  set length(int newLength) {
+    if (newLength == super.length) {
+      return;
+    }
+    super.length = newLength;
+    notifyListeners();
+  }
+
+  @override
+  set first(E value) {
+    if (super.isEmpty) {
+      throw StateError('No element');
+    }
+    if (super.first != value) {
+      super[0] = value;
+      notifyListeners();
+    }
+  }
+
+  @override
+  set last(E value) {
+    if (super.isEmpty) {
+      throw StateError('No element');
+    }
+    if (super.last != value) {
+      super[super.length - 1] = value;
+      notifyListeners();
+    }
+  }
+
+  @override
   void operator []=(int index, E value) {
     if (super[index] != value) {
       super[index] = value;
