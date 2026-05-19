@@ -1,3 +1,11 @@
+---
+name: collection_notifiers
+description: collection_notifiers consumer guide — pick the right List/Set/Map/Queue notifier, hooks vs ValueListenableBuilder, dispose discipline, equality requirements for smart-notification, integration with Riverpod / Provider / vanilla.
+paths:
+  - "**/lib/**/*.dart"
+  - "**/test/**/*.dart"
+---
+
 # collection-notifiers — consumer-side rule
 
 Applies when editing Dart code that imports
