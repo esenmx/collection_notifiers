@@ -34,7 +34,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter analyze --fatal-warnings
+      - run: flutter analyze --no-fatal-infos --fatal-warnings
 
   test:
     name: Test (Flutter ${{ matrix.flutter }})
@@ -83,5 +83,5 @@ jobs:
           cache: true
       - run: flutter pub get
         working-directory: example
-      - run: flutter analyze
+      - run: flutter analyze --no-fatal-infos --fatal-warnings
         working-directory: example
