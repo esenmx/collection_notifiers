@@ -90,8 +90,7 @@ class _VlbPanel extends StatelessWidget {
         ValueListenableBuilder<Set<int>>(
           valueListenable: notifier,
           builder: (context, selected, _) => PanelHeader(
-            label:
-                'ValueListenableBuilder (${selected.length} selected)',
+            label: 'ValueListenableBuilder (${selected.length} selected)',
           ),
         ),
         Expanded(
