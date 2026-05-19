@@ -42,21 +42,23 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     if (!super.containsKey(key) || super[key] != value) {
       super[key] = value;
       notifyListeners();
-    } else {
-      super[key] = value;
     }
   }
 
   @override
   void addAll(Map<K, V> other) {
-    var shouldUpdate = false;
+    if (other.isEmpty) {
+      return;
+    }
+    var shouldNotify = false;
     for (final entry in other.entries) {
-      if (!shouldUpdate && super[entry.key] != entry.value) {
-        shouldUpdate = true;
+      if (!shouldNotify &&
+          (!super.containsKey(entry.key) || super[entry.key] != entry.value)) {
+        shouldNotify = true;
       }
       super[entry.key] = entry.value;
     }
-    if (shouldUpdate) {
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -80,11 +82,12 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
 
   @override
   V putIfAbsent(K key, V Function() ifAbsent) {
-    if (!super.containsKey(key)) {
-      super.putIfAbsent(key, ifAbsent);
+    final hadKey = super.containsKey(key);
+    final value = super.putIfAbsent(key, ifAbsent);
+    if (!hadKey) {
       notifyListeners();
     }
-    return super[key]!;
+    return value;
   }
 
   @override

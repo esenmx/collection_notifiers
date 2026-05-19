@@ -47,8 +47,6 @@ class ListNotifier<E> extends DelegatingList<E>
     if (super[index] != value) {
       super[index] = value;
       notifyListeners();
-    } else {
-      super[index] = value;
     }
   }
 
@@ -76,12 +74,17 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void fillRange(int start, int end, [E? fillValue]) {
-    final nonNullFillValue = fillValue as E;
     RangeError.checkValidRange(start, end, length);
+    if (start == end) {
+      return;
+    }
+    final value = fillValue as E;
     var shouldNotify = false;
     for (var i = start; i < end; i++) {
-      shouldNotify = shouldNotify || super[i] != fillValue;
-      super[i] = nonNullFillValue;
+      if (!shouldNotify && super[i] != value) {
+        shouldNotify = true;
+      }
+      super[i] = value;
     }
     if (shouldNotify) {
       notifyListeners();

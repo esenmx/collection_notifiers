@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils.dart';
@@ -115,6 +116,23 @@ void main() {
         listener.verifyCalledOnce;
 
         notifier.fillRange(0, 3, 1);
+        listener.verifyNotCalled;
+      });
+
+      test('empty range is no-op and does not require fillValue', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.fillRange(1, 1);
+        listener.verifyNotCalled;
+        check(notifier).deepEquals([1, 2, 3]);
+      });
+
+      test('throws RangeError before cast on invalid range', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(() => notifier.fillRange(0, 99, 0)).throws<RangeError>();
         listener.verifyNotCalled;
       });
     });
@@ -364,6 +382,66 @@ void main() {
 
         notifier.sort();
         listener.verifyNotCalled;
+      });
+    });
+
+    group('listener lifecycle', () {
+      test('removeListener stops the removed listener from firing', () {
+        final second = VoidListener();
+        notifier
+          ..addListener(second.call)
+          ..add(1);
+        listener.verifyCalledOnce;
+        second.verifyCalledOnce;
+
+        notifier
+          ..removeListener(second.call)
+          ..add(2);
+        listener.verifyCalledOnce;
+        second.verifyNotCalled;
+      });
+
+      test('re-entrant mutation inside a listener does not throw', () {
+        var fired = 0;
+        notifier
+          ..addListener(() {
+            fired++;
+            if (notifier.length < 3) {
+              notifier.add(notifier.length);
+            }
+          })
+          ..add(0);
+
+        check(notifier.length).equals(3);
+        check(fired).isGreaterThan(0);
+      });
+    });
+
+    group('dispose', () {
+      test('mutating after dispose throws FlutterError', () {
+        final n = ListNotifier<int>([1])..dispose();
+        check(() => n.add(2)).throws<FlutterError>();
+      });
+    });
+
+    group('null elements', () {
+      test('add/operator[]=/remove work with null values', () {
+        final n = ListNotifier<int?>();
+        final l = VoidListener();
+        n.addListener(l.call);
+        addTearDown(n.dispose);
+
+        n.add(null);
+        l.verifyCalledOnce;
+        check(n).deepEquals([null]);
+
+        n[0] = null;
+        l.verifyNotCalled;
+
+        n[0] = 1;
+        l.verifyCalledOnce;
+        check(n.remove(1)).isTrue();
+        l.verifyCalledOnce;
       });
     });
   });
