@@ -335,6 +335,17 @@ void dispose() {
 
 ---
 
+## 🤖 LLM rule file
+
+A compact rule file ships at [`rules/collection_notifiers.md`](rules/collection_notifiers.md).
+Drop it into your agent's rules directory (`~/.claude/rules/`,
+`.cursor/rules/`, `.cursorrules`, or the AntiGravity equivalent) so the
+agent reaches for the right notifier (List / Set / Map / Queue), respects
+dispose discipline, and stops replacing the collection instead of mutating
+it.
+
+---
+
 ## 📖 Migration from 1.x
 
 **Breaking change:** `SetNotifier.invert()` return value changed in 2.0.0:
