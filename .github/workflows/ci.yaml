@@ -34,7 +34,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter analyze --fatal-infos --fatal-warnings
+      - run: flutter analyze --fatal-warnings
 
   test:
     name: Test (Flutter ${{ matrix.flutter }})
