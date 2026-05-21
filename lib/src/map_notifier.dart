@@ -26,8 +26,12 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     implements ValueListenable<Map<K, V>> {
   /// Creates a [MapNotifier] optionally initialized with [base] entries.
   ///
-  /// The [base] map is copied, so changes to the original do not affect
-  /// this notifier.
+  /// [base] is copied **shallowly**. Changes to the source map's entries
+  /// do not affect this notifier, but key and value references are
+  /// shared — mutating a value in place will bypass the "no-rebuild on
+  /// no-op" check because the value's identity didn't change. Use
+  /// `freezed` / `equatable` or otherwise immutable value types for
+  /// reliable smart-notification.
   MapNotifier([Map<K, V> base = const {}]) : super(Map<K, V>.of(base));
 
   /// Returns this map as the listenable value.
@@ -63,6 +67,12 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     }
   }
 
+  /// Adds [entries] and notifies only when the map's length changes.
+  ///
+  /// Unlike [addAll], this method uses a **length-only** check for
+  /// notification: re-inserting an existing key with a different value
+  /// will mutate the map but **will not** notify listeners. Use
+  /// [operator []=] or [addAll] when per-key value-diff matters.
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
     final length = super.length;
