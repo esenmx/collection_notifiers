@@ -36,7 +36,9 @@ class _HooksPanel extends HookWidget {
           label: 'Hooks · useSetNotifier (${notifier.length} selected)',
         ),
         _Controls(notifier: notifier),
-        Expanded(child: _SetBody(notifier: notifier, total: total)),
+        Expanded(
+          child: _SetBody(notifier: notifier, total: total),
+        ),
       ],
     );
   }
@@ -68,8 +70,7 @@ class _VlbPanelState extends State<_VlbPanel> {
         ValueListenableBuilder<Set<int>>(
           valueListenable: notifier,
           builder: (context, selected, _) => PanelHeader(
-            label:
-                'ValueListenableBuilder (${selected.length} selected)',
+            label: 'ValueListenableBuilder (${selected.length} selected)',
           ),
         ),
         _Controls(notifier: notifier),

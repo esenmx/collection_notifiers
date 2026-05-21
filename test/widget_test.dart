@@ -57,8 +57,9 @@ void main() {
       check(buildCount).equals(1);
     });
 
-    testWidgets('MapNotifier with null values rebuilds correctly',
-        (tester) async {
+    testWidgets('MapNotifier with null values rebuilds correctly', (
+      tester,
+    ) async {
       final notifier = MapNotifier<String, int?>();
       addTearDown(notifier.dispose);
       var buildCount = 0;

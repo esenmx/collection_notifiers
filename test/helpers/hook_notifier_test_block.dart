@@ -84,8 +84,9 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
       check(() => mutate(captured)).throws<FlutterError>();
     });
 
-    testWidgets('initial argument is consumed only on first build',
-        (tester) async {
+    testWidgets('initial argument is consumed only on first build', (
+      tester,
+    ) async {
       late N captured;
 
       Widget build(I initial) {
@@ -108,8 +109,7 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
       check(length(captured)).equals(initialLength);
     });
 
-    testWidgets('single mutation triggers exactly one rebuild',
-        (tester) async {
+    testWidgets('single mutation triggers exactly one rebuild', (tester) async {
       final harness = await _pumpHarness(tester, useHook, initialA);
 
       check(harness.buildCount).equals(1);
@@ -120,8 +120,9 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
       check(harness.buildCount).equals(2);
     });
 
-    testWidgets('three mutations between pumps coalesce into one rebuild',
-        (tester) async {
+    testWidgets('three mutations between pumps coalesce into one rebuild', (
+      tester,
+    ) async {
       final harness = await _pumpHarness(tester, useHook, initialA);
 
       check(harness.buildCount).equals(1);
@@ -134,8 +135,9 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
       check(harness.buildCount).equals(2);
     });
 
-    testWidgets('N pumped mutations trigger exactly N rebuilds',
-        (tester) async {
+    testWidgets('N pumped mutations trigger exactly N rebuilds', (
+      tester,
+    ) async {
       final harness = await _pumpHarness(tester, useHook, initialA);
 
       check(harness.buildCount).equals(1);
@@ -161,8 +163,9 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
       check(harness.buildCount).equals(1);
     });
 
-    testWidgets('mixed sequence: only real mutations advance the counter',
-        (tester) async {
+    testWidgets('mixed sequence: only real mutations advance the counter', (
+      tester,
+    ) async {
       final harness = await _pumpHarness(tester, useHook, initialA);
 
       check(harness.buildCount).equals(1);

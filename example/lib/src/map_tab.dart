@@ -4,11 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-const _seed = <String, int>{
-  'Apples': 5,
-  'Oranges': 3,
-  'Bananas': 7,
-};
+const _seed = <String, int>{'Apples': 5, 'Oranges': 3, 'Bananas': 7};
 
 class MapTab extends StatelessWidget {
   const MapTab({super.key});

@@ -91,8 +91,7 @@ class _Controls extends StatelessWidget {
             label: const Text('Add first'),
           ),
           FilledButton.icon(
-            onPressed: () =>
-                notifier.addLast('Last ${DateTime.now().second}'),
+            onPressed: () => notifier.addLast('Last ${DateTime.now().second}'),
             icon: const Icon(Icons.last_page),
             label: const Text('Add last'),
           ),
@@ -133,8 +132,8 @@ class _QueueBody extends StatelessWidget {
           trailing: i == 0
               ? const Chip(label: Text('HEAD'))
               : i == items.length - 1
-                  ? const Chip(label: Text('TAIL'))
-                  : null,
+              ? const Chip(label: Text('TAIL'))
+              : null,
         );
       },
     );
