@@ -61,36 +61,55 @@ final settings = MapNotifier<String, bool>({'darkMode': false});
 
 ### 2. Connect to your UI
 
-#### Option A: Using flutter_hooks (Recommended)
+#### Option A: Custom hooks (Recommended)
 
-This package is designed to work perfectly with [flutter_hooks](https://pub.dev/packages/flutter_hooks). The `useValueListenable` hook automatically handles subscription and disposal:
+The package ships dedicated [flutter_hooks](https://pub.dev/packages/flutter_hooks) for every collection type — `useListNotifier`, `useSetNotifier`, `useMapNotifier`, `useQueueNotifier`. Each one creates the notifier, disposes it on unmount, and rebuilds the host widget on every change. Zero boilerplate.
 
 ```dart
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
 
 class TodoList extends HookWidget {
-  final todos = ListNotifier<String>(['Buy milk']);
+  const TodoList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 🪄 Automatically rebuilds when collection changes
-    final items = useValueListenable(todos);
-    
+    // 🪄 Creates, disposes, and subscribes in one call.
+    final todos = useListNotifier<String>(['Buy milk']);
+
     return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) => Text(items[index]),
+      itemCount: todos.length,
+      itemBuilder: (context, index) => Text(todos[index]),
     );
   }
 }
 ```
 
-**Why we recommend hooks:**
+**Use custom hooks:**
 
-- ✂️ **Zero Boilerplate**: No `ValueListenableBuilder` nesting
-- 🔄 **Auto-Dispose**: Subscriptions are managed automatically
+- ✂️ **Zero Boilerplate**: No `ValueListenableBuilder` nesting, no `dispose` override
+- 🔄 **Auto-Dispose**: The hook owns the lifecycle
 - 🧼 **Cleaner Code**: Reads like synchronous code
 - 🧩 **Composable**: Easy to combine with other hooks
+
+If the notifier is owned upstream (Riverpod, parent widget), subscribe without recreating it:
+
+```dart
+class TodoList extends HookWidget {
+  const TodoList({super.key, required this.notifier});
+
+  final ListNotifier<String> notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    useListenable(notifier);
+    return ListView.builder(
+      itemCount: notifier.length,
+      itemBuilder: (context, i) => Text(notifier[i]),
+    );
+  }
+}
+```
 
 #### Option B: Using ValueListenableBuilder
 
@@ -331,18 +350,30 @@ void dispose() {
 
 ### Some Methods Always Notify
 
-`sort()` and `shuffle()` always notify because checking if order changed would be expensive.
+`sort()` and `shuffle()` on a list of length > 1 always notify — even when the order didn't actually change. Verifying order-preservation would cost O(n) per call and defeats the smart-notification budget. Lists of length 0 or 1 short-circuit silently.
 
 ---
 
-## 🤖 LLM rule file
+## 🤖 Agent setup
 
-A compact rule file ships at [`rules/collection_notifiers.md`](rules/collection_notifiers.md).
-Drop it into your agent's rules directory (`~/.claude/rules/`,
-`.cursor/rules/`, `.cursorrules`, or the AntiGravity equivalent) so the
-agent reaches for the right notifier (List / Set / Map / Queue), respects
-dispose discipline, and stops replacing the collection instead of mutating
-it.
+Coding with an LLM? Drop
+[`skills/flutter-collection-notifiers/SKILL.md`](skills/flutter-collection-notifiers/SKILL.md)
+into your agent's skill directory (`~/.claude/skills/flutter-collection-notifiers/`,
+or the Cursor / AntiGravity equivalent). The skill teaches the agent to
+pick the right notifier, wire the matching custom hook, respect dispose
+discipline, and stop replacing the collection instead of mutating it.
+
+---
+
+## 📂 Where the custom hooks live
+
+The hooks ship at [`lib/src/ui/`](lib/src/ui/) — one file per type
+(`use_list_notifier.dart`, `use_set_notifier.dart`,
+`use_map_notifier.dart`, `use_queue_notifier.dart`). If your project
+prefers a different layout (`lib/src/hooks/`, `lib/src/widgets/`, etc.),
+fork the package or re-export the hooks from your own path — the
+`part` directives in [`lib/collection_notifiers.dart`](lib/collection_notifiers.dart)
+are the only place to update.
 
 ---
 

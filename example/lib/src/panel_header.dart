@@ -11,10 +11,7 @@ class PanelHeader extends StatelessWidget {
       width: double.infinity,
       color: Theme.of(context).colorScheme.surfaceContainerHigh,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge,
-      ),
+      child: Text(label, style: Theme.of(context).textTheme.labelLarge),
     );
   }
 }

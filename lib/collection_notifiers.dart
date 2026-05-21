@@ -1,44 +1,68 @@
 /// Collection classes with [ChangeNotifier] and [ValueListenable] support.
 ///
-/// This library provides reactive collection wrappers that notify listeners
-/// when their contents change, enabling efficient UI rebuilds in Flutter.
+/// Reactive collection wrappers that notify listeners when their contents
+/// change, enabling efficient UI rebuilds in Flutter.
 ///
-/// ## Available Notifiers
+/// ## Notifiers
 ///
-/// - [ListNotifier] - A reactive [List] implementation
-/// - [MapNotifier] - A reactive [Map] implementation
-/// - [SetNotifier] - A reactive [Set] implementation
-/// - [QueueNotifier] - A reactive [Queue] implementation
+/// - [ListNotifier] — reactive [List]
+/// - [MapNotifier] — reactive [Map]
+/// - [SetNotifier] — reactive [Set]
+/// - [QueueNotifier] — reactive [Queue]
 ///
-/// ## Usage with ValueListenableBuilder
+/// ## Recommended: the dedicated hooks
+///
+/// Every notifier ships with a matching `flutter_hooks` hook that owns
+/// the lifecycle: create on first build, dispose on unmount, rebuild
+/// the host widget on every change. **Prefer the hooks** — they remove
+/// the `StatefulWidget` / `dispose` / `ValueListenableBuilder`
+/// boilerplate that older Flutter docs lean on.
+///
+/// - [useListNotifier]
+/// - [useSetNotifier]
+/// - [useMapNotifier]
+/// - [useQueueNotifier]
 ///
 /// ```dart
-/// final items = ListNotifier<String>(['a', 'b', 'c']);
+/// class Items extends HookWidget {
+///   const Items({super.key});
 ///
-/// ValueListenableBuilder<List<String>>(
-///   valueListenable: items,
-///   builder: (context, value, child) {
-///     return ListView.builder(
-///       itemCount: value.length,
-///       itemBuilder: (context, index) => Text(value[index]),
+///   @override
+///   Widget build(BuildContext context) {
+///     final items = useListNotifier<String>(['a', 'b', 'c']);
+///     return Column(
+///       children: [
+///         FilledButton(
+///           onPressed: () => items.add('d'),
+///           child: const Text('Add'),
+///         ),
+///         for (final item in items) Text(item),
+///       ],
 ///     );
-///   },
-/// );
-///
-/// // Mutations automatically trigger rebuilds
-/// items.add('d');
+///   }
+/// }
 /// ```
 ///
-/// ## Notification Behavior
+/// ## Fallback: [ValueListenableBuilder]
 ///
-/// Methods only call [ChangeNotifier.notifyListeners] when the collection
-/// actually changes. For example:
+/// When `flutter_hooks` is not on the project's dependency list — or
+/// when the notifier is owned by a state-management container such as a
+/// Riverpod `ChangeNotifierProvider` — the standard
+/// [ValueListenableBuilder] still works. It is a fallback, not a peer
+/// to the hook API.
 ///
-/// - `set.add(existingElement)` - No notification (element already exists)
-/// - `map['key'] = sameValue` - No notification (value unchanged)
-/// - `list.clear()` on empty list - No notification (nothing to clear)
+/// ## Notification behaviour
 ///
-/// This optimization prevents unnecessary widget rebuilds.
+/// Methods only call [ChangeNotifier.notifyListeners] when the
+/// collection actually changes:
+///
+/// - `set.add(existingElement)` — no notification (already present)
+/// - `map['key'] = sameValue` — no notification (value unchanged)
+/// - `list.clear()` on an empty list — no notification (nothing to clear)
+///
+/// Exceptions: [ListNotifier.sort] and [ListNotifier.shuffle] on a list
+/// of length > 1 always notify, and [MapNotifier.addEntries] notifies
+/// only on length change. See each method's dartdoc for details.
 library;
 
 import 'dart:collection';
@@ -46,9 +70,14 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' show ChangeNotifier, ValueListenable;
-import 'package:flutter/widgets.dart' show ValueListenableBuilder;
+import 'package:flutter/widgets.dart' show BuildContext, ValueListenableBuilder;
+import 'package:flutter_hooks/flutter_hooks.dart' show Hook, HookState, use;
 
 part 'src/list_notifier.dart';
 part 'src/map_notifier.dart';
 part 'src/queue_notifier.dart';
 part 'src/set_notifier.dart';
+part 'src/ui/use_list_notifier.dart';
+part 'src/ui/use_map_notifier.dart';
+part 'src/ui/use_queue_notifier.dart';
+part 'src/ui/use_set_notifier.dart';

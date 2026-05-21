@@ -223,15 +223,19 @@ void main() {
       });
 
       test('uses ifAbsent when key missing', () {
-        final result =
-            notifier.update('a', (v) => (v ?? 0) + 1, ifAbsent: () => 5);
+        final result = notifier.update(
+          'a',
+          (v) => (v ?? 0) + 1,
+          ifAbsent: () => 5,
+        );
         listener.verifyCalledOnce;
         check(result).equals(5);
       });
 
       test('throws when key missing and no ifAbsent', () {
-        check(() => notifier.update('a', (v) => (v ?? 0) + 1))
-            .throws<ArgumentError>();
+        check(
+          () => notifier.update('a', (v) => (v ?? 0) + 1),
+        ).throws<ArgumentError>();
       });
     });
 

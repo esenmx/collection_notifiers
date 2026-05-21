@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.2.0
+
+- feat: ship dedicated `flutter_hooks` hooks for every notifier —
+  `useListNotifier`, `useSetNotifier`, `useMapNotifier`,
+  `useQueueNotifier`. Each owns the lifecycle: creates on first build,
+  disposes on unmount, rebuilds the host widget on every mutation.
+- feat: `flutter_hooks` is now a runtime dependency.
+- docs: agent skill at `skills/flutter-collection-notifiers/SKILL.md`
+  replaces the old `rules/collection_notifiers.md`.
+- docs: stronger "hooks recommended" framing in the library dartdoc;
+  method-level notes on `ListNotifier.sort`/`shuffle` (always notify
+  when `length > 1`) and `MapNotifier.addEntries` (length-only check).
+- docs: shallow-copy semantics called out on every notifier constructor.
+- example: each tab now shows a hooks panel (`useXNotifier`,
+  self-contained) alongside the externally-owned `ValueListenableBuilder`
+  panel.
+- test: widget tests for all four hooks covering single-instance reuse,
+  dispose-on-unmount, rebuild-on-mutation, and one-time `initial`
+  semantics.
+
 ## 2.1.0
 
 - feat: `ListNotifier` now notifies listeners for the `length=`, `first=`,

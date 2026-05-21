@@ -4,14 +4,46 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-class ListTab extends StatefulWidget {
+class ListTab extends StatelessWidget {
   const ListTab({super.key});
 
   @override
-  State<ListTab> createState() => _ListTabState();
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Expanded(child: _HooksPanel()),
+        Divider(height: 1),
+        Expanded(child: _VlbPanel()),
+      ],
+    );
+  }
 }
 
-class _ListTabState extends State<ListTab> {
+class _HooksPanel extends HookWidget {
+  const _HooksPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final notifier = useListNotifier<String>(['Apple', 'Banana', 'Cherry']);
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        const PanelHeader(label: 'Hooks · useListNotifier'),
+        _Controls(notifier: notifier),
+        Expanded(child: _ListBody(notifier: notifier)),
+      ],
+    );
+  }
+}
+
+class _VlbPanel extends StatefulWidget {
+  const _VlbPanel();
+
+  @override
+  State<_VlbPanel> createState() => _VlbPanelState();
+}
+
+class _VlbPanelState extends State<_VlbPanel> {
   final notifier = ListNotifier<String>(['Apple', 'Banana', 'Cherry']);
 
   @override
@@ -23,12 +55,16 @@ class _ListTabState extends State<ListTab> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: .start,
       children: [
+        const PanelHeader(label: 'ValueListenableBuilder · externally owned'),
         _Controls(notifier: notifier),
-        const Divider(height: 1),
-        Expanded(child: _HooksPanel(notifier: notifier)),
-        const Divider(height: 1),
-        Expanded(child: _VlbPanel(notifier: notifier)),
+        Expanded(
+          child: ValueListenableBuilder<List<String>>(
+            valueListenable: notifier,
+            builder: (context, items, _) => _ListBody(notifier: notifier),
+          ),
+        ),
       ],
     );
   }
@@ -67,68 +103,24 @@ class _Controls extends StatelessWidget {
   }
 }
 
-class _HooksPanel extends HookWidget {
-  const _HooksPanel({required this.notifier});
+class _ListBody extends StatelessWidget {
+  const _ListBody({required this.notifier});
 
   final ListNotifier<String> notifier;
 
   @override
   Widget build(BuildContext context) {
-    final items = useValueListenable(notifier);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'Hooks · useValueListenable'),
-        Expanded(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, i) => ListTile(
-              dense: true,
-              leading: CircleAvatar(child: Text('${i + 1}')),
-              title: Text(items[i]),
-              trailing: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => notifier.removeAt(i),
-              ),
-            ),
-          ),
+    return ListView.builder(
+      itemCount: notifier.length,
+      itemBuilder: (context, i) => ListTile(
+        dense: true,
+        leading: CircleAvatar(child: Text('${i + 1}')),
+        title: Text(notifier[i]),
+        trailing: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => notifier.removeAt(i),
         ),
-      ],
-    );
-  }
-}
-
-class _VlbPanel extends StatelessWidget {
-  const _VlbPanel({required this.notifier});
-
-  final ListNotifier<String> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'ValueListenableBuilder'),
-        Expanded(
-          child: ValueListenableBuilder<List<String>>(
-            valueListenable: notifier,
-            builder: (context, items, _) {
-              return ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, i) => ListTile(
-                  dense: true,
-                  leading: CircleAvatar(child: Text('${i + 1}')),
-                  title: Text(items[i]),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => notifier.removeAt(i),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

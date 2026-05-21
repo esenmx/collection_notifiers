@@ -28,8 +28,12 @@ class SetNotifier<E> extends DelegatingSet<E>
     implements ValueListenable<Set<E>> {
   /// Creates a [SetNotifier] optionally initialized with [base] elements.
   ///
-  /// The [base] iterable is copied, so changes to the original do not affect
-  /// this notifier.
+  /// [base] is copied **shallowly**. Changes to the source iterable's
+  /// membership do not affect this notifier, but element references are
+  /// shared — mutating an element in place will bypass the "no-rebuild
+  /// on no-op" check because the element's identity didn't change. Use
+  /// `freezed` / `equatable` or otherwise immutable element types for
+  /// reliable smart-notification.
   SetNotifier([Iterable<E> base = const []]) : super(Set<E>.of(base));
 
   /// Returns this set as the listenable value.
