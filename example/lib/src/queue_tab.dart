@@ -6,18 +6,47 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-class QueueTab extends StatefulWidget {
+class QueueTab extends StatelessWidget {
   const QueueTab({super.key});
 
   @override
-  State<QueueTab> createState() => _QueueTabState();
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Expanded(child: _HooksPanel()),
+        Divider(height: 1),
+        Expanded(child: _VlbPanel()),
+      ],
+    );
+  }
 }
 
-class _QueueTabState extends State<QueueTab> {
-  final notifier = QueueNotifier<String>();
+class _HooksPanel extends HookWidget {
+  const _HooksPanel();
 
-  void _addFirst() => notifier.addFirst('First ${DateTime.now().second}');
-  void _addLast() => notifier.addLast('Last ${DateTime.now().second}');
+  @override
+  Widget build(BuildContext context) {
+    final notifier = useQueueNotifier<String>();
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        const PanelHeader(label: 'Hooks · useQueueNotifier'),
+        _Controls(notifier: notifier),
+        Expanded(child: _QueueBody(queue: notifier)),
+      ],
+    );
+  }
+}
+
+class _VlbPanel extends StatefulWidget {
+  const _VlbPanel();
+
+  @override
+  State<_VlbPanel> createState() => _VlbPanelState();
+}
+
+class _VlbPanelState extends State<_VlbPanel> {
+  final notifier = QueueNotifier<String>();
 
   @override
   void dispose() {
@@ -28,77 +57,14 @@ class _QueueTabState extends State<QueueTab> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: .start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Wrap(
-            spacing: 8,
-            children: [
-              FilledButton.icon(
-                onPressed: _addFirst,
-                icon: const Icon(Icons.first_page),
-                label: const Text('Add first'),
-              ),
-              FilledButton.icon(
-                onPressed: _addLast,
-                icon: const Icon(Icons.last_page),
-                label: const Text('Add last'),
-              ),
-              OutlinedButton.icon(
-                onPressed: notifier.isEmpty ? null : notifier.removeFirst,
-                icon: const Icon(Icons.remove),
-                label: const Text('Remove first'),
-              ),
-              OutlinedButton.icon(
-                onPressed: notifier.isEmpty ? null : notifier.removeLast,
-                icon: const Icon(Icons.remove),
-                label: const Text('Remove last'),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-        Expanded(child: _HooksPanel(notifier: notifier)),
-        const Divider(height: 1),
-        Expanded(child: _VlbPanel(notifier: notifier)),
-      ],
-    );
-  }
-}
-
-class _HooksPanel extends HookWidget {
-  const _HooksPanel({required this.notifier});
-
-  final QueueNotifier<String> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    final queue = useValueListenable(notifier);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'Hooks · useValueListenable'),
-        Expanded(child: _QueueList(queue: queue)),
-      ],
-    );
-  }
-}
-
-class _VlbPanel extends StatelessWidget {
-  const _VlbPanel({required this.notifier});
-
-  final QueueNotifier<String> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'ValueListenableBuilder'),
+        const PanelHeader(label: 'ValueListenableBuilder · externally owned'),
+        _Controls(notifier: notifier),
         Expanded(
           child: ValueListenableBuilder<Queue<String>>(
             valueListenable: notifier,
-            builder: (context, queue, _) => _QueueList(queue: queue),
+            builder: (context, queue, _) => _QueueBody(queue: queue),
           ),
         ),
       ],
@@ -106,8 +72,48 @@ class _VlbPanel extends StatelessWidget {
   }
 }
 
-class _QueueList extends StatelessWidget {
-  const _QueueList({required this.queue});
+class _Controls extends StatelessWidget {
+  const _Controls({required this.notifier});
+
+  final QueueNotifier<String> notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Wrap(
+        spacing: 8,
+        children: [
+          FilledButton.icon(
+            onPressed: () =>
+                notifier.addFirst('First ${DateTime.now().second}'),
+            icon: const Icon(Icons.first_page),
+            label: const Text('Add first'),
+          ),
+          FilledButton.icon(
+            onPressed: () =>
+                notifier.addLast('Last ${DateTime.now().second}'),
+            icon: const Icon(Icons.last_page),
+            label: const Text('Add last'),
+          ),
+          OutlinedButton.icon(
+            onPressed: notifier.isEmpty ? null : notifier.removeFirst,
+            icon: const Icon(Icons.remove),
+            label: const Text('Remove first'),
+          ),
+          OutlinedButton.icon(
+            onPressed: notifier.isEmpty ? null : notifier.removeLast,
+            icon: const Icon(Icons.remove),
+            label: const Text('Remove last'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QueueBody extends StatelessWidget {
+  const _QueueBody({required this.queue});
 
   final Queue<String> queue;
 

@@ -26,8 +26,12 @@ class QueueNotifier<E> extends DelegatingQueue<E>
     implements ValueListenable<Queue<E>> {
   /// Creates a [QueueNotifier] optionally initialized with [base] elements.
   ///
-  /// The [base] iterable is copied, so changes to the original do not affect
-  /// this notifier.
+  /// [base] is copied **shallowly**. Changes to the source iterable do
+  /// not affect this notifier, but element references are shared —
+  /// mutating an element in place will bypass the "no-rebuild on no-op"
+  /// check because the element's identity didn't change. Use `freezed`
+  /// / `equatable` or otherwise immutable element types for reliable
+  /// smart-notification.
   QueueNotifier([Iterable<E> base = const []]) : super(Queue<E>.of(base));
 
   /// Returns this queue as the listenable value.

@@ -31,8 +31,12 @@ class ListNotifier<E> extends DelegatingList<E>
     implements ValueListenable<List<E>> {
   /// Creates a [ListNotifier] optionally initialized with [base] elements.
   ///
-  /// The [base] iterable is copied, so changes to the original do not affect
-  /// this notifier.
+  /// [base] is copied **shallowly**. Changes to the source iterable's
+  /// length or order do not affect this notifier, but element references
+  /// are shared — mutating an element in place will bypass the
+  /// "no-rebuild on no-op" check because the element's identity didn't
+  /// change. Use `freezed` / `equatable` or otherwise immutable element
+  /// types for reliable smart-notification.
   ListNotifier([Iterable<E> base = const []]) : super(List<E>.of(base));
 
   /// Returns this list as the listenable value.
@@ -210,6 +214,12 @@ class ListNotifier<E> extends DelegatingList<E>
     }
   }
 
+  /// Shuffles the list and notifies listeners.
+  ///
+  /// Skips notification when [length] ≤ 1 (nothing can move). On a list
+  /// of length > 1 this **always** notifies, even when the shuffle
+  /// happens to produce the same ordering — verifying order-preservation
+  /// would cost O(n) per call and defeats the optimisation budget.
   @override
   void shuffle([math.Random? random]) {
     if (length > 1) {
@@ -218,6 +228,12 @@ class ListNotifier<E> extends DelegatingList<E>
     }
   }
 
+  /// Sorts the list and notifies listeners.
+  ///
+  /// Skips notification when [length] ≤ 1 (already sorted). On a list of
+  /// length > 1 this **always** notifies, even when the list was already
+  /// in the requested order — verifying that would cost O(n) per call
+  /// and defeats the optimisation budget.
   @override
   void sort([int Function(E a, E b)? compare]) {
     if (length > 1) {

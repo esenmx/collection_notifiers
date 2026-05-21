@@ -4,19 +4,53 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-class MapTab extends StatefulWidget {
+const _seed = <String, int>{
+  'Apples': 5,
+  'Oranges': 3,
+  'Bananas': 7,
+};
+
+class MapTab extends StatelessWidget {
   const MapTab({super.key});
 
   @override
-  State<MapTab> createState() => _MapTabState();
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Expanded(child: _HooksPanel()),
+        Divider(height: 1),
+        Expanded(child: _VlbPanel()),
+      ],
+    );
+  }
 }
 
-class _MapTabState extends State<MapTab> {
-  final notifier = MapNotifier<String, int>({
-    'Apples': 5,
-    'Oranges': 3,
-    'Bananas': 7,
-  });
+class _HooksPanel extends HookWidget {
+  const _HooksPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final notifier = useMapNotifier<String, int>(_seed);
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        const PanelHeader(label: 'Hooks · useMapNotifier'),
+        _Controls(notifier: notifier),
+        Expanded(child: _MapBody(notifier: notifier)),
+      ],
+    );
+  }
+}
+
+class _VlbPanel extends StatefulWidget {
+  const _VlbPanel();
+
+  @override
+  State<_VlbPanel> createState() => _VlbPanelState();
+}
+
+class _VlbPanelState extends State<_VlbPanel> {
+  final notifier = MapNotifier<String, int>(_seed);
 
   @override
   void dispose() {
@@ -27,62 +61,14 @@ class _MapTabState extends State<MapTab> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: .start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: FilledButton.icon(
-            onPressed: () {
-              final name = 'Item ${notifier.length + 1}';
-              notifier[name] = 1;
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('Add item'),
-          ),
-        ),
-        const Divider(height: 1),
-        Expanded(child: _HooksPanel(notifier: notifier)),
-        const Divider(height: 1),
-        Expanded(child: _VlbPanel(notifier: notifier)),
-      ],
-    );
-  }
-}
-
-class _HooksPanel extends HookWidget {
-  const _HooksPanel({required this.notifier});
-
-  final MapNotifier<String, int> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    final cart = useValueListenable(notifier);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'Hooks · useValueListenable'),
-        Expanded(child: _MapList(notifier: notifier, cart: cart)),
-      ],
-    );
-  }
-}
-
-class _VlbPanel extends StatelessWidget {
-  const _VlbPanel({required this.notifier});
-
-  final MapNotifier<String, int> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const PanelHeader(label: 'ValueListenableBuilder'),
+        const PanelHeader(label: 'ValueListenableBuilder · externally owned'),
+        _Controls(notifier: notifier),
         Expanded(
           child: ValueListenableBuilder<Map<String, int>>(
             valueListenable: notifier,
-            builder: (context, cart, _) {
-              return _MapList(notifier: notifier, cart: cart);
-            },
+            builder: (context, _, _) => _MapBody(notifier: notifier),
           ),
         ),
       ],
@@ -90,15 +76,35 @@ class _VlbPanel extends StatelessWidget {
   }
 }
 
-class _MapList extends StatelessWidget {
-  const _MapList({required this.notifier, required this.cart});
+class _Controls extends StatelessWidget {
+  const _Controls({required this.notifier});
 
   final MapNotifier<String, int> notifier;
-  final Map<String, int> cart;
 
   @override
   Widget build(BuildContext context) {
-    final entries = cart.entries.toList();
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: FilledButton.icon(
+        onPressed: () {
+          final name = 'Item ${notifier.length + 1}';
+          notifier[name] = 1;
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Add item'),
+      ),
+    );
+  }
+}
+
+class _MapBody extends StatelessWidget {
+  const _MapBody({required this.notifier});
+
+  final MapNotifier<String, int> notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = notifier.entries.toList();
     return ListView.builder(
       itemCount: entries.length,
       itemBuilder: (context, i) {
@@ -107,7 +113,7 @@ class _MapList extends StatelessWidget {
           dense: true,
           title: Text(entry.key),
           trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle_outline),

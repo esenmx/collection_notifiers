@@ -16,7 +16,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: TextDirection.ltr);
+              return Text(items.join(','), textDirection: .ltr);
             },
           ),
         ),
@@ -43,7 +43,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: TextDirection.ltr);
+              return Text(items.join(','), textDirection: .ltr);
             },
           ),
         ),
@@ -69,7 +69,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, map, _) {
               buildCount++;
-              return Text('${map.length}', textDirection: TextDirection.ltr);
+              return Text('${map.length}', textDirection: .ltr);
             },
           ),
         ),
