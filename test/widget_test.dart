@@ -16,7 +16,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: TextDirection.ltr);
+              return Text(items.join(','), textDirection: .ltr);
             },
           ),
         ),
@@ -43,7 +43,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: TextDirection.ltr);
+              return Text(items.join(','), textDirection: .ltr);
             },
           ),
         ),
@@ -57,8 +57,9 @@ void main() {
       check(buildCount).equals(1);
     });
 
-    testWidgets('MapNotifier with null values rebuilds correctly',
-        (tester) async {
+    testWidgets('MapNotifier with null values rebuilds correctly', (
+      tester,
+    ) async {
       final notifier = MapNotifier<String, int?>();
       addTearDown(notifier.dispose);
       var buildCount = 0;
@@ -69,7 +70,7 @@ void main() {
             valueListenable: notifier,
             builder: (context, map, _) {
               buildCount++;
-              return Text('${map.length}', textDirection: TextDirection.ltr);
+              return Text('${map.length}', textDirection: .ltr);
             },
           ),
         ),

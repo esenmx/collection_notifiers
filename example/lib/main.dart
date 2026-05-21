@@ -45,12 +45,7 @@ class _HomePage extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          children: [
-            ListTab(),
-            SetTab(),
-            MapTab(),
-            QueueTab(),
-          ],
+          children: [ListTab(), SetTab(), MapTab(), QueueTab()],
         ),
       ),
     );
