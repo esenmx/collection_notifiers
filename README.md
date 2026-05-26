@@ -1,393 +1,272 @@
 # collection_notifiers
 
-[![Pub Version](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers)
+[![pub](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers)
 [![CI](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml/badge.svg)](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/esenmx/collection_notifiers/branch/master/graph/badge.svg)](https://codecov.io/gh/esenmx/collection_notifiers)
 [![pub points](https://img.shields.io/pub/points/collection_notifiers)](https://pub.dev/packages/collection_notifiers/score)
-[![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Reactive collections for Flutter** — Lists, Sets, Maps, and Queues that automatically rebuild your UI when they change.
-
----
-
-## ✨ Why collection_notifiers?
-
-| Without this package | With collection_notifiers |
-|---------------------|---------------------------|
-| Create copies on every change | Mutate in place |
-| Always triggers rebuilds | Only rebuilds when actually changed |
-| Verbose state management code | Clean, simple API |
-| Manual equality checks | Automatic optimization |
+**Reactive `List` / `Set` / `Map` / `Queue` for Flutter.** Mutate in
+place, rebuild on real change only. Ships matching `flutter_hooks`
+hooks for one-line widget integration.
 
 ```dart
-// ❌ Traditional approach - creates new objects, always rebuilds
-ref.read(provider.notifier).update((state) => {...state, newItem});
-
-// ✅ With collection_notifiers - zero copies, smart rebuilds
-ref.read(provider).add(newItem);
+final todos = useListNotifier<String>(['buy milk']);
+todos.add('walk dog');   // rebuilds — new element
+todos[0] = 'buy milk';   // silent — same value
+todos[0] = 'buy eggs';   // rebuilds — value changed
+todos.clear();           // rebuilds — was non-empty
+todos.clear();           // silent — already empty
 ```
 
 ---
 
-## 📦 Installation
+## What it's for
 
-Add to your `pubspec.yaml`:
+- In-place collection state in a widget: selection toggles, todo
+  lists, key/value settings, FIFO/LIFO queues.
+- Anywhere `ValueNotifier<List<T>>` would force a `[...state, x]` copy
+  per mutation.
 
-```yaml
-dependencies:
-  collection_notifiers: ^2.0.0
-```
+## What it isn't
 
-Then run:
+- **Not a state container.** Wrap with `ChangeNotifierProvider`
+  (Provider) or expose via a Riverpod notifier when you need DI.
+- **Not deep-reactive.** Mutating an element in place
+  (`list[0].field = x`) bypasses the equality check — use
+  [`freezed`](https://pub.dev/packages/freezed) or
+  [`equatable`](https://pub.dev/packages/equatable) for element types.
+- **Not for a single value.** Reach for stdlib `ValueNotifier<T>`.
+
+---
+
+## Install
 
 ```bash
-flutter pub get
+flutter pub add collection_notifiers
 ```
+
+```dart
+import 'package:collection_notifiers/collection_notifiers.dart';
+```
+
+[`flutter_hooks`](https://pub.dev/packages/flutter_hooks) is a runtime
+dependency — the hook variants ship with the package.
 
 ---
 
-## 🚀 Quick Start
+## Pick the notifier
 
-### 1. Create a reactive collection
+|Need|Class|Hook|
+|---|---|---|
+|Ordered, indexable, reorderable|`ListNotifier`|`useListNotifier`|
+|Unique elements, selection toggles|`SetNotifier`|`useSetNotifier`|
+|Key → value lookup|`MapNotifier`|`useMapNotifier`|
+|FIFO/LIFO head-or-tail mutation|`QueueNotifier`|`useQueueNotifier`|
+
+Each class extends `package:collection`'s `DelegatingX` and mixes in
+`ChangeNotifier` — drop-in replacement for the matching `dart:core`
+collection, plus `ValueListenable<List<E>>` / `<Set<E>>` / `<Map<K, V>>`
+/ `<Queue<E>>`.
+
+---
+
+## Hooks — recommended
+
+The hook owns the lifecycle: creates the notifier on first build,
+disposes on unmount, rebuilds the host widget on every mutation. Zero
+boilerplate.
 
 ```dart
-import 'package:collection_notifiers/collection_notifiers.dart';
-
-// Just like regular collections, but reactive!
-final todos = ListNotifier<String>(['Buy milk', 'Walk dog']);
-final selectedIds = SetNotifier<int>();
-final settings = MapNotifier<String, bool>({'darkMode': false});
-```
-
-### 2. Connect to your UI
-
-#### Option A: Custom hooks (Recommended)
-
-The package ships dedicated [flutter_hooks](https://pub.dev/packages/flutter_hooks) for every collection type — `useListNotifier`, `useSetNotifier`, `useMapNotifier`, `useQueueNotifier`. Each one creates the notifier, disposes it on unmount, and rebuilds the host widget on every change. Zero boilerplate.
-
-```dart
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:collection_notifiers/collection_notifiers.dart';
-
 class TodoList extends HookWidget {
   const TodoList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 🪄 Creates, disposes, and subscribes in one call.
-    final todos = useListNotifier<String>(['Buy milk']);
-
-    return ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, index) => Text(todos[index]),
+    final todos = useListNotifier<String>(['buy milk']);
+    return Column(
+      children: [
+        FilledButton(
+          onPressed: () => todos.add('walk dog'),
+          child: const Text('Add'),
+        ),
+        for (final t in todos) Text(t),
+      ],
     );
   }
 }
 ```
 
-**Use custom hooks:**
+`initial` is consumed **once**. To reset on a dependency change, scope
+the host widget under a different `key` so the hook re-mounts.
 
-- ✂️ **Zero Boilerplate**: No `ValueListenableBuilder` nesting, no `dispose` override
-- 🔄 **Auto-Dispose**: The hook owns the lifecycle
-- 🧼 **Cleaner Code**: Reads like synchronous code
-- 🧩 **Composable**: Easy to combine with other hooks
-
-If the notifier is owned upstream (Riverpod, parent widget), subscribe without recreating it:
+If the notifier is owned upstream (Riverpod, parent widget), subscribe
+without recreating it:
 
 ```dart
-class TodoList extends HookWidget {
-  const TodoList({super.key, required this.notifier});
-
-  final ListNotifier<String> notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    useListenable(notifier);
-    return ListView.builder(
-      itemCount: notifier.length,
-      itemBuilder: (context, i) => Text(notifier[i]),
-    );
-  }
-}
+useListenable(notifier);
 ```
 
-#### Option B: Using ValueListenableBuilder
+---
 
-If you're not using hooks, use the standard `ValueListenableBuilder`:
+## Without hooks
+
+If `flutter_hooks` is not on the project, fall back to
+`ValueListenableBuilder` — the notifier exposes itself as the value:
 
 ```dart
+final todos = ListNotifier<String>(['buy milk']);
+
 ValueListenableBuilder<List<String>>(
   valueListenable: todos,
-  builder: (context, items, child) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) => Text(items[index]),
-    );
-  },
-)
+  builder: (context, items, _) => Column(
+    children: [for (final t in items) Text(t)],
+  ),
+);
 ```
 
-### 3. Mutate and watch UI update automatically
-
-```dart
-todos.add('Call mom');     // ✅ UI rebuilds
-todos[0] = 'Buy eggs';     // ✅ UI rebuilds  
-todos[0] = 'Buy eggs';     // ⏭️ No rebuild (same value!)
-```
+Dispose `todos` yourself — `ChangeNotifierProvider` /
+`State.dispose` / `ref.onDispose`.
 
 ---
 
-## 📚 Available Notifiers
+## Notification contract
 
-| Type | Class | Best For |
-|------|-------|----------|
-| **List** | `ListNotifier<E>` | Ordered items, indices matter |
-| **Set** | `SetNotifier<E>` | Unique items, selections |
-| **Map** | `MapNotifier<K,V>` | Key-value data, settings |
-| **Queue** | `QueueNotifier<E>` | FIFO/LIFO operations |
-
----
-
-## 🎯 Smart Notifications
-
-The magic is in the optimization — methods only notify listeners when something **actually changes**:
+Mutating methods call `notifyListeners()` only when the underlying
+collection actually changes.
 
 ```dart
 final tags = SetNotifier<String>({'flutter', 'dart'});
+tags.add('rust');     // notifies — new element
+tags.add('rust');     // silent — already present
+tags.remove('rust');  // notifies — element removed
+tags.remove('rust');  // silent — wasn't there
+tags.clear();         // notifies — set drained
+tags.clear();         // silent — already empty
 
-tags.add('rust');      // 🔔 Notifies — new element added
-tags.add('rust');      // 🔕 Silent — already exists
-
-tags.remove('rust');   // 🔔 Notifies — element removed  
-tags.remove('rust');   // 🔕 Silent — wasn't there
-
-tags.clear();          // 🔔 Notifies — set emptied
-tags.clear();          // 🔕 Silent — already empty
-```
-
-Same for Maps:
-
-```dart
 final config = MapNotifier<String, int>({'volume': 50});
-
-config['volume'] = 75;   // 🔔 Notifies — value changed
-config['volume'] = 75;   // 🔕 Silent — same value
-config['bass'] = 30;     // 🔔 Notifies — new key added
+config['volume'] = 75;  // notifies — value changed
+config['volume'] = 75;  // silent — same value
+config['bass'] = 30;    // notifies — new key
 ```
+
+The per-method strategy — length-delta diff, equality-guarded
+single-slot, `containsKey` disambiguation for nullable values — is
+documented in each method's dartdoc.
+
+### Exceptions
+
+- `ListNotifier.sort` / `shuffle` on `length > 1` **always** notify.
+  Verifying order-preservation costs O(n) per call and defeats the
+  optimisation budget. Lists of length 0 or 1 short-circuit silently.
+- `MapNotifier.addEntries` uses a length-only check: re-inserting an
+  existing key with a different value mutates the map but does **not**
+  notify. Use `operator []=` or `addAll` when per-key value-diff
+  matters.
 
 ---
 
-## 💡 Common Patterns
+## Patterns
 
-### Selection UI with SetNotifier
-
-Perfect for checkboxes, chips, and multi-select:
+### Multi-select with `SetNotifier`
 
 ```dart
-final selected = SetNotifier<int>();
+final selected = useSetNotifier<int>();
 
-// In your widget
 CheckboxListTile(
-  value: selected.contains(itemId),
-  onChanged: (_) => selected.invert(itemId),  // Toggle with one call!
-  title: Text('Item $itemId'),
-)
+  value: selected.contains(id),
+  onChanged: (_) => selected.invert(id),
+  title: Text('Item $id'),
+);
 ```
 
-The `invert()` method toggles presence:
+`invert(e)` toggles presence — returns `true` if added, `false` if
+removed.
 
-- If item exists → removes it, returns `false`
-- If item missing → adds it, returns `true`
-
-### Settings with MapNotifier
+### Settings with `MapNotifier`
 
 ```dart
-final settings = MapNotifier<String, dynamic>({
+final settings = useMapNotifier<String, Object>({
   'darkMode': false,
   'fontSize': 14,
-  'notifications': true,
 });
 
-// Toggle dark mode
-settings['darkMode'] = !settings['darkMode']!;
-
-// Only rebuilds if value actually changes
-settings['fontSize'] = 14;  // No rebuild if already 14
+settings['darkMode'] = !(settings['darkMode']! as bool);
+settings['fontSize'] = 14;   // silent — already 14
 ```
 
-### Todo List with ListNotifier
+### Todos with `ListNotifier`
 
 ```dart
-final todos = ListNotifier<Todo>();
+final todos = useListNotifier<Todo>();
 
-// Add
-todos.add(Todo(title: 'Learn Flutter'));
-
-// Remove
+todos.add(Todo(title: 'learn Flutter'));
 todos.removeWhere((t) => t.completed);
 
-// Reorder
+// reorder
 final item = todos.removeAt(oldIndex);
 todos.insert(newIndex, item);
 
-// Sort
+// sort always notifies on length > 1 — see "Exceptions"
 todos.sort((a, b) => a.priority.compareTo(b.priority));
 ```
 
----
-
-## 🔌 State Management Integration
-
-> **Pro Tip:** As mentioned in the Quick Start, we strongly recommend using [flutter_hooks](https://pub.dev/packages/flutter_hooks) via the `useValueListenable` hook for the cleanest, most idiomatic code.
-
-### With Riverpod
+### Riverpod
 
 ```dart
 final todosProvider = ChangeNotifierProvider((ref) {
-  return ListNotifier<String>(['Initial todo']);
+  return ListNotifier<String>(['initial']);
 });
 
-// In widget
 class TodoList extends ConsumerWidget {
+  const TodoList({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final todos = ref.watch(todosProvider);
-    return ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, i) => ListTile(
-        title: Text(todos[i]),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () => ref.read(todosProvider).removeAt(i),
-        ),
-      ),
-    );
-  }
-}
-```
-
-### With Provider
-
-```dart
-ChangeNotifierProvider(
-  create: (_) => SetNotifier<int>(),
-  child: MyApp(),
-)
-
-// In widget
-final selected = context.watch<SetNotifier<int>>();
-context.read<SetNotifier<int>>().add(itemId);
-```
-
-### Vanilla Flutter (no packages)
-
-```dart
-class MyWidget extends StatefulWidget {
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  final _items = ListNotifier<String>();
-  
-  @override
-  void dispose() {
-    _items.dispose();  // Don't forget to dispose!
-    super.dispose();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<String>>(
-      valueListenable: _items,
-      builder: (context, items, _) => /* your UI */,
-    );
+    return Column(children: [for (final t in todos) Text(t)]);
   }
 }
 ```
 
 ---
 
-## ⚠️ Important Notes
+## Agent setup
 
-### Element Equality
-
-Smart notifications rely on `==` comparison. For custom objects:
-
-```dart
-// ❌ Won't work - default object equality
-class User {
-  final String name;
-  User(this.name);
-}
-
-// ✅ Works - proper equality
-class User {
-  final String name;
-  User(this.name);
-  
-  @override
-  bool operator ==(Object other) => other is User && other.name == name;
-  
-  @override
-  int get hashCode => name.hashCode;
-}
-```
-
-**Pro tip:** Use [freezed](https://pub.dev/packages/freezed) or [equatable](https://pub.dev/packages/equatable) for automatic equality.
-
-### Always Dispose
-
-When using in StatefulWidgets, always dispose:
-
-```dart
-@override
-void dispose() {
-  myNotifier.dispose();
-  super.dispose();
-}
-```
-
-### Some Methods Always Notify
-
-`sort()` and `shuffle()` on a list of length > 1 always notify — even when the order didn't actually change. Verifying order-preservation would cost O(n) per call and defeats the smart-notification budget. Lists of length 0 or 1 short-circuit silently.
+A bundled skill ships at
+[`skills/flutter-collection-notifiers/SKILL.md`](skills/flutter-collection-notifiers/SKILL.md).
+Vendor it into your agent's skill directory
+(`~/.claude/skills/flutter-collection-notifiers/`, or the Cursor /
+AntiGravity equivalent). It teaches the agent to pick the right
+notifier, wire the matching hook, respect dispose discipline, and
+stop replacing the collection instead of mutating it.
 
 ---
 
-## 🤖 Agent setup
+## Pitfalls
 
-Coding with an LLM? Drop
-[`skills/flutter-collection-notifiers/SKILL.md`](skills/flutter-collection-notifiers/SKILL.md)
-into your agent's skill directory (`~/.claude/skills/flutter-collection-notifiers/`,
-or the Cursor / AntiGravity equivalent). The skill teaches the agent to
-pick the right notifier, wire the matching custom hook, respect dispose
-discipline, and stop replacing the collection instead of mutating it.
-
----
-
-## 📂 Where the custom hooks live
-
-The hooks ship at [`lib/src/ui/`](lib/src/ui/) — one file per type
-(`use_list_notifier.dart`, `use_set_notifier.dart`,
-`use_map_notifier.dart`, `use_queue_notifier.dart`). If your project
-prefers a different layout (`lib/src/hooks/`, `lib/src/widgets/`, etc.),
-fork the package or re-export the hooks from your own path — the
-`part` directives in [`lib/collection_notifiers.dart`](lib/collection_notifiers.dart)
-are the only place to update.
+|❌|✅|
+|---|---|
+|`notifier = ListNotifier([...])` — reassigning kills listeners|`notifier..clear()..addAll([...])` — mutate in place|
+|Custom element types with default `==` / `hashCode`|`freezed` / `equatable` so equality checks can see real changes|
+|`useListNotifier(seed)` with a fresh `seed` per rebuild expecting a reset|`initial` is consumed once — change the host widget's `key` to reset|
+|`StatefulWidget` holding a notifier without disposing|Use the matching hook, or override `dispose` and call `notifier.dispose()`|
+|Expecting `addEntries` to fire on value change for an existing key|Use `operator []=` / `addAll` — `addEntries` is length-only|
 
 ---
 
-## 📖 Migration from 1.x
+## Migration 1.x → 2.x
 
-**Breaking change:** `SetNotifier.invert()` return value changed in 2.0.0:
-
-- Now returns `true` if element was **added**
-- Now returns `false` if element was **removed**
+**Breaking:** `SetNotifier.invert(e)` return value:
 
 ```dart
-// v1.x
-selected.invert(1);  // returned result of add() or remove()
-
-// v2.x
-selected.invert(1);  // returns true if added, false if removed
+// v1.x — returned whichever of add()/remove() ran
+// v2.x — true if element was added, false if removed
+selected.invert(1);
 ```
+
+---
+
+## License
+
+MIT.
