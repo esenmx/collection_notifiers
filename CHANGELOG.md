@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- docs: README rewritten for pith and consistency with sibling
+  packages (`fluiver`, `rand`). Removed decorative emojis and
+  marketing voice; restructured into per-concern sections with a
+  pitfalls table.
+
 ## 2.2.0
 
 - feat: ship dedicated `flutter_hooks` hooks for every notifier —
