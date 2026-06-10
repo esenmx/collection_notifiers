@@ -1,8 +1,8 @@
 ---
 name: flutter-collection-notifiers
 version: 1
-description: 'Wire reactive List/Set/Map/Queue state in Flutter via `package:collection_notifiers`. Use for: selection toggles, multi-select chips, mutable todo lists, key/value settings, in-memory caches, FIFO/LIFO job queues, anything that mutates a collection in place and needs the UI to follow.'
-when_to_use: Any in-place collection state in a Flutter widget — list, set, map, queue. DO NOT use for a single immutable value (use `ValueNotifier` from the SDK).
+description: 'Wire reactive List/Set/Map/Queue state in Flutter via `package:collection_notifiers` — selection toggles, multi-select chips, mutable todo lists, key/value settings, in-memory caches, job queues.'
+when_to_use: Any in-place collection state driving UI. Not for a single immutable value (`ValueNotifier`).
 ---
 
 # flutter-collection-notifiers
