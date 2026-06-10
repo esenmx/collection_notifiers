@@ -3,7 +3,7 @@ import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'utils.dart';
+import 'helpers/utils.dart';
 
 void main() {
   group('SetNotifier', () {
