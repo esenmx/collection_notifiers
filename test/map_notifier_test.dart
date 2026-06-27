@@ -114,7 +114,16 @@ void main() {
         check(notifier).deepEquals({'a': 1, 'b': 2});
       });
 
-      test('does not notify when entries already exist', () {
+      test('notifies when updating existing value', () {
+        notifier.addEntries([const MapEntry('a', 1)]);
+        listener.verifyCalledOnce;
+
+        notifier.addEntries([const MapEntry('a', 2)]);
+        listener.verifyCalledOnce;
+        check(notifier['a']).equals(2);
+      });
+
+      test('does not notify when entries already exist with same value', () {
         notifier.addEntries([const MapEntry('a', 1)]);
         listener.verifyCalledOnce;
 
@@ -294,6 +303,13 @@ void main() {
       test('mutating after dispose throws FlutterError', () {
         final n = MapNotifier<String, int>({'a': 1})..dispose();
         check(() => n['b'] = 2).throws<FlutterError>();
+      });
+    });
+
+    group('notifyListeners', () {
+      test('can be called publicly', () {
+        notifier.notifyListeners();
+        listener.verifyCalledOnce;
       });
     });
   });

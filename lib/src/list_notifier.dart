@@ -183,8 +183,24 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
-    super.replaceRange(start, end, iterable);
-    if (end != start || iterable.isNotEmpty) {
+    RangeError.checkValidRange(start, end, length);
+    if (start == end && iterable.isEmpty) {
+      return;
+    }
+    final list = iterable is List<E> ? iterable : iterable.toList();
+    if (list.length == end - start) {
+      var shouldNotify = false;
+      for (var i = 0; i < list.length; i++) {
+        if (!shouldNotify && super[start + i] != list[i]) {
+          shouldNotify = true;
+        }
+        super[start + i] = list[i];
+      }
+      if (shouldNotify) {
+        notifyListeners();
+      }
+    } else {
+      super.replaceRange(start, end, list);
       notifyListeners();
     }
   }
@@ -200,16 +216,44 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setAll(int index, Iterable<E> iterable) {
-    super.setAll(index, iterable);
-    if (iterable.isNotEmpty) {
+    var i = index;
+    var shouldNotify = false;
+    for (final element in iterable) {
+      if (!shouldNotify && super[i] != element) {
+        shouldNotify = true;
+      }
+      super[i] = element;
+      i++;
+    }
+    if (shouldNotify) {
       notifyListeners();
     }
   }
 
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
-    super.setRange(start, end, iterable, skipCount);
-    if (end != start) {
+    RangeError.checkValidRange(start, end, length);
+    if (start == end) {
+      return;
+    }
+    final iterator = iterable.iterator;
+    for (var i = 0; i < skipCount; i++) {
+      if (!iterator.moveNext()) {
+        throw StateError('Not enough elements');
+      }
+    }
+    var shouldNotify = false;
+    for (var i = start; i < end; i++) {
+      if (!iterator.moveNext()) {
+        throw StateError('Not enough elements');
+      }
+      final element = iterator.current;
+      if (!shouldNotify && super[i] != element) {
+        shouldNotify = true;
+      }
+      super[i] = element;
+    }
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -241,4 +285,7 @@ class ListNotifier<E> extends DelegatingList<E>
       notifyListeners();
     }
   }
+
+  @override
+  void notifyListeners() => super.notifyListeners();
 }

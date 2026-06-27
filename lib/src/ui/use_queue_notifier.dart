@@ -31,12 +31,18 @@ part of '../../collection_notifiers.dart';
 ///   }
 /// }
 /// ```
-QueueNotifier<E> useQueueNotifier<E>([Iterable<E> initial = const []]) {
-  return use(_QueueNotifierHook<E>(initial));
+QueueNotifier<E> useQueueNotifier<E>([
+  Iterable<E> initial = const [],
+  List<Object?>? keys,
+]) {
+  return use(_QueueNotifierHook<E>(initial, keys));
 }
 
 class _QueueNotifierHook<E> extends Hook<QueueNotifier<E>> {
-  const _QueueNotifierHook(this.initial);
+  const _QueueNotifierHook(
+    this.initial, [
+    List<Object?>? keys,
+  ]) : super(keys: keys);
 
   final Iterable<E> initial;
 
