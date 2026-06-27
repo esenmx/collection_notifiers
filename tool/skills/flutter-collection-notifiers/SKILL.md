@@ -102,8 +102,9 @@ class JobQueueView extends HookWidget {
 ## Hard rules
 
 - **Mutate, never reassign.** `notifier..clear()..addAll([...])`, never `notifier = ListNotifier(...)`.
-- **`initial` is consumed once.** To reset, change the host widget's `key` so the hook re-mounts.
+- **`initial` is consumed once (unless keys are provided).** To reset, either pass a dependency array `keys` parameter (e.g. `useListNotifier(initial, [dependency])`), or change the host widget's `key` so the hook re-mounts.
 - **Element equality is the optimisation contract.** Use `freezed` / `equatable` on custom element types so `==` / `hashCode` are correct.
+- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is public on all notifiers, call it to trigger UI updates if you mutate properties of collection elements in-place (which bypasses reference equality).
 
 ## When not to use
 
