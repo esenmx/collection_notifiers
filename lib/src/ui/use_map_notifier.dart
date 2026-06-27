@@ -27,12 +27,18 @@ part of '../../collection_notifiers.dart';
 ///   }
 /// }
 /// ```
-MapNotifier<K, V> useMapNotifier<K, V>([Map<K, V> initial = const {}]) {
-  return use(_MapNotifierHook<K, V>(initial));
+MapNotifier<K, V> useMapNotifier<K, V>([
+  Map<K, V> initial = const {},
+  List<Object?>? keys,
+]) {
+  return use(_MapNotifierHook<K, V>(initial, keys));
 }
 
 class _MapNotifierHook<K, V> extends Hook<MapNotifier<K, V>> {
-  const _MapNotifierHook(this.initial);
+  const _MapNotifierHook(
+    this.initial, [
+    List<Object?>? keys,
+  ]) : super(keys: keys);
 
   final Map<K, V> initial;
 

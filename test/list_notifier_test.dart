@@ -284,6 +284,15 @@ void main() {
         notifier.replaceRange(1, 1, []);
         listener.verifyNotCalled;
       });
+
+      test('does not notify when replacing range with same values', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.replaceRange(1, 2, [2]);
+        listener.verifyNotCalled;
+        check(notifier).deepEquals([1, 2, 3]);
+      });
     });
 
     group('retainWhere', () {
@@ -322,6 +331,15 @@ void main() {
         notifier.setAll(0, []);
         listener.verifyNotCalled;
       });
+
+      test('does not notify when setting same values', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setAll(0, [1, 2]);
+        listener.verifyNotCalled;
+        check(notifier).deepEquals([1, 2, 3]);
+      });
     });
 
     group('setRange', () {
@@ -340,6 +358,15 @@ void main() {
 
         notifier.setRange(1, 1, [4, 5]);
         listener.verifyNotCalled;
+      });
+
+      test('does not notify when range is set with same values', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.setRange(0, 2, [1, 2]);
+        listener.verifyNotCalled;
+        check(notifier).deepEquals([1, 2, 3]);
       });
     });
 
@@ -497,6 +524,13 @@ void main() {
       test('mutating after dispose throws FlutterError', () {
         final n = ListNotifier<int>([1])..dispose();
         check(() => n.add(2)).throws<FlutterError>();
+      });
+    });
+
+    group('notifyListeners', () {
+      test('can be called publicly', () {
+        notifier.notifyListeners();
+        listener.verifyCalledOnce;
       });
     });
 

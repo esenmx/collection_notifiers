@@ -31,12 +31,18 @@ part of '../../collection_notifiers.dart';
 ///   }
 /// }
 /// ```
-ListNotifier<E> useListNotifier<E>([Iterable<E> initial = const []]) {
-  return use(_ListNotifierHook<E>(initial));
+ListNotifier<E> useListNotifier<E>([
+  Iterable<E> initial = const [],
+  List<Object?>? keys,
+]) {
+  return use(_ListNotifierHook<E>(initial, keys));
 }
 
 class _ListNotifierHook<E> extends Hook<ListNotifier<E>> {
-  const _ListNotifierHook(this.initial);
+  const _ListNotifierHook(
+    this.initial, [
+    List<Object?>? keys,
+  ]) : super(keys: keys);
 
   final Iterable<E> initial;
 

@@ -115,4 +115,7 @@ class QueueNotifier<E> extends DelegatingQueue<E>
       notifyListeners();
     }
   }
+
+  @override
+  void notifyListeners() => super.notifyListeners();
 }
