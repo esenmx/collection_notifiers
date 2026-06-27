@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased
+## 2.3.0
 
-- docs: README rewritten for pith and consistency with sibling
-  packages (`fluiver`, `rand`). Removed decorative emojis and
-  marketing voice; restructured into per-concern sections with a
-  pitfalls table.
+- feat: added optional `keys` dependency array to all hooks (`useListNotifier`, `useMapNotifier`, `useSetNotifier`, `useQueueNotifier`) for keys-based state resets without unmounting the host widget.
+- feat: overrode `notifyListeners` as public on all notifiers to support manual UI updates on deep/in-place collection mutations.
+- fix: fixed `MapNotifier.addEntries` silent update bug by checking entry-by-entry for key addition or value modification.
+- perf: optimized range updates in `ListNotifier.setAll`, `setRange`, and `replaceRange` to compare in-place and only notify on actual content changes.
+- docs: README rewritten for pith and consistency with sibling packages (`fluiver`, `rand`). Removed decorative emojis and marketing voice; restructured into per-concern sections with a pitfalls table.
 
 ## 2.2.0
 
