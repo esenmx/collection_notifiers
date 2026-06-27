@@ -34,12 +34,18 @@ part of '../../collection_notifiers.dart';
 ///   }
 /// }
 /// ```
-SetNotifier<E> useSetNotifier<E>([Iterable<E> initial = const []]) {
-  return use(_SetNotifierHook<E>(initial));
+SetNotifier<E> useSetNotifier<E>([
+  Iterable<E> initial = const [],
+  List<Object?>? keys,
+]) {
+  return use(_SetNotifierHook<E>(initial, keys));
 }
 
 class _SetNotifierHook<E> extends Hook<SetNotifier<E>> {
-  const _SetNotifierHook(this.initial);
+  const _SetNotifierHook(
+    this.initial, [
+    List<Object?>? keys,
+  ]) : super(keys: keys);
 
   final Iterable<E> initial;
 

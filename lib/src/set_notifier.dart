@@ -139,4 +139,7 @@ class SetNotifier<E> extends DelegatingSet<E>
     add(element);
     return true;
   }
+
+  @override
+  void notifyListeners() => super.notifyListeners();
 }

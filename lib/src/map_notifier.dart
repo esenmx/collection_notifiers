@@ -67,17 +67,21 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
     }
   }
 
-  /// Adds [entries] and notifies only when the map's length changes.
+  /// Adds [entries] and notifies when the map changes.
   ///
-  /// Unlike [addAll], this method uses a **length-only** check for
-  /// notification: re-inserting an existing key with a different value
-  /// will mutate the map but **will not** notify listeners. Use
-  /// [operator []=] or [addAll] when per-key value-diff matters.
+  /// This method checks if any entry contains a new key or a modified value,
+  /// notifying listeners if a change is found.
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    final length = super.length;
-    super.addEntries(entries);
-    if (length != super.length) {
+    var shouldNotify = false;
+    for (final entry in entries) {
+      if (!shouldNotify &&
+          (!super.containsKey(entry.key) || super[entry.key] != entry.value)) {
+        shouldNotify = true;
+      }
+      super[entry.key] = entry.value;
+    }
+    if (shouldNotify) {
       notifyListeners();
     }
   }
@@ -141,4 +145,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
       notifyListeners();
     }
   }
+
+  @override
+  void notifyListeners() => super.notifyListeners();
 }
