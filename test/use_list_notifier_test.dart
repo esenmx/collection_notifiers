@@ -18,10 +18,10 @@ void main() {
   );
 
   group('useListNotifier keys parameter', () {
-    testWidgets(
-      'recreates notifier and disposes old one when keys change',
-      (tester) async {
-        late ListNotifier<int> captured;
+    testWidgets('recreates notifier and disposes old one when keys change', (
+      tester,
+    ) async {
+      late ListNotifier<int> captured;
 
       Widget build(int keyVal) {
         return MaterialApp(
