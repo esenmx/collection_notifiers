@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1
+
+- fix: enforced transactional boundaries for `ListNotifier.setAll` and `ListNotifier.setRange` by verifying target lengths before executing in-place mutations.
+- fix: wrapped `MapNotifier.updateAll` iteration in a `try/finally` block to guarantee `notifyListeners` fires even if the user-provided update callback throws midway.
+
 ## 2.3.0
 
 - feat: added optional `keys` dependency array to all hooks (`useListNotifier`, `useMapNotifier`, `useSetNotifier`, `useQueueNotifier`) for keys-based state resets without unmounting the host widget.
