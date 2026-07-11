@@ -136,13 +136,16 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   @override
   void updateAll(V Function(K key, V value) update) {
     var shouldNotify = false;
-    for (final entry in super.entries) {
-      final newValue = update(entry.key, entry.value);
-      shouldNotify = shouldNotify || newValue != entry.value;
-      super[entry.key] = newValue;
-    }
-    if (shouldNotify) {
-      notifyListeners();
+    try {
+      for (final entry in super.entries) {
+        final newValue = update(entry.key, entry.value);
+        shouldNotify = shouldNotify || newValue != entry.value;
+        super[entry.key] = newValue;
+      }
+    } finally {
+      if (shouldNotify) {
+        notifyListeners();
+      }
     }
   }
 

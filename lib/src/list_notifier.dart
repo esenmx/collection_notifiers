@@ -216,14 +216,14 @@ class ListNotifier<E> extends DelegatingList<E>
 
   @override
   void setAll(int index, Iterable<E> iterable) {
-    var i = index;
+    final list = iterable is List<E> ? iterable : iterable.toList();
+    RangeError.checkValidRange(index, index + list.length, length);
     var shouldNotify = false;
-    for (final element in iterable) {
-      if (!shouldNotify && super[i] != element) {
+    for (var i = 0; i < list.length; i++) {
+      if (!shouldNotify && super[index + i] != list[i]) {
         shouldNotify = true;
       }
-      super[i] = element;
-      i++;
+      super[index + i] = list[i];
     }
     if (shouldNotify) {
       notifyListeners();
@@ -242,16 +242,20 @@ class ListNotifier<E> extends DelegatingList<E>
         throw StateError('Not enough elements');
       }
     }
-    var shouldNotify = false;
+    final newElements = <E>[];
     for (var i = start; i < end; i++) {
       if (!iterator.moveNext()) {
         throw StateError('Not enough elements');
       }
-      final element = iterator.current;
-      if (!shouldNotify && super[i] != element) {
+      newElements.add(iterator.current);
+    }
+    var shouldNotify = false;
+    for (var i = 0; i < newElements.length; i++) {
+      final element = newElements[i];
+      if (!shouldNotify && super[start + i] != element) {
         shouldNotify = true;
       }
-      super[i] = element;
+      super[start + i] = element;
     }
     if (shouldNotify) {
       notifyListeners();
