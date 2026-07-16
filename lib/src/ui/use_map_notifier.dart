@@ -35,10 +35,8 @@ MapNotifier<K, V> useMapNotifier<K, V>([
 }
 
 class _MapNotifierHook<K, V> extends Hook<MapNotifier<K, V>> {
-  const _MapNotifierHook(
-    this.initial, [
-    List<Object?>? keys,
-  ]) : super(keys: keys);
+  const _MapNotifierHook(this.initial, [List<Object?>? keys])
+    : super(keys: keys);
 
   final Map<K, V> initial;
 
