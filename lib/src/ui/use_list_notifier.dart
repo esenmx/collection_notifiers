@@ -39,10 +39,8 @@ ListNotifier<E> useListNotifier<E>([
 }
 
 class _ListNotifierHook<E> extends Hook<ListNotifier<E>> {
-  const _ListNotifierHook(
-    this.initial, [
-    List<Object?>? keys,
-  ]) : super(keys: keys);
+  const _ListNotifierHook(this.initial, [List<Object?>? keys])
+    : super(keys: keys);
 
   final Iterable<E> initial;
 
