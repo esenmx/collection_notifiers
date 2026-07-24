@@ -242,9 +242,8 @@ void main() {
       });
 
       test('throws when key missing and no ifAbsent', () {
-        check(
-          () => notifier.update('a', (v) => (v ?? 0) + 1),
-        ).throws<ArgumentError>();
+        void bump() => notifier.update('a', (v) => (v ?? 0) + 1);
+        check(bump).throws<ArgumentError>();
       });
     });
 
