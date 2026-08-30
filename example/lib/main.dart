@@ -17,7 +17,7 @@ class CollectionNotifiersExample extends StatelessWidget {
     return MaterialApp(
       title: 'Collection Notifiers Example',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const _HomePage(),
