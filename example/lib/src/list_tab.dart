@@ -4,9 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-class ListTab extends StatelessWidget {
-  const ListTab({super.key});
-
+class const ListTab({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
@@ -70,11 +68,8 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class _Controls extends StatelessWidget {
-  const _Controls({required this.notifier});
-
-  final ListNotifier<String> notifier;
-
+class const _Controls({required final ListNotifier<String> notifier})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -103,11 +98,8 @@ class _Controls extends StatelessWidget {
   }
 }
 
-class _ListBody extends StatelessWidget {
-  const _ListBody({required this.notifier});
-
-  final ListNotifier<String> notifier;
-
+class const _ListBody({required final ListNotifier<String> notifier})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(

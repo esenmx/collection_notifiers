@@ -21,7 +21,8 @@ part of '../collection_notifiers.dart';
 /// settings['sound'] = true;      // Notifies: {darkMode: true, sound: true}
 /// settings.remove('sound');      // Notifies: {darkMode: true}
 /// ```
-class MapNotifier<K, V> extends DelegatingMap<K, V>
+class MapNotifier<K, V>([Map<K, V> base = const {}])
+    extends DelegatingMap<K, V>
     with ChangeNotifier
     implements ValueListenable<Map<K, V>> {
   /// Creates a [MapNotifier] optionally initialized with [base] entries.
@@ -32,7 +33,7 @@ class MapNotifier<K, V> extends DelegatingMap<K, V>
   /// no-op" check because the value's identity didn't change. Use
   /// `freezed` / `equatable` or otherwise immutable value types for
   /// reliable smart-notification.
-  MapNotifier([Map<K, V> base = const {}]) : super(Map<K, V>.of(base));
+  this : super(Map<K, V>.of(base));
 
   /// Returns this map as the listenable value.
   ///

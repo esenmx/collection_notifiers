@@ -41,11 +41,11 @@ SetNotifier<E> useSetNotifier<E>([
   return use(_SetNotifierHook<E>(initial, keys));
 }
 
-class _SetNotifierHook<E> extends Hook<SetNotifier<E>> {
-  const _SetNotifierHook(this.initial, [List<Object?>? keys])
-    : super(keys: keys);
-
-  final Iterable<E> initial;
+class const _SetNotifierHook<E>(
+  final Iterable<E> initial, [
+  List<Object?>? keys,
+]) extends Hook<SetNotifier<E>> {
+  this : super(keys: keys);
 
   @override
   _SetNotifierHookState<E> createState() => _SetNotifierHookState<E>();

@@ -26,7 +26,8 @@ part of '../collection_notifiers.dart';
 /// todos[0] = 'Walk dog';      // No notification (value unchanged)
 /// todos[0] = 'Feed dog';      // Notifies: [Feed dog, Call mom]
 /// ```
-class ListNotifier<E> extends DelegatingList<E>
+class ListNotifier<E>([Iterable<E> base = const []])
+    extends DelegatingList<E>
     with ChangeNotifier
     implements ValueListenable<List<E>> {
   /// Creates a [ListNotifier] optionally initialized with [base] elements.
@@ -37,7 +38,7 @@ class ListNotifier<E> extends DelegatingList<E>
   /// "no-rebuild on no-op" check because the element's identity didn't
   /// change. Use `freezed` / `equatable` or otherwise immutable element
   /// types for reliable smart-notification.
-  ListNotifier([Iterable<E> base = const []]) : super(List<E>.of(base));
+  this : super(List<E>.of(base));
 
   /// Returns this list as the listenable value.
   ///

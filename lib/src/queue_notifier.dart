@@ -21,7 +21,8 @@ part of '../collection_notifiers.dart';
 /// tasks.addFirst('Urgent');  // Notifies: [Urgent, Task 1, Task 2]
 /// tasks.removeFirst();       // Notifies: [Task 1, Task 2]
 /// ```
-class QueueNotifier<E> extends DelegatingQueue<E>
+class QueueNotifier<E>([Iterable<E> base = const []])
+    extends DelegatingQueue<E>
     with ChangeNotifier
     implements ValueListenable<Queue<E>> {
   /// Creates a [QueueNotifier] optionally initialized with [base] elements.
@@ -32,7 +33,7 @@ class QueueNotifier<E> extends DelegatingQueue<E>
   /// check because the element's identity didn't change. Use `freezed`
   /// / `equatable` or otherwise immutable element types for reliable
   /// smart-notification.
-  QueueNotifier([Iterable<E> base = const []]) : super(Queue<E>.of(base));
+  this : super(Queue<E>.of(base));
 
   /// Returns this queue as the listenable value.
   ///

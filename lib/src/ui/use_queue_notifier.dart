@@ -38,11 +38,11 @@ QueueNotifier<E> useQueueNotifier<E>([
   return use(_QueueNotifierHook<E>(initial, keys));
 }
 
-class _QueueNotifierHook<E> extends Hook<QueueNotifier<E>> {
-  const _QueueNotifierHook(this.initial, [List<Object?>? keys])
-    : super(keys: keys);
-
-  final Iterable<E> initial;
+class const _QueueNotifierHook<E>(
+  final Iterable<E> initial, [
+  List<Object?>? keys,
+]) extends Hook<QueueNotifier<E>> {
+  this : super(keys: keys);
 
   @override
   _QueueNotifierHookState<E> createState() => _QueueNotifierHookState<E>();

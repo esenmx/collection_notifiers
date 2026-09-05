@@ -38,11 +38,11 @@ ListNotifier<E> useListNotifier<E>([
   return use(_ListNotifierHook<E>(initial, keys));
 }
 
-class _ListNotifierHook<E> extends Hook<ListNotifier<E>> {
-  const _ListNotifierHook(this.initial, [List<Object?>? keys])
-    : super(keys: keys);
-
-  final Iterable<E> initial;
+class const _ListNotifierHook<E>(
+  final Iterable<E> initial, [
+  List<Object?>? keys,
+]) extends Hook<ListNotifier<E>> {
+  this : super(keys: keys);
 
   @override
   _ListNotifierHookState<E> createState() => _ListNotifierHookState<E>();

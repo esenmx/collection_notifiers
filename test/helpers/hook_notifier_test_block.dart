@@ -193,10 +193,7 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
   });
 }
 
-class _Harness<N> {
-  _Harness(this.notifier);
-
-  final N notifier;
+class _Harness<N>(final N notifier) {
   int buildCount = 0;
 }
 

@@ -23,7 +23,8 @@ part of '../collection_notifiers.dart';
 /// selectedIds.invert(2);     // Notifies: {} (toggles off)
 /// selectedIds.invert(3);     // Notifies: {3} (toggles on)
 /// ```
-class SetNotifier<E> extends DelegatingSet<E>
+class SetNotifier<E>([Iterable<E> base = const []])
+    extends DelegatingSet<E>
     with ChangeNotifier
     implements ValueListenable<Set<E>> {
   /// Creates a [SetNotifier] optionally initialized with [base] elements.
@@ -34,7 +35,7 @@ class SetNotifier<E> extends DelegatingSet<E>
   /// on no-op" check because the element's identity didn't change. Use
   /// `freezed` / `equatable` or otherwise immutable element types for
   /// reliable smart-notification.
-  SetNotifier([Iterable<E> base = const []]) : super(Set<E>.of(base));
+  this : super(Set<E>.of(base));
 
   /// Returns this set as the listenable value.
   ///

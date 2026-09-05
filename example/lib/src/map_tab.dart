@@ -6,9 +6,7 @@ import 'panel_header.dart';
 
 const _seed = <String, int>{'Apples': 5, 'Oranges': 3, 'Bananas': 7};
 
-class MapTab extends StatelessWidget {
-  const MapTab({super.key});
-
+class const MapTab({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
@@ -72,11 +70,8 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class _Controls extends StatelessWidget {
-  const _Controls({required this.notifier});
-
-  final MapNotifier<String, int> notifier;
-
+class const _Controls({required final MapNotifier<String, int> notifier})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -93,11 +88,8 @@ class _Controls extends StatelessWidget {
   }
 }
 
-class _MapBody extends StatelessWidget {
-  const _MapBody({required this.notifier});
-
-  final MapNotifier<String, int> notifier;
-
+class const _MapBody({required final MapNotifier<String, int> notifier})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final entries = notifier.entries.toList();

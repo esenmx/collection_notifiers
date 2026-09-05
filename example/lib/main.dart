@@ -9,9 +9,7 @@ void main() {
   runApp(const CollectionNotifiersExample());
 }
 
-class CollectionNotifiersExample extends StatelessWidget {
-  const CollectionNotifiersExample({super.key});
-
+class const CollectionNotifiersExample({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
