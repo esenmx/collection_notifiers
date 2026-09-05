@@ -6,9 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'panel_header.dart';
 
-class QueueTab extends StatelessWidget {
-  const QueueTab({super.key});
-
+class const QueueTab({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
@@ -72,11 +70,8 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class _Controls extends StatelessWidget {
-  const _Controls({required this.notifier});
-
-  final QueueNotifier<String> notifier;
-
+class const _Controls({required final QueueNotifier<String> notifier})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -111,11 +106,8 @@ class _Controls extends StatelessWidget {
   }
 }
 
-class _QueueBody extends StatelessWidget {
-  const _QueueBody({required this.queue});
-
-  final Queue<String> queue;
-
+class const _QueueBody({required final Queue<String> queue})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (queue.isEmpty) {
