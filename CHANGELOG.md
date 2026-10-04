@@ -28,6 +28,12 @@
 - Example: the ValueListenableBuilder panels refresh their buttons, and Map "Add item" always adds a row.
 - Docs: `addEntries` is no longer described as length-only, hook `keys` is documented, the Riverpod 3 snippet imports `legacy.dart`, and every snippet compiles.
 
+### Removed
+
+- `homepage` and `documentation` from `pubspec.yaml`.
+- The Codecov badge and `codecov.yml`.
+- `SECURITY.md` (no private vulnerability-report channel).
+
 ## 2.3.1
 
 - fix: enforced transactional boundaries for `ListNotifier.setAll` and `ListNotifier.setRange` by verifying target lengths before executing in-place mutations.

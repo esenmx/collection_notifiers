@@ -1,4 +1,11 @@
+include: package:very_good_analysis/analysis_options.yaml
+
 analyzer:
   exclude:
     - build/**
-include: package:very_good_analysis/analysis_options.yaml
+
+linter:
+  rules:
+    # Maintainer convention: fire-and-forget is a bare drop; never unawaited().
+    unawaited_futures: false
+    discarded_futures: false

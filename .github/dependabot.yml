@@ -5,20 +5,15 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
+    labels: [dependencies]
   - package-ecosystem: pub
     directory: /example
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - example
+    labels: [dependencies, example]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    labels:
-      - dependencies
-      - ci
+    labels: [dependencies, ci]
