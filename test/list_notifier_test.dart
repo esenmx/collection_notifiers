@@ -94,6 +94,26 @@ void main() {
         check(reads).equals(3);
         listener.verifyCalledOnce;
       });
+
+      test('adding itself throws before mutating, like a plain list', () {
+        final plain = [1, 2, 3];
+        check(() => plain.addAll(plain)).throws<ConcurrentModificationError>();
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(() => notifier.addAll(notifier))
+            .throws<ConcurrentModificationError>();
+        check(notifier).deepEquals(plain);
+        listener.verifyNotCalled;
+      });
+
+      test('adding itself when empty is a silent no-op, like a plain list', () {
+        final plain = <int>[];
+        check(() => plain.addAll(plain)).returnsNormally();
+        notifier.addAll(notifier);
+        check(notifier).isEmpty();
+        listener.verifyNotCalled;
+      });
     });
 
     group('clear', () {

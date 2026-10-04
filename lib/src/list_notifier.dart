@@ -103,6 +103,9 @@ class ListNotifier<E>([Iterable<E> base = const []])
   @override
   void addAll(Iterable<E> iterable) {
     _debugAssertNotDisposed();
+    if (identical(iterable, this) && super.isNotEmpty) {
+      throw ConcurrentModificationError(this);
+    }
     _notifyOnLengthChange(() => super.addAll(iterable));
   }
 
@@ -325,11 +328,19 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// Moves the element at [from] to index [to] with one notification.
   /// [to] is the final index, as passed by
   /// `ReorderableListView.onReorderItem`.
+  ///
+  /// Silent when [from] == [to] or when every element from [from] to [to]
+  /// is `==` to the moved one, since the contents are then unchanged.
   void move(int from, int to) {
     _debugAssertNotDisposed();
     RangeError.checkValidIndex(from, this, 'from');
     RangeError.checkValidIndex(to, this, 'to');
     if (from == to) {
+      return;
+    }
+    final moved = super[from];
+    final span = super.getRange(math.min(from, to), math.max(from, to) + 1);
+    if (span.every((element) => element == moved)) {
       return;
     }
     super.insert(to, super.removeAt(from));

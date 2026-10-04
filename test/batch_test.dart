@@ -162,6 +162,36 @@ void main() {
       l.verifyNotCalled;
     });
 
+    test('moving across only equal elements is silent', () {
+      final l = VoidListener();
+      final pair = ListNotifier<int>([1, 1])
+        ..addListener(l.call)
+        ..move(0, 1);
+      final triple = ListNotifier<int>([1, 1, 1])
+        ..addListener(l.call)
+        ..move(0, 2)
+        ..move(2, 0);
+      addTearDown(pair.dispose);
+      addTearDown(triple.dispose);
+      check(pair).deepEquals([1, 1]);
+      check(triple).deepEquals([1, 1, 1]);
+      l.verifyNotCalled;
+    });
+
+    test('moving past a different element notifies once per move', () {
+      final l = VoidListener();
+      final n = ListNotifier<int>([1, 2, 1])
+        ..addListener(l.call)
+        ..move(0, 2);
+      addTearDown(n.dispose);
+      check(n).deepEquals([2, 1, 1]);
+      l.verifyCalledOnce;
+
+      n.move(2, 0);
+      check(n).deepEquals([1, 2, 1]);
+      l.verifyCalledOnce;
+    });
+
     test('an out-of-range index throws before mutating', () {
       final l = VoidListener();
       final n = ListNotifier<String>(['a', 'b', 'c'])..addListener(l.call);
