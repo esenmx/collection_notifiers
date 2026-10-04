@@ -1,6 +1,5 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/utils.dart';
@@ -214,14 +213,14 @@ void main() {
           })
           ..addLast(0);
         check(notifier.length).equals(3);
-        check(fired).isGreaterThan(0);
+        check(fired).equals(3);
       });
     });
 
     group('dispose', () {
-      test('mutating after dispose throws FlutterError', () {
+      test('mutating after dispose throws', () {
         final n = QueueNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<FlutterError>();
+        check(() => n.add(2)).throws<Error>();
       });
     });
 

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/utils.dart';
@@ -293,6 +292,15 @@ void main() {
         listener.verifyNotCalled;
         check(notifier).deepEquals([1, 2, 3]);
       });
+
+      test('notifies once when a same-length replacement changes a value', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.replaceRange(1, 2, [9]);
+        listener.verifyCalledOnce;
+        check(notifier).deepEquals([1, 9, 3]);
+      });
     });
 
     group('retainWhere', () {
@@ -340,6 +348,15 @@ void main() {
         listener.verifyNotCalled;
         check(notifier).deepEquals([1, 2, 3]);
       });
+
+      test('throws RangeError past the end without mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(() => notifier.setAll(2, [9, 9])).throws<RangeError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled;
+      });
     });
 
     group('setRange', () {
@@ -367,6 +384,16 @@ void main() {
         notifier.setRange(0, 2, [1, 2]);
         listener.verifyNotCalled;
         check(notifier).deepEquals([1, 2, 3]);
+      });
+
+      test('throws StateError on too few elements without mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(() => notifier.setRange(0, 3, [9, 9])).throws<StateError>();
+        check(() => notifier.setRange(0, 1, [9], 1)).throws<StateError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled;
       });
     });
 
@@ -516,14 +543,14 @@ void main() {
           ..add(0);
 
         check(notifier.length).equals(3);
-        check(fired).isGreaterThan(0);
+        check(fired).equals(3);
       });
     });
 
     group('dispose', () {
-      test('mutating after dispose throws FlutterError', () {
+      test('mutating after dispose throws', () {
         final n = ListNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<FlutterError>();
+        check(() => n.add(2)).throws<Error>();
       });
     });
 

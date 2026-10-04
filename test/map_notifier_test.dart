@@ -1,6 +1,5 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/utils.dart';
@@ -269,6 +268,20 @@ void main() {
         notifier.updateAll((key, value) => (value ?? 0) * 2);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the callback throws after a change', () {
+        notifier.addAll({'a': 1, 'b': 2});
+        listener.verifyCalledOnce;
+
+        var calls = 0;
+        check(
+          () => notifier.updateAll(
+            (key, value) => calls++ == 0 ? 10 : throw StateError('x'),
+          ),
+        ).throws<StateError>();
+        check(notifier['a']).equals(10);
+        listener.verifyCalledOnce;
+      });
     });
 
     group('listener lifecycle', () {
@@ -299,9 +312,9 @@ void main() {
     });
 
     group('dispose', () {
-      test('mutating after dispose throws FlutterError', () {
+      test('mutating after dispose throws', () {
         final n = MapNotifier<String, int>({'a': 1})..dispose();
-        check(() => n['b'] = 2).throws<FlutterError>();
+        check(() => n['b'] = 2).throws<Error>();
       });
     });
 

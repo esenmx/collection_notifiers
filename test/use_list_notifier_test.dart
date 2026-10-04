@@ -41,7 +41,31 @@ void main() {
       final secondNotifier = captured;
 
       check(identical(firstNotifier, secondNotifier)).isFalse();
-      check(() => firstNotifier.add(4)).throws<FlutterError>();
+      check(() => firstNotifier.add(4)).throws<Error>();
+    });
+
+    testWidgets('a child ValueListenableBuilder follows the new notifier', (
+      tester,
+    ) async {
+      Widget build(int keyVal) {
+        return MaterialApp(
+          home: HookBuilder(
+            builder: (context) {
+              final notifier = useListNotifier<int>([keyVal], [keyVal]);
+              return ValueListenableBuilder<List<int>>(
+                valueListenable: notifier,
+                builder: (_, value, _) => Text('$value', textDirection: .ltr),
+              );
+            },
+          ),
+        );
+      }
+
+      await tester.pumpWidget(build(1));
+      await tester.pumpWidget(build(2));
+
+      check(tester.takeException()).isNull();
+      check(find.text('[2]').evaluate()).length.equals(1);
     });
   });
 }

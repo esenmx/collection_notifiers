@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Requires Dart 3.13 / Flutter 3.47 (was Dart 3.10).
+
 ## 2.3.1
 
 - fix: enforced transactional boundaries for `ListNotifier.setAll` and `ListNotifier.setRange` by verifying target lengths before executing in-place mutations.

@@ -1,6 +1,5 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/utils.dart';
@@ -247,9 +246,9 @@ void main() {
     });
 
     group('dispose', () {
-      test('mutating after dispose throws FlutterError', () {
+      test('mutating after dispose throws', () {
         final n = SetNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<FlutterError>();
+        check(() => n.add(2)).throws<Error>();
       });
     });
   });
