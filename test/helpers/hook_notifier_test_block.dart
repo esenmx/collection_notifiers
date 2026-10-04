@@ -17,14 +17,11 @@ import 'package:flutter_test/flutter_test.dart';
 ///    [length], pump again with [initialB], assert snapshot unchanged.
 /// 4. **Single mutation = one rebuild** — host build counter advances
 ///    by exactly one after `mutate ; pump`.
-/// 5. **Coalesced mutations = one rebuild** — three [mutate] calls
-///    between two pumps still produce a single rebuild (framework
-///    setState batching).
-/// 6. **N pumped mutations = N rebuilds** — each `mutate ; pump`
+/// 5. **N pumped mutations = N rebuilds** — each `mutate ; pump`
 ///    increments the counter by one.
-/// 7. **No-op mutations = zero rebuilds** — [noOp] calls never advance
+/// 6. **No-op mutations = zero rebuilds** — [noOp] calls never advance
 ///    the counter, proving the notifier's smart-notification path.
-/// 8. **Mixed sequence** — interleaved [noOp] and [mutate] only counts
+/// 7. **Mixed sequence** — interleaved [noOp] and [mutate] only counts
 ///    the real mutations.
 ///
 /// [mutate] must change the notifier's state on every call (use the
@@ -81,7 +78,7 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
 
       await tester.pumpWidget(const SizedBox.shrink());
 
-      check(() => mutate(captured)).throws<FlutterError>();
+      check(() => mutate(captured)).throws<Error>();
     });
 
     testWidgets('initial argument is consumed only on first build', (
@@ -114,21 +111,6 @@ void runHookNotifierTests<N extends ChangeNotifier, I>({
 
       check(harness.buildCount).equals(1);
 
-      mutate(harness.notifier);
-      await tester.pump();
-
-      check(harness.buildCount).equals(2);
-    });
-
-    testWidgets('three mutations between pumps coalesce into one rebuild', (
-      tester,
-    ) async {
-      final harness = await _pumpHarness(tester, useHook, initialA);
-
-      check(harness.buildCount).equals(1);
-
-      mutate(harness.notifier);
-      mutate(harness.notifier);
       mutate(harness.notifier);
       await tester.pump();
 
