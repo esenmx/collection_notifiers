@@ -38,7 +38,11 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// "no-rebuild on no-op" check because the element's identity didn't
   /// change. Use `freezed` / `equatable` or otherwise immutable element
   /// types for reliable smart-notification.
-  this : super(List<E>.of(base));
+  this : super(List<E>.of(base)) {
+    if (kFlutterMemoryAllocationsEnabled) {
+      ChangeNotifier.maybeDispatchObjectCreation(this);
+    }
+  }
 
   /// Returns this list as the listenable value.
   ///
@@ -285,18 +289,22 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   /// Sorts the list and notifies listeners.
   ///
-  /// Skips notification when [length] ≤ 1 (already sorted). On a list of
-  /// length > 1 this **always** notifies, even when the list was already
-  /// in the requested order — verifying that would cost O(n) per call
-  /// and defeats the optimisation budget.
+  /// Silent when the list is already sorted by [compare] (one O(n)
+  /// pass before the sort), which includes every list of length < 2.
   @override
   void sort([int Function(E a, E b)? compare]) {
     _debugAssertNotDisposed();
-    if (length > 1) {
-      super.sort(compare);
-      notifyListeners();
+    if (length < 2 || isSorted(compare ?? _compareComparables)) {
+      return;
     }
+    super.sort(compare);
+    notifyListeners();
   }
+
+  static int _compareComparables(Object? a, Object? b) => switch (a) {
+    final Comparable<Object?> comparable => comparable.compareTo(b),
+    _ => throw TypeError(),
+  };
 
   @override
   List<R> cast<R>() => List.castFrom<E, R>(this);

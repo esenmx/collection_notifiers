@@ -69,7 +69,8 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart' show ChangeNotifier, ValueListenable;
+import 'package:flutter/foundation.dart'
+    show ChangeNotifier, ValueListenable, kFlutterMemoryAllocationsEnabled;
 import 'package:flutter/widgets.dart' show BuildContext, ValueListenableBuilder;
 import 'package:flutter_hooks/flutter_hooks.dart' show Hook, HookState, use;
 
