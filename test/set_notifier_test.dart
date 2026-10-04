@@ -135,6 +135,19 @@ void main() {
         notifier.removeAll([4, 5]);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the iterable throws after a change', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        Iterable<int> partial() sync* {
+          yield 1;
+          throw StateError('x');
+        }
+
+        check(() => notifier.removeAll(partial())).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
+      });
     });
 
     group('removeWhere', () {
@@ -190,6 +203,19 @@ void main() {
         notifier.retainAll([1, 2, 3]);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the iterable throws after a change', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        Iterable<int> partial() sync* {
+          yield 1;
+          throw StateError('x');
+        }
+
+        check(() => notifier.retainAll(partial())).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
+      });
     });
 
     group('retainWhere', () {
@@ -208,6 +234,18 @@ void main() {
 
         notifier.retainWhere((e) => e.isOdd);
         listener.verifyNotCalled;
+      });
+
+      test('notifies once when the predicate throws after a change', () {
+        notifier.addAll([2, 3, 4]);
+        listener.verifyCalledOnce;
+
+        check(
+          () => notifier.retainWhere(
+            (e) => e == 3 ? throw StateError('x') : e.isOdd,
+          ),
+        ).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
       });
     });
 
