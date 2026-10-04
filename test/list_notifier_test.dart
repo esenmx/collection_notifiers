@@ -114,6 +114,16 @@ void main() {
         check(notifier).isEmpty();
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the iterable throws after a change', () {
+        Iterable<int> partial() sync* {
+          yield 1;
+          throw StateError('x');
+        }
+
+        check(() => notifier.addAll(partial())).throws<StateError>();
+        listener.called(notifier.isEmpty ? 0 : 1);
+      });
     });
 
     group('clear', () {
@@ -215,6 +225,19 @@ void main() {
         );
         check(reads).equals(3);
         listener.verifyCalledOnce;
+      });
+
+      test('notifies once when the iterable throws after a change', () {
+        notifier.add(0);
+        listener.verifyCalledOnce;
+
+        Iterable<int> partial() sync* {
+          yield 1;
+          throw StateError('x');
+        }
+
+        check(() => notifier.insertAll(0, partial())).throws<StateError>();
+        listener.called(notifier.length != 1 ? 1 : 0);
       });
     });
 

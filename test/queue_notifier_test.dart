@@ -224,6 +224,18 @@ void main() {
         notifier.retainWhere((e) => e.isOdd);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the predicate throws after a change', () {
+        notifier.addAll([2, 3, 4]);
+        listener.verifyCalledOnce;
+
+        check(
+          () => notifier.retainWhere(
+            (e) => e == 3 ? throw StateError('x') : e.isOdd,
+          ),
+        ).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
+      });
     });
 
     group('listener lifecycle', () {

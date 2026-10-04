@@ -76,6 +76,13 @@ void main() {
       n.batch(n.notifyListeners);
       l.verifyCalledOnce;
     });
+
+    test('throws after dispose without running the body', () {
+      final n = ListNotifier<int>()..dispose();
+      var ran = false;
+      check(() => n.batch(() => ran = true)).throws<Error>();
+      check(ran).isFalse();
+    });
   });
 
   group('assignAll', () {
@@ -139,6 +146,21 @@ void main() {
       check(n.keys).deepEquals(['b', 'a']);
       l.verifyCalledOnce;
     });
+
+    test('throws after dispose before mutating', () {
+      final list = ListNotifier<int>([1])..dispose();
+      final set = SetNotifier<int>({1})..dispose();
+      final queue = QueueNotifier<int>([1])..dispose();
+      final map = MapNotifier<String, int>({'a': 1})..dispose();
+      check(() => list.assignAll([2])).throws<Error>();
+      check(() => set.assignAll([2])).throws<Error>();
+      check(() => queue.assignAll([2])).throws<Error>();
+      check(() => map.assignAll({'b': 2})).throws<Error>();
+      check(list).deepEquals([1]);
+      check(set).deepEquals({1});
+      check(queue.toList()).deepEquals([1]);
+      check(map).deepEquals({'a': 1});
+    });
   });
 
   group('move', () {
@@ -199,6 +221,12 @@ void main() {
       check(() => n.move(0, 3)).throws<RangeError>();
       check(n).deepEquals(['a', 'b', 'c']);
       l.verifyNotCalled;
+    });
+
+    test('throws after dispose before mutating', () {
+      final n = ListNotifier<String>(['a', 'b'])..dispose();
+      check(() => n.move(0, 1)).throws<Error>();
+      check(n).deepEquals(['a', 'b']);
     });
   });
 }
