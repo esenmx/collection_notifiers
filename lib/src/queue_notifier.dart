@@ -23,7 +23,7 @@ part of '../collection_notifiers.dart';
 /// ```
 class QueueNotifier<E>([Iterable<E> base = const []])
     extends DelegatingQueue<E>
-    with ChangeNotifier
+    with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Queue<E>> {
   /// Creates a [QueueNotifier] optionally initialized with [base] elements.
   ///
@@ -50,10 +50,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void addAll(Iterable<E> iterable) {
-    super.addAll(iterable);
-    if (iterable.isNotEmpty) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.addAll(iterable));
   }
 
   @override
@@ -101,20 +98,12 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeWhere(bool Function(E element) test) {
-    final length = super.length;
-    super.removeWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainWhere(bool Function(E element) test) {
-    final length = super.length;
-    super.retainWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
   @override

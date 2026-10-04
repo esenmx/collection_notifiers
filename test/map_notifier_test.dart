@@ -141,6 +141,17 @@ void main() {
         notifier.addEntries([const MapEntry('a', 1)]);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the iterable throws after a change', () {
+        Iterable<MapEntry<String, int?>> partial() sync* {
+          yield const MapEntry('a', 1);
+          throw StateError('x');
+        }
+
+        check(() => notifier.addEntries(partial())).throws<StateError>();
+        check(notifier.containsKey('a')).isTrue();
+        listener.verifyCalledOnce;
+      });
     });
 
     group('clear', () {
@@ -222,6 +233,19 @@ void main() {
         notifier.removeWhere((key, value) => (value ?? 0) > 10);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the predicate throws after a change', () {
+        notifier.addAll({'a': 2, 'b': 3, 'c': 4});
+        listener.verifyCalledOnce;
+
+        check(
+          () => notifier.removeWhere(
+            (key, value) =>
+                value == 3 ? throw StateError('x') : (value ?? 0).isEven,
+          ),
+        ).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
+      });
     });
 
     group('update', () {
@@ -255,6 +279,12 @@ void main() {
       test('throws when key missing and no ifAbsent', () {
         void bump() => notifier.update('a', (v) => (v ?? 0) + 1);
         check(bump).throws<ArgumentError>();
+      });
+
+      test('notifies once when ifAbsent adds a null value', () {
+        notifier.update('a', (v) => v, ifAbsent: () => null);
+        check(notifier.containsKey('a')).isTrue();
+        listener.verifyCalledOnce;
       });
     });
 

@@ -25,7 +25,7 @@ part of '../collection_notifiers.dart';
 /// ```
 class SetNotifier<E>([Iterable<E> base = const []])
     extends DelegatingSet<E>
-    with ChangeNotifier
+    with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Set<E>> {
   /// Creates a [SetNotifier] optionally initialized with [base] elements.
   ///
@@ -55,11 +55,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void addAll(Iterable<E> elements) {
-    final length = super.length;
-    super.addAll(elements);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.addAll(elements));
   }
 
   @override
@@ -81,38 +77,22 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeAll(Iterable<Object?> elements) {
-    final length = super.length;
-    super.removeAll(elements);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.removeAll(elements));
   }
 
   @override
   void removeWhere(bool Function(E e) test) {
-    final length = super.length;
-    super.removeWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainAll(Iterable<Object?> elements) {
-    final length = super.length;
-    super.retainAll(elements);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.retainAll(elements));
   }
 
   @override
   void retainWhere(bool Function(E e) test) {
-    final length = super.length;
-    super.retainWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
   /// Toggles an element's presence in the set.
