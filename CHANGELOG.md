@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.4.0 - 2026-10-04
 
 ### Added
 
@@ -74,7 +74,7 @@
   and `last=` setters. Previously these inherited from `DelegatingList`
   and mutated silently. If you depend on silence here, audit call sites.
 
-## 2.0.2
+## 2.0.2 (not published)
 
 - fix: `ListNotifier.fillRange` now runs `RangeError.checkValidRange` before the
   `fillValue` cast and short-circuits on empty ranges, so an empty no-op call

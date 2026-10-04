@@ -1,6 +1,6 @@
 name: collection_notifiers
 description: Reactive List, Set, Map and Queue for Flutter — mutate in place, notify only on real change. A flutter_hooks hook per type (useListNotifier) plus a ValueListenable fallback.
-version: 2.3.1
+version: 2.4.0
 repository: https://github.com/esenmx/collection_notifiers
 issue_tracker: https://github.com/esenmx/collection_notifiers/issues
 topics:
