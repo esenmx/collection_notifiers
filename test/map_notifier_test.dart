@@ -70,6 +70,18 @@ void main() {
       });
     });
 
+    group('equal-but-distinct values', () {
+      test('operator[]= stores the new value without notifying', () {
+        final l = VoidListener();
+        final n = MapNotifier<String, Entity>({'k': const Entity(1, 'A')})
+          ..addListener(l.call);
+        addTearDown(n.dispose);
+        n['k'] = const Entity(1, 'B');
+        check(n['k']?.label).equals('B');
+        l.verifyNotCalled;
+      });
+    });
+
     group('addAll', () {
       test('notifies when adding new entries', () {
         notifier.addAll({'a': 1, 'b': 2});
