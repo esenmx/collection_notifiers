@@ -200,6 +200,22 @@ void main() {
       l.verifyNotCalled;
     });
 
+    test(
+      'moving across equal-but-distinct elements moves without notifying',
+      () {
+        const a = Entity(1, 'A');
+        const b = Entity(1, 'B');
+        final l = VoidListener();
+        final n = ListNotifier<Entity>([a, b])
+          ..addListener(l.call)
+          ..move(0, 1);
+        addTearDown(n.dispose);
+        check(identical(n[0], b)).isTrue();
+        check(identical(n[1], a)).isTrue();
+        l.verifyNotCalled;
+      },
+    );
+
     test('moving past a different element notifies once per move', () {
       final l = VoidListener();
       final n = ListNotifier<int>([1, 2, 1])
