@@ -1,4 +1,5 @@
 import 'package:checks/checks.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
 /// Callable listener that counts invocations. Plug into any
 /// `Listenable.addListener`.
@@ -32,4 +33,13 @@ class VoidListener {
   void get verifyCalledTwice => called(2);
 
   void get verifyCalledThrice => called(3);
+}
+
+@immutable
+class const Entity(final int id, final String label) {
+  @override
+  bool operator ==(Object other) => other is Entity && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

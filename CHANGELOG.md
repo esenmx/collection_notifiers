@@ -5,6 +5,7 @@
 ### Changed
 
 - Requires Dart 3.13 / Flutter 3.47 (was Dart 3.10).
+- **Behaviour change:** `ListNotifier` `[]=` / `first=` / `last=` and `MapNotifier` `[]=` always store the new value and notify only when `old != new`. An equal-but-distinct value (id-only `==`, `-0.0` over `0.0`) was silently dropped; this reverses the 2.0.2 "no write-back" change.
 
 ## 2.3.1
 

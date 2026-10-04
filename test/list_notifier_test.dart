@@ -496,6 +496,46 @@ void main() {
       });
     });
 
+    group('equal-but-distinct values', () {
+      ListNotifier<Entity> entities(VoidListener l) {
+        final n = ListNotifier<Entity>([const Entity(1, 'A')])
+          ..addListener(l.call);
+        addTearDown(n.dispose);
+        return n;
+      }
+
+      test('operator[]= stores the new value without notifying', () {
+        final l = VoidListener();
+        final n = entities(l);
+        n[0] = const Entity(1, 'B');
+        check(n[0].label).equals('B');
+        l.verifyNotCalled;
+      });
+
+      test('first= stores the new value without notifying', () {
+        final l = VoidListener();
+        final n = entities(l)..first = const Entity(1, 'B');
+        check(n.first.label).equals('B');
+        l.verifyNotCalled;
+      });
+
+      test('last= stores the new value without notifying', () {
+        final l = VoidListener();
+        final n = entities(l)..last = const Entity(1, 'B');
+        check(n.last.label).equals('B');
+        l.verifyNotCalled;
+      });
+
+      test('-0.0 over 0.0 is stored without notifying', () {
+        final l = VoidListener();
+        final n = ListNotifier<double>([0])..addListener(l.call);
+        addTearDown(n.dispose);
+        n[0] = -0.0;
+        check(n[0].isNegative).isTrue();
+        l.verifyNotCalled;
+      });
+    });
+
     group('sort', () {
       test('notifies when sorting', () {
         notifier.addAll([3, 1, 2]);

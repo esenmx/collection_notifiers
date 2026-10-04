@@ -44,8 +44,9 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void operator []=(K key, V value) {
-    if (!super.containsKey(key) || super[key] != value) {
-      super[key] = value;
+    final changed = !super.containsKey(key) || super[key] != value;
+    super[key] = value;
+    if (changed) {
       notifyListeners();
     }
   }

@@ -61,10 +61,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
     if (super.isEmpty) {
       throw StateError('No element');
     }
-    if (super.first != value) {
-      super[0] = value;
-      notifyListeners();
-    }
+    _write(0, value);
   }
 
   @override
@@ -72,16 +69,18 @@ class ListNotifier<E>([Iterable<E> base = const []])
     if (super.isEmpty) {
       throw StateError('No element');
     }
-    if (super.last != value) {
-      super[super.length - 1] = value;
-      notifyListeners();
-    }
+    _write(super.length - 1, value);
   }
 
   @override
   void operator []=(int index, E value) {
-    if (super[index] != value) {
-      super[index] = value;
+    _write(index, value);
+  }
+
+  void _write(int index, E value) {
+    final old = super[index];
+    super[index] = value;
+    if (old != value) {
       notifyListeners();
     }
   }
