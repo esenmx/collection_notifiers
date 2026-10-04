@@ -19,8 +19,7 @@ body:
       description: A minimal Dart snippet that reproduces the issue.
       render: dart
       placeholder: |
-        final n = ListNotifier<int>([1, 2, 3]);
-        n.fillRange(0, 0); // crashes
+        // minimal reproduction
     validations:
       required: true
   - type: textarea
@@ -33,7 +32,7 @@ body:
     id: package-version
     attributes:
       label: collection_notifiers version
-      placeholder: 2.0.2
+      placeholder: 2.4.0
     validations:
       required: true
   - type: textarea
