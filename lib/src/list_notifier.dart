@@ -329,8 +329,9 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// [to] is the final index, as passed by
   /// `ReorderableListView.onReorderItem`.
   ///
-  /// Silent when [from] == [to] or when every element from [from] to [to]
-  /// is `==` to the moved one, since the contents are then unchanged.
+  /// Silent when [from] == [to]. When every element from [from] to [to]
+  /// is `==` to the moved one, the element still moves but listeners are
+  /// not notified, since the contents are unchanged by `==`.
   void move(int from, int to) {
     _debugAssertNotDisposed();
     RangeError.checkValidIndex(from, this, 'from');
@@ -339,11 +340,12 @@ class ListNotifier<E>([Iterable<E> base = const []])
       return;
     }
     final moved = super[from];
-    final span = super.getRange(math.min(from, to), math.max(from, to) + 1);
-    if (span.every((element) => element == moved)) {
-      return;
-    }
+    final unchanged = super
+        .getRange(math.min(from, to), math.max(from, to) + 1)
+        .every((element) => element == moved);
     super.insert(to, super.removeAt(from));
-    notifyListeners();
+    if (!unchanged) {
+      notifyListeners();
+    }
   }
 }
