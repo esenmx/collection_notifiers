@@ -33,7 +33,11 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   /// no-op" check because the value's identity didn't change. Use
   /// `freezed` / `equatable` or otherwise immutable value types for
   /// reliable smart-notification.
-  this : super(Map<K, V>.of(base));
+  this : super(Map<K, V>.of(base)) {
+    if (kFlutterMemoryAllocationsEnabled) {
+      ChangeNotifier.maybeDispatchObjectCreation(this);
+    }
+  }
 
   /// Returns this map as the listenable value.
   ///

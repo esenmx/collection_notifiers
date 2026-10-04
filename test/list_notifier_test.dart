@@ -628,6 +628,23 @@ void main() {
         notifier.sort();
         listener.verifyNotCalled;
       });
+
+      test('does not notify when already sorted', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        notifier.sort();
+        listener.verifyNotCalled;
+      });
+
+      test('does not notify when already sorted by the comparator', () {
+        notifier.addAll([3, 2, 1]);
+        listener.verifyCalledOnce;
+
+        notifier.sort((a, b) => b - a);
+        listener.verifyNotCalled;
+        check(notifier).deepEquals([3, 2, 1]);
+      });
     });
 
     group('listener lifecycle', () {

@@ -33,7 +33,11 @@ class QueueNotifier<E>([Iterable<E> base = const []])
   /// check because the element's identity didn't change. Use `freezed`
   /// / `equatable` or otherwise immutable element types for reliable
   /// smart-notification.
-  this : super(Queue<E>.of(base));
+  this : super(Queue<E>.of(base)) {
+    if (kFlutterMemoryAllocationsEnabled) {
+      ChangeNotifier.maybeDispatchObjectCreation(this);
+    }
+  }
 
   /// Returns this queue as the listenable value.
   ///

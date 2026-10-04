@@ -35,7 +35,11 @@ class SetNotifier<E>([Iterable<E> base = const []])
   /// on no-op" check because the element's identity didn't change. Use
   /// `freezed` / `equatable` or otherwise immutable element types for
   /// reliable smart-notification.
-  this : super(Set<E>.of(base));
+  this : super(Set<E>.of(base)) {
+    if (kFlutterMemoryAllocationsEnabled) {
+      ChangeNotifier.maybeDispatchObjectCreation(this);
+    }
+  }
 
   /// Returns this set as the listenable value.
   ///
