@@ -71,6 +71,16 @@ void main() {
         listener.verifyCalledOnce;
         check(notifier).unorderedEquals([1, 2, 3]);
       });
+
+      test('notifies once when the iterable throws after a change', () {
+        Iterable<int> partial() sync* {
+          yield 1;
+          throw StateError('x');
+        }
+
+        check(() => notifier.addAll(partial())).throws<StateError>();
+        listener.called(notifier.isEmpty ? 0 : 1);
+      });
     });
 
     group('clear', () {
@@ -143,6 +153,18 @@ void main() {
 
         notifier.removeWhere((e) => e.isEven);
         listener.verifyNotCalled;
+      });
+
+      test('notifies once when the predicate throws after a change', () {
+        notifier.addAll([2, 3, 4]);
+        listener.verifyCalledOnce;
+
+        check(
+          () => notifier.removeWhere(
+            (e) => e == 3 ? throw StateError('x') : e.isEven,
+          ),
+        ).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
       });
     });
 

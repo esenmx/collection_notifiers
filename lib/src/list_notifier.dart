@@ -28,7 +28,7 @@ part of '../collection_notifiers.dart';
 /// ```
 class ListNotifier<E>([Iterable<E> base = const []])
     extends DelegatingList<E>
-    with ChangeNotifier
+    with ChangeNotifier, _NotifierMixin
     implements ValueListenable<List<E>> {
   /// Creates a [ListNotifier] optionally initialized with [base] elements.
   ///
@@ -93,10 +93,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void addAll(Iterable<E> iterable) {
-    if (iterable.isNotEmpty) {
-      super.addAll(iterable);
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.addAll(iterable));
   }
 
   @override
@@ -134,10 +131,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void insertAll(int index, Iterable<E> iterable) {
-    super.insertAll(index, iterable);
-    if (iterable.isNotEmpty) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.insertAll(index, iterable));
   }
 
   @override
@@ -174,20 +168,16 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeWhere(bool Function(E element) test) {
-    final length = super.length;
-    super.removeWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
     RangeError.checkValidRange(start, end, length);
-    if (start == end && iterable.isEmpty) {
+    final list = iterable is List<E> ? iterable : iterable.toList();
+    if (start == end && list.isEmpty) {
       return;
     }
-    final list = iterable is List<E> ? iterable : iterable.toList();
     if (list.length == end - start) {
       var shouldNotify = false;
       for (var i = 0; i < list.length; i++) {
@@ -207,11 +197,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void retainWhere(bool Function(E element) test) {
-    final length = super.length;
-    super.retainWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
   @override
@@ -236,6 +222,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
     if (start == end) {
       return;
     }
+    RangeError.checkNotNegative(skipCount, 'skipCount');
     final iterator = iterable.iterator;
     for (var i = 0; i < skipCount; i++) {
       if (!iterator.moveNext()) {

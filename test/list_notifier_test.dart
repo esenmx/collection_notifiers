@@ -82,6 +82,18 @@ void main() {
         notifier.addAll([]);
         listener.verifyNotCalled;
       });
+
+      test('reads a lazy iterable once', () {
+        var reads = 0;
+        notifier.addAll(
+          [1, 2, 3].where((_) {
+            reads++;
+            return true;
+          }),
+        );
+        check(reads).equals(3);
+        listener.verifyCalledOnce;
+      });
     });
 
     group('clear', () {
@@ -158,6 +170,31 @@ void main() {
       test('does not notify when inserting empty iterable', () {
         notifier.insertAll(0, []);
         listener.verifyNotCalled;
+      });
+
+      test('notifies once for a lazy iterable that empties itself', () {
+        notifier.add(0);
+        listener.verifyCalledOnce;
+
+        notifier.insertAll(0, [1, 2].where((e) => !notifier.contains(e)));
+        check(notifier).deepEquals([1, 2, 0]);
+        listener.verifyCalledOnce;
+      });
+
+      test('reads a lazy iterable once', () {
+        notifier.add(0);
+        listener.verifyCalledOnce;
+
+        var reads = 0;
+        notifier.insertAll(
+          0,
+          [1, 2, 3].where((_) {
+            reads++;
+            return true;
+          }),
+        );
+        check(reads).equals(3);
+        listener.verifyCalledOnce;
       });
     });
 
@@ -246,6 +283,18 @@ void main() {
         notifier.removeWhere((e) => e.isEven);
         listener.verifyNotCalled;
       });
+
+      test('notifies once when the predicate throws after a change', () {
+        notifier.addAll([2, 3, 4]);
+        listener.verifyCalledOnce;
+
+        check(
+          () => notifier.removeWhere(
+            (e) => e == 3 ? throw StateError('x') : e.isEven,
+          ),
+        ).throws<StateError>();
+        listener.called(notifier.length != 3 ? 1 : 0);
+      });
     });
 
     group('replaceRange', () {
@@ -300,6 +349,23 @@ void main() {
         notifier.replaceRange(1, 2, [9]);
         listener.verifyCalledOnce;
         check(notifier).deepEquals([1, 9, 3]);
+      });
+
+      test('reads a lazy iterable once on an empty range', () {
+        notifier.add(0);
+        listener.verifyCalledOnce;
+
+        var reads = 0;
+        notifier.replaceRange(
+          0,
+          0,
+          [1, 2, 3].where((_) {
+            reads++;
+            return true;
+          }),
+        );
+        check(reads).equals(3);
+        listener.verifyCalledOnce;
       });
     });
 
@@ -392,6 +458,15 @@ void main() {
 
         check(() => notifier.setRange(0, 3, [9, 9])).throws<StateError>();
         check(() => notifier.setRange(0, 1, [9], 1)).throws<StateError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled;
+      });
+
+      test('throws RangeError on a negative skipCount', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce;
+
+        check(() => notifier.setRange(0, 1, [9, 8], -1)).throws<RangeError>();
         check(notifier).deepEquals([1, 2, 3]);
         listener.verifyNotCalled;
       });

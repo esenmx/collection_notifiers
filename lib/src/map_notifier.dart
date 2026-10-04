@@ -23,7 +23,7 @@ part of '../collection_notifiers.dart';
 /// ```
 class MapNotifier<K, V>([Map<K, V> base = const {}])
     extends DelegatingMap<K, V>
-    with ChangeNotifier
+    with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Map<K, V>> {
   /// Creates a [MapNotifier] optionally initialized with [base] entries.
   ///
@@ -52,22 +52,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   }
 
   @override
-  void addAll(Map<K, V> other) {
-    if (other.isEmpty) {
-      return;
-    }
-    var shouldNotify = false;
-    for (final entry in other.entries) {
-      if (!shouldNotify &&
-          (!super.containsKey(entry.key) || super[entry.key] != entry.value)) {
-        shouldNotify = true;
-      }
-      super[entry.key] = entry.value;
-    }
-    if (shouldNotify) {
-      notifyListeners();
-    }
-  }
+  void addAll(Map<K, V> other) => addEntries(other.entries);
 
   /// Adds [entries] and notifies when the map changes.
   ///
@@ -75,16 +60,16 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   /// notifying listeners if a change is found.
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    var shouldNotify = false;
-    for (final entry in entries) {
-      if (!shouldNotify &&
-          (!super.containsKey(entry.key) || super[entry.key] != entry.value)) {
-        shouldNotify = true;
+    var changed = false;
+    try {
+      for (final MapEntry(:key, :value) in entries) {
+        changed = changed || !super.containsKey(key) || super[key] != value;
+        super[key] = value;
       }
-      super[entry.key] = entry.value;
-    }
-    if (shouldNotify) {
-      notifyListeners();
+    } finally {
+      if (changed) {
+        notifyListeners();
+      }
     }
   }
 
@@ -118,18 +103,15 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    final length = super.length;
-    super.removeWhere(test);
-    if (length != super.length) {
-      notifyListeners();
-    }
+    _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
+    final hadKey = super.containsKey(key);
     final value = super[key];
     final newValue = super.update(key, update, ifAbsent: ifAbsent);
-    if (value != newValue) {
+    if (!hadKey || value != newValue) {
       notifyListeners();
     }
     return newValue;

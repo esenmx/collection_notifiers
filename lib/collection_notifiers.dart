@@ -73,6 +73,7 @@ import 'package:flutter/foundation.dart' show ChangeNotifier, ValueListenable;
 import 'package:flutter/widgets.dart' show BuildContext, ValueListenableBuilder;
 import 'package:flutter_hooks/flutter_hooks.dart' show Hook, HookState, use;
 
+part 'src/notifier_mixin.dart';
 part 'src/list_notifier.dart';
 part 'src/map_notifier.dart';
 part 'src/queue_notifier.dart';
