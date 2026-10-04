@@ -3,6 +3,10 @@ part of '../collection_notifiers.dart';
 mixin _NotifierMixin on ChangeNotifier {
   int get length;
 
+  void _debugAssertNotDisposed() {
+    assert(ChangeNotifier.debugAssertNotDisposed(this), 'Used after dispose.');
+  }
+
   void _notifyOnLengthChange(void Function() mutate) {
     final before = length;
     try {

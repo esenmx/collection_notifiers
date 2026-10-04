@@ -44,29 +44,34 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void add(E value) {
+    _debugAssertNotDisposed();
     super.add(value);
     notifyListeners();
   }
 
   @override
   void addAll(Iterable<E> iterable) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.addAll(iterable));
   }
 
   @override
   void addFirst(E value) {
+    _debugAssertNotDisposed();
     super.addFirst(value);
     notifyListeners();
   }
 
   @override
   void addLast(E value) {
+    _debugAssertNotDisposed();
     super.addLast(value);
     notifyListeners();
   }
 
   @override
   void clear() {
+    _debugAssertNotDisposed();
     if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -75,6 +80,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool remove(Object? object) {
+    _debugAssertNotDisposed();
     if (super.remove(object)) {
       notifyListeners();
       return true;
@@ -84,6 +90,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeFirst() {
+    _debugAssertNotDisposed();
     final element = super.removeFirst();
     notifyListeners();
     return element;
@@ -91,6 +98,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeLast() {
+    _debugAssertNotDisposed();
     final element = super.removeLast();
     notifyListeners();
     return element;
@@ -98,13 +106,18 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeWhere(bool Function(E element) test) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainWhere(bool Function(E element) test) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.retainWhere(test));
   }
+
+  @override
+  Queue<R> cast<R>() => Queue.castFrom<E, R>(this);
 
   @override
   void notifyListeners() => super.notifyListeners();

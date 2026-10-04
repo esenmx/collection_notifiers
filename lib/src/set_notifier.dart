@@ -46,6 +46,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool add(E value) {
+    _debugAssertNotDisposed();
     if (super.add(value)) {
       notifyListeners();
       return true;
@@ -55,11 +56,13 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void addAll(Iterable<E> elements) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.addAll(elements));
   }
 
   @override
   void clear() {
+    _debugAssertNotDisposed();
     if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -68,6 +71,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool remove(Object? value) {
+    _debugAssertNotDisposed();
     if (super.remove(value)) {
       notifyListeners();
       return true;
@@ -77,21 +81,25 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeAll(Iterable<Object?> elements) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.removeAll(elements));
   }
 
   @override
   void removeWhere(bool Function(E e) test) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainAll(Iterable<Object?> elements) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.retainAll(elements));
   }
 
   @override
   void retainWhere(bool Function(E e) test) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
@@ -120,6 +128,9 @@ class SetNotifier<E>([Iterable<E> base = const []])
     add(element);
     return true;
   }
+
+  @override
+  Set<R> cast<R>() => Set.castFrom<E, R>(this);
 
   @override
   void notifyListeners() => super.notifyListeners();

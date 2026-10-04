@@ -353,6 +353,17 @@ void main() {
       });
     });
 
+    group('cast', () {
+      test('mutating through the view changes the data and notifies once', () {
+        final l = VoidListener();
+        final n = MapNotifier<String, num>({'a': 1})..addListener(l.call);
+        addTearDown(n.dispose);
+        n.cast<String, int>()['b'] = 2;
+        check(n['b']).equals(2);
+        l.verifyCalledOnce;
+      });
+    });
+
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = MapNotifier<String, int>({'a': 1})..dispose();

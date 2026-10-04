@@ -662,10 +662,32 @@ void main() {
       });
     });
 
+    group('cast', () {
+      test('mutating through the view changes the data and notifies once', () {
+        final l = VoidListener();
+        final n = ListNotifier<num>([1])..addListener(l.call);
+        addTearDown(n.dispose);
+        n.cast<int>()[0] = 5;
+        check(n[0]).equals(5);
+        l.verifyCalledOnce;
+      });
+    });
+
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = ListNotifier<int>([1])..dispose();
         check(() => n.add(2)).throws<Error>();
+      });
+
+      test('add after dispose throws before mutating', () {
+        final n = ListNotifier<int>([1])..dispose();
+        check(() => n.add(2)).throws<Error>();
+        check(n.length).equals(1);
+      });
+
+      test('a no-op clear after dispose throws', () {
+        final n = ListNotifier<int>()..dispose();
+        check(n.clear).throws<Error>();
       });
     });
 
