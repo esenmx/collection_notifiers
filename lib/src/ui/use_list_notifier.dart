@@ -5,10 +5,10 @@ part of '../../collection_notifiers.dart';
 /// The notifier is constructed once on first build, disposed on unmount,
 /// and listened to so the host widget rebuilds when the list mutates.
 ///
-/// [initial] is consumed **once** on first build. Passing a different
-/// iterable on a later rebuild has no effect — the notifier was already
-/// constructed. To reset on a dependency change, scope the host widget
-/// under a different `key` so the hook re-mounts.
+/// [initial] is consumed **once** on first build. Pass [keys] to
+/// dispose the notifier and create a fresh one from the current
+/// [initial] whenever a key changes (compared like `useMemoized` keys),
+/// or re-key the host widget.
 ///
 /// See also: [ListNotifier], the underlying reactive list.
 ///

@@ -15,6 +15,7 @@
 - **Behaviour change:** `ListNotifier` `[]=` / `first=` / `last=` and `MapNotifier` `[]=` always store the new value and notify only when `old != new`. An equal-but-distinct value (id-only `==`, `-0.0` over `0.0`) was silently dropped; this reverses the 2.0.2 "no write-back" change.
 - Mutating a disposed notifier fails in debug mode before the mutation, including no-op calls.
 - `ListNotifier.sort` is silent when the list is already sorted.
+- The agent skill moved to `skills/collection-notifiers-usage/` (was `skills/flutter-collection-notifiers/`), so `dart run skills@ get --package collection_notifiers --all` installs it.
 
 ### Fixed
 
@@ -25,6 +26,7 @@
 - Bulk mutators notify when a callback or iterable throws after a partial change.
 - `cast()` views (and `retype()` from `package:collection`) notify when mutated.
 - Example: the ValueListenableBuilder panels refresh their buttons, and Map "Add item" always adds a row.
+- Docs: `addEntries` is no longer described as length-only, hook `keys` is documented, the Riverpod 3 snippet imports `legacy.dart`, and every snippet compiles.
 
 ## 2.3.1
 
