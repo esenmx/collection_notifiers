@@ -1,5 +1,3 @@
-// Sweep repro: VLB panels place state-dependent _Controls outside the
-// ValueListenableBuilder, so button enablement never refreshes.
 import 'package:example/src/list_tab.dart';
 import 'package:example/src/map_tab.dart';
 import 'package:example/src/queue_tab.dart';
@@ -7,18 +5,20 @@ import 'package:example/src/set_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const vlbPanel = 1;
+
 Future<void> pumpTab(WidgetTester tester, Widget tab) async {
   tester.view.physicalSize = const Size(1200, 2400);
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(home: Scaffold(body: tab)));
 }
 
-ButtonStyleButton button(WidgetTester tester, String label, int panel) {
+ButtonStyleButton vlbButton(WidgetTester tester, String label) {
   final finder = find.ancestor(
     of: find.text(label),
     matching: find.bySubtype<ButtonStyleButton>(),
   );
-  return tester.widget<ButtonStyleButton>(finder.at(panel));
+  return tester.widget<ButtonStyleButton>(finder.at(vlbPanel));
 }
 
 void main() {
@@ -26,19 +26,20 @@ void main() {
     tester,
   ) async {
     await pumpTab(tester, const QueueTab());
-    await tester.tap(find.text('Add last').at(1)); // panel 1 = VLB
+    await tester.tap(find.text('Add last').at(vlbPanel));
     await tester.pump();
     expect(find.textContaining('Last ').evaluate(), isNotEmpty);
-    expect(button(tester, 'Remove first', 1).onPressed, isNotNull);
+    expect(vlbButton(tester, 'Remove first').onPressed, isNotNull);
   });
 
   testWidgets('Set VLB panel: "Clear selection" enables after selecting', (
     tester,
   ) async {
     await pumpTab(tester, const SetTab());
-    await tester.tap(find.byType(CheckboxListTile).at(10)); // first VLB row
+    final firstVlbCheckbox = find.byType(CheckboxListTile).at(10);
+    await tester.tap(firstVlbCheckbox);
     await tester.pump();
-    expect(button(tester, 'Clear selection', 1).onPressed, isNotNull);
+    expect(vlbButton(tester, 'Clear selection').onPressed, isNotNull);
   });
 
   testWidgets('List VLB panel: "Remove last" disables once empty', (
@@ -46,10 +47,10 @@ void main() {
   ) async {
     await pumpTab(tester, const ListTab());
     for (var i = 0; i < 3; i++) {
-      await tester.tap(find.text('Remove last').at(1));
+      await tester.tap(find.text('Remove last').at(vlbPanel));
       await tester.pump();
     }
-    expect(button(tester, 'Remove last', 1).onPressed, isNull);
+    expect(vlbButton(tester, 'Remove last').onPressed, isNull);
   });
 
   testWidgets('Map: "Add item" after a delete always adds a row', (
@@ -57,13 +58,14 @@ void main() {
   ) async {
     await pumpTab(tester, const MapTab());
     final rows = find.byType(ListTile);
-    await tester.tap(find.text('Add item').first); // adds "Item 4"
+    final addItem = find.text('Add item').first;
+    await tester.tap(addItem);
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete).first); // delete Apples
+    await tester.tap(find.byIcon(Icons.delete).first);
     await tester.pump();
-    final before = rows.evaluate().length;
-    await tester.tap(find.text('Add item').first); // "Item 4" again
+    final rowsAfterDelete = rows.evaluate().length;
+    await tester.tap(addItem);
     await tester.pump();
-    expect(rows.evaluate().length, before + 1);
+    expect(rows.evaluate().length, rowsAfterDelete + 1);
   });
 }

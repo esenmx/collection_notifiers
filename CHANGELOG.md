@@ -27,7 +27,7 @@
 - `cast()` views (and `retype()` from `package:collection`) notify when mutated.
 - `ListNotifier.addAll` with the notifier itself throws `ConcurrentModificationError` before changing anything, like `List`; it used to append one element and notify first.
 - Example: the ValueListenableBuilder panels refresh their buttons, and Map "Add item" always adds a row.
-- Docs: `addEntries` is no longer described as length-only, hook `keys` is documented, the Riverpod 3 snippet imports `legacy.dart`, and every snippet compiles.
+- Docs: `addEntries` is no longer described as length-only, hook `keys` is documented, the Riverpod 3 snippet imports `flutter_riverpod.dart` and `legacy.dart`, and every snippet compiles.
 
 ### Removed
 

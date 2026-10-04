@@ -223,6 +223,7 @@ cart.assignAll(['apples', 'pears']);
 Riverpod 3 moved `ChangeNotifierProvider` to `legacy.dart`.
 
 ```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 final todosProvider = ChangeNotifierProvider((ref) {
