@@ -54,18 +54,16 @@ class _VlbPanelState extends State<_VlbPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        const PanelHeader(label: 'ValueListenableBuilder · externally owned'),
-        _Controls(notifier: notifier),
-        Expanded(
-          child: ValueListenableBuilder<Queue<String>>(
-            valueListenable: notifier,
-            builder: (context, queue, _) => _QueueBody(queue: queue),
-          ),
-        ),
-      ],
+    return ValueListenableBuilder<Queue<String>>(
+      valueListenable: notifier,
+      builder: (context, queue, _) => Column(
+        crossAxisAlignment: .start,
+        children: [
+          const PanelHeader(label: 'ValueListenableBuilder · externally owned'),
+          _Controls(notifier: notifier),
+          Expanded(child: _QueueBody(queue: queue)),
+        ],
+      ),
     );
   }
 }

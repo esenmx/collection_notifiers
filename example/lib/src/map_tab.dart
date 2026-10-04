@@ -78,8 +78,11 @@ class const _Controls({required final MapNotifier<String, int> notifier})
       padding: const EdgeInsets.all(12),
       child: FilledButton.icon(
         onPressed: () {
-          final name = 'Item ${notifier.length + 1}';
-          notifier[name] = 1;
+          var i = notifier.length + 1;
+          while (notifier.containsKey('Item $i')) {
+            i++;
+          }
+          notifier['Item $i'] = 1;
         },
         icon: const Icon(Icons.add),
         label: const Text('Add item'),
