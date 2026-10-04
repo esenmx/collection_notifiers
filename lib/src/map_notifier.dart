@@ -148,6 +148,18 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   @override
   Map<RK, RV> cast<RK, RV>() => Map.castFrom<K, V, RK, RV>(this);
 
-  @override
-  void notifyListeners() => super.notifyListeners();
+  /// Replaces the contents with [other], notifying once only when the
+  /// resulting key or value sequence differs by `==`.
+  void assignAll(Map<K, V> other) {
+    _debugAssertNotDisposed();
+    final next = Map<K, V>.of(other);
+    final keys = List<K>.of(super.keys);
+    final values = List<V>.of(super.values);
+    super.clear();
+    super.addAll(next);
+    if (!const IterableEquality<Object?>().equals(keys, super.keys) ||
+        !const IterableEquality<Object?>().equals(values, super.values)) {
+      notifyListeners();
+    }
+  }
 }

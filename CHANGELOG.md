@@ -4,6 +4,9 @@
 
 ### Added
 
+- `batch(body)` on every notifier: one notification per batch, silent when no inner call changed anything.
+- `assignAll(...)` on every notifier: replaces the contents with one notification, silent when equal.
+- `ListNotifier.move(from, to)`: one notification; use it as `ReorderableListView(onReorderItem: list.move)`.
 - Notifiers report their creation to `FlutterMemoryAllocations`, so leak_tracker sees notifiers that are never listened to.
 
 ### Changed
