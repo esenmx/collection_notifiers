@@ -6,7 +6,7 @@
 
 - `batch(body)` on every notifier: one notification per batch, silent when no inner call changed anything.
 - `assignAll(...)` on every notifier: replaces the contents with one notification, silent when equal.
-- `ListNotifier.move(from, to)`: one notification; use it as `ReorderableListView(onReorderItem: list.move)`.
+- `ListNotifier.move(from, to)`: one notification, silent when the contents are unchanged by `==`; use it as `ReorderableListView(onReorderItem: list.move)`.
 - Notifiers report their creation to `FlutterMemoryAllocations`, so leak_tracker sees notifiers that are never listened to.
 
 ### Changed
@@ -25,6 +25,7 @@
 - `ListNotifier.setRange` rejects a negative `skipCount` with a `RangeError`, like `List`.
 - Bulk mutators notify when a callback or iterable throws after a partial change.
 - `cast()` views (and `retype()` from `package:collection`) notify when mutated.
+- `ListNotifier.addAll` with the notifier itself throws `ConcurrentModificationError` before changing anything, like `List`; it used to append one element and notify first.
 - Example: the ValueListenableBuilder panels refresh their buttons, and Map "Add item" always adds a row.
 - Docs: `addEntries` is no longer described as length-only, hook `keys` is documented, the Riverpod 3 snippet imports `legacy.dart`, and every snippet compiles.
 
