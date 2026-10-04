@@ -120,7 +120,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
   /// CheckboxListTile(
   ///   value: selected.contains(itemId),
   ///   onChanged: (_) => selected.invert(itemId),
-  /// )
+  /// );
   /// ```
   ///
   /// Returns `true` if the element was added, `false` if removed.

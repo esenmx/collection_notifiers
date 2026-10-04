@@ -1,11 +1,11 @@
 ---
-name: flutter-collection-notifiers
-version: 1
-description: 'Wire reactive List/Set/Map/Queue state in Flutter via `package:collection_notifiers` — selection toggles, multi-select chips, mutable todo lists, key/value settings, in-memory caches, job queues.'
-when_to_use: Any in-place collection state driving UI. Not for a single immutable value (`ValueNotifier`).
+name: collection-notifiers-usage
+description: 'Wire reactive List/Set/Map/Queue state in Flutter via `package:collection_notifiers` — selection toggles, multi-select chips, mutable todo lists, key/value settings, in-memory caches, job queues. Use for any in-place collection state driving UI; not for a single immutable value (`ValueNotifier`).'
+license: MIT
+metadata: {version: "1"}
 ---
 
-# flutter-collection-notifiers
+# collection-notifiers-usage
 
 ## Pick the hook
 
@@ -16,7 +16,7 @@ when_to_use: Any in-place collection state driving UI. Not for a single immutabl
 |Key → value lookup|`useMapNotifier<K, V>`|
 |FIFO/LIFO head-or-tail mutation|`useQueueNotifier<E>`|
 
-Each hook creates the notifier, disposes it on unmount, and rebuilds the host widget on every mutation.
+Each hook creates the notifier, disposes it on unmount, and rebuilds the host widget on every real change.
 
 ## Snippets
 
@@ -101,10 +101,11 @@ class JobQueueView extends HookWidget {
 
 ## Hard rules
 
-- **Mutate, never reassign.** `notifier..clear()..addAll([...])`, never `notifier = ListNotifier(...)`.
+- **Mutate, never reassign.** `notifier.assignAll([...])` (one notification), never `notifier = ListNotifier(...)`.
+- **Coalesce.** Group mutations in `notifier.batch(() { ... })`; reorder with `ReorderableListView(onReorderItem: list.move)`.
 - **`initial` is consumed once (unless keys are provided).** To reset, either pass a dependency array `keys` parameter (e.g. `useListNotifier(initial, [dependency])`), or change the host widget's `key` so the hook re-mounts.
 - **Element equality is the optimisation contract.** Use `freezed` / `equatable` on custom element types so `==` / `hashCode` are correct.
-- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is public on all notifiers, call it to trigger UI updates if you mutate properties of collection elements in-place (which bypasses reference equality).
+- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is public on all notifiers, call it to trigger UI updates if you mutate properties of collection elements in-place (the `==` check cannot see in-place field changes).
 
 ## When not to use
 

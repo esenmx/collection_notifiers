@@ -1,14 +1,18 @@
 # collection_notifiers
 
-[![pub](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers)
-[![CI](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml/badge.svg)](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml)
-[![codecov](https://codecov.io/gh/esenmx/collection_notifiers/branch/master/graph/badge.svg)](https://codecov.io/gh/esenmx/collection_notifiers)
-[![pub points](https://img.shields.io/pub/points/collection_notifiers)](https://pub.dev/packages/collection_notifiers/score)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![pub](https://img.shields.io/pub/v/collection_notifiers.svg)](https://pub.dev/packages/collection_notifiers) [![pub points](https://img.shields.io/pub/points/collection_notifiers)](https://pub.dev/packages/collection_notifiers/score) [![CI](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml/badge.svg)](https://github.com/esenmx/collection_notifiers/actions/workflows/ci.yaml) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **Reactive `List` / `Set` / `Map` / `Queue` for Flutter.** Mutate in
 place, rebuild on real change only. Ships matching `flutter_hooks`
 hooks for one-line widget integration.
+
+## Install
+
+```sh
+flutter pub add collection_notifiers
+```
+
+## Quick start
 
 ```dart
 final todos = useListNotifier<String>(['buy milk']);
@@ -35,23 +39,9 @@ todos.clear();           // silent — already empty
 - **Not deep-reactive.** Mutating an element in place
   (`list[0].field = x`) bypasses the equality check — use
   [`freezed`](https://pub.dev/packages/freezed) or
-  [`equatable`](https://pub.dev/packages/equatable) for element types.
+  [`equatable`](https://pub.dev/packages/equatable) for element types,
+  or call `notifier.notifyListeners()` after an in-place change.
 - **Not for a single value.** Reach for stdlib `ValueNotifier<T>`.
-
----
-
-## Install
-
-```bash
-flutter pub add collection_notifiers
-```
-
-```dart
-import 'package:collection_notifiers/collection_notifiers.dart';
-```
-
-[`flutter_hooks`](https://pub.dev/packages/flutter_hooks) is a runtime
-dependency — the hook variants ship with the package.
 
 ---
 
@@ -65,17 +55,17 @@ dependency — the hook variants ship with the package.
 |FIFO/LIFO head-or-tail mutation|`QueueNotifier`|`useQueueNotifier`|
 
 Each class extends `package:collection`'s `DelegatingX` and mixes in
-`ChangeNotifier` — drop-in replacement for the matching `dart:core`
-collection, plus `ValueListenable<List<E>>` / `<Set<E>>` / `<Map<K, V>>`
-/ `<Queue<E>>`.
+`ChangeNotifier` — implements `List`/`Set`/`Map` (`dart:core`) or
+`Queue` (`dart:collection`), plus `ValueListenable<…>`; the constructor
+copies its argument.
 
 ---
 
 ## Hooks — recommended
 
 The hook owns the lifecycle: creates the notifier on first build,
-disposes on unmount, rebuilds the host widget on every mutation. Zero
-boilerplate.
+disposes on unmount, rebuilds the host widget on every real change.
+Zero boilerplate.
 
 ```dart
 class TodoList extends HookWidget {
@@ -97,8 +87,9 @@ class TodoList extends HookWidget {
 }
 ```
 
-`initial` is consumed **once**. To reset on a dependency change, scope
-the host widget under a different `key` so the hook re-mounts.
+`initial` is consumed **once**. Pass `keys` (`useListNotifier(seed, [dep])`)
+to recreate the notifier when a dependency changes, or re-key the host
+widget.
 
 If the notifier is owned upstream (Riverpod, parent widget), subscribe
 without recreating it:
@@ -150,19 +141,15 @@ config['volume'] = 75;  // silent — same value
 config['bass'] = 30;    // notifies — new key
 ```
 
-The per-method strategy — length-delta diff, equality-guarded
-single-slot, `containsKey` disambiguation for nullable values — is
-documented in each method's dartdoc.
+Single-slot writes (`[]=`, `first=`, `last=`, Map `[]=`) always store
+the value and notify only when it changed; `batch` and `assignAll`
+coalesce several changes into one notification.
 
 ### Exceptions
 
-- `ListNotifier.sort` / `shuffle` on `length > 1` **always** notify.
-  Verifying order-preservation costs O(n) per call and defeats the
-  optimisation budget. Lists of length 0 or 1 short-circuit silently.
-- `MapNotifier.addEntries` uses a length-only check: re-inserting an
-  existing key with a different value mutates the map but does **not**
-  notify. Use `operator []=` or `addAll` when per-key value-diff
-  matters.
+- `ListNotifier.shuffle` on `length > 1` **always** notifies, even
+  when the order happens to stay the same.
+- `ListNotifier.sort` is silent when the list is already sorted.
 
 ---
 
@@ -204,16 +191,40 @@ todos.add(Todo(title: 'learn Flutter'));
 todos.removeWhere((t) => t.completed);
 
 // reorder
-final item = todos.removeAt(oldIndex);
-todos.insert(newIndex, item);
+ReorderableListView(
+  onReorderItem: todos.move,
+  children: [
+    for (final t in todos) ListTile(key: ValueKey(t), title: Text(t.title)),
+  ],
+);
 
-// sort always notifies on length > 1 — see "Exceptions"
+// silent when already sorted
 todos.sort((a, b) => a.priority.compareTo(b.priority));
+```
+
+### Batch and replace
+
+`batch` runs several mutations with one notification; `assignAll`
+replaces the contents with one notification, silent when equal.
+
+```dart
+final cart = useListNotifier<String>();
+
+cart.batch(() {
+  cart
+    ..removeWhere((item) => item.startsWith('tmp'))
+    ..add('checkout');
+});
+cart.assignAll(['apples', 'pears']);
 ```
 
 ### Riverpod
 
+Riverpod 3 moved `ChangeNotifierProvider` to `legacy.dart`.
+
 ```dart
+import 'package:flutter_riverpod/legacy.dart';
+
 final todosProvider = ChangeNotifierProvider((ref) {
   return ListNotifier<String>(['initial']);
 });
@@ -231,27 +242,14 @@ class TodoList extends ConsumerWidget {
 
 ---
 
-## Agent setup
-
-A bundled skill ships at
-[`skills/flutter-collection-notifiers/SKILL.md`](skills/flutter-collection-notifiers/SKILL.md).
-Vendor it into your agent's skill directory
-(`~/.claude/skills/flutter-collection-notifiers/`, or the Cursor /
-AntiGravity equivalent). It teaches the agent to pick the right
-notifier, wire the matching hook, respect dispose discipline, and
-stop replacing the collection instead of mutating it.
-
----
-
 ## Pitfalls
 
 |❌|✅|
 |---|---|
-|`notifier = ListNotifier([...])` — reassigning kills listeners|`notifier..clear()..addAll([...])` — mutate in place|
+|`notifier = ListNotifier([...])` — reassigning kills listeners|`notifier.assignAll([...])` — mutate in place, one notification|
 |Custom element types with default `==` / `hashCode`|`freezed` / `equatable` so equality checks can see real changes|
-|`useListNotifier(seed)` with a fresh `seed` per rebuild expecting a reset|`initial` is consumed once — change the host widget's `key` to reset|
+|`useListNotifier(seed)` with a fresh `seed` per rebuild expecting a reset|pass `keys`, or change the host widget's `key`|
 |`StatefulWidget` holding a notifier without disposing|Use the matching hook, or override `dispose` and call `notifier.dispose()`|
-|Expecting `addEntries` to fire on value change for an existing key|Use `operator []=` / `addAll` — `addEntries` is length-only|
 
 ---
 
@@ -267,6 +265,20 @@ selected.invert(1);
 
 ---
 
+## Agent skill
+
+This package ships an agent skill in `skills/collection-notifiers-usage/`. Install it into your project's agent config with:
+
+```sh
+dart run skills@ get --package collection_notifiers --all
+```
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
-MIT.
+MIT — see [LICENSE](LICENSE).

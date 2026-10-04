@@ -14,8 +14,8 @@
 ///
 /// Every notifier ships with a matching `flutter_hooks` hook that owns
 /// the lifecycle: create on first build, dispose on unmount, rebuild
-/// the host widget on every change. **Prefer the hooks** — they remove
-/// the `StatefulWidget` / `dispose` / `ValueListenableBuilder`
+/// the host widget on every real change. **Prefer the hooks** — they
+/// remove the `StatefulWidget` / `dispose` / `ValueListenableBuilder`
 /// boilerplate that older Flutter docs lean on.
 ///
 /// - [useListNotifier]
@@ -47,7 +47,8 @@
 ///
 /// When `flutter_hooks` is not on the project's dependency list — or
 /// when the notifier is owned by a state-management container such as a
-/// Riverpod `ChangeNotifierProvider` — the standard
+/// Riverpod `ChangeNotifierProvider`
+/// (`package:flutter_riverpod/legacy.dart`) — the standard
 /// [ValueListenableBuilder] still works. It is a fallback, not a peer
 /// to the hook API.
 ///
@@ -57,12 +58,12 @@
 /// collection actually changes:
 ///
 /// - `set.add(existingElement)` — no notification (already present)
-/// - `map['key'] = sameValue` — no notification (value unchanged)
+/// - `map['key'] = sameValue` — stores the value, no notification
 /// - `list.clear()` on an empty list — no notification (nothing to clear)
 ///
-/// Exceptions: [ListNotifier.sort] and [ListNotifier.shuffle] on a list
-/// of length > 1 always notify, and [MapNotifier.addEntries] notifies
-/// only on length change. See each method's dartdoc for details.
+/// [ListNotifier.batch] and [ListNotifier.assignAll] coalesce several
+/// changes into one notification; [ListNotifier.shuffle] on a list of
+/// length > 1 always notifies. See each method's dartdoc.
 library;
 
 import 'dart:collection';
