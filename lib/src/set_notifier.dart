@@ -136,6 +136,16 @@ class SetNotifier<E>([Iterable<E> base = const []])
   @override
   Set<R> cast<R>() => Set.castFrom<E, R>(this);
 
-  @override
-  void notifyListeners() => super.notifyListeners();
+  /// Replaces the contents with [elements], notifying once only when the
+  /// resulting sequence differs by `==`.
+  void assignAll(Iterable<E> elements) {
+    _debugAssertNotDisposed();
+    final next = List<E>.of(elements);
+    final before = List<E>.of(this);
+    super.clear();
+    super.addAll(next);
+    if (!const IterableEquality<Object?>().equals(before, this)) {
+      notifyListeners();
+    }
+  }
 }

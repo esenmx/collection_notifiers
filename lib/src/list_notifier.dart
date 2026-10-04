@@ -309,6 +309,30 @@ class ListNotifier<E>([Iterable<E> base = const []])
   @override
   List<R> cast<R>() => List.castFrom<E, R>(this);
 
-  @override
-  void notifyListeners() => super.notifyListeners();
+  /// Replaces the contents with [elements], notifying once only when the
+  /// resulting sequence differs by `==`.
+  void assignAll(Iterable<E> elements) {
+    _debugAssertNotDisposed();
+    final next = List<E>.of(elements);
+    final before = List<E>.of(this);
+    super.clear();
+    super.addAll(next);
+    if (!const IterableEquality<Object?>().equals(before, this)) {
+      notifyListeners();
+    }
+  }
+
+  /// Moves the element at [from] to index [to] with one notification.
+  /// [to] is the final index, as passed by
+  /// `ReorderableListView.onReorderItem`.
+  void move(int from, int to) {
+    _debugAssertNotDisposed();
+    RangeError.checkValidIndex(from, this, 'from');
+    RangeError.checkValidIndex(to, this, 'to');
+    if (from == to) {
+      return;
+    }
+    super.insert(to, super.removeAt(from));
+    notifyListeners();
+  }
 }
