@@ -24,6 +24,7 @@
 - `ListNotifier.setRange` rejects a negative `skipCount` with a `RangeError`, like `List`.
 - Bulk mutators notify when a callback or iterable throws after a partial change.
 - `cast()` views (and `retype()` from `package:collection`) notify when mutated.
+- Example: the ValueListenableBuilder panels refresh their buttons, and Map "Add item" always adds a row.
 
 ## 2.3.1
 
