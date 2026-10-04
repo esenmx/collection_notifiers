@@ -257,6 +257,17 @@ void main() {
       });
     });
 
+    group('cast', () {
+      test('mutating through the view changes the data and notifies once', () {
+        final l = VoidListener();
+        final n = QueueNotifier<num>([1])..addListener(l.call);
+        addTearDown(n.dispose);
+        n.cast<int>().addLast(2);
+        check(n.length).equals(2);
+        l.verifyCalledOnce;
+      });
+    });
+
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = QueueNotifier<int>([1])..dispose();

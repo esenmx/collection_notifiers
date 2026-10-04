@@ -44,6 +44,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void operator []=(K key, V value) {
+    _debugAssertNotDisposed();
     final changed = !super.containsKey(key) || super[key] != value;
     super[key] = value;
     if (changed) {
@@ -60,6 +61,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   /// notifying listeners if a change is found.
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
+    _debugAssertNotDisposed();
     var changed = false;
     try {
       for (final MapEntry(:key, :value) in entries) {
@@ -75,6 +77,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void clear() {
+    _debugAssertNotDisposed();
     if (isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -83,6 +86,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   V putIfAbsent(K key, V Function() ifAbsent) {
+    _debugAssertNotDisposed();
     final hadKey = super.containsKey(key);
     final value = super.putIfAbsent(key, ifAbsent);
     if (!hadKey) {
@@ -93,6 +97,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   V? remove(Object? key) {
+    _debugAssertNotDisposed();
     if (super.containsKey(key)) {
       final value = super.remove(key);
       notifyListeners();
@@ -103,11 +108,13 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
+    _debugAssertNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
+    _debugAssertNotDisposed();
     final hadKey = super.containsKey(key);
     final value = super[key];
     final newValue = super.update(key, update, ifAbsent: ifAbsent);
@@ -119,6 +126,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void updateAll(V Function(K key, V value) update) {
+    _debugAssertNotDisposed();
     var shouldNotify = false;
     try {
       for (final entry in super.entries) {
@@ -132,6 +140,9 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
       }
     }
   }
+
+  @override
+  Map<RK, RV> cast<RK, RV>() => Map.castFrom<K, V, RK, RV>(this);
 
   @override
   void notifyListeners() => super.notifyListeners();

@@ -267,6 +267,17 @@ void main() {
       });
     });
 
+    group('cast', () {
+      test('mutating through the view changes the data and notifies once', () {
+        final l = VoidListener();
+        final n = SetNotifier<num>({1})..addListener(l.call);
+        addTearDown(n.dispose);
+        n.cast<int>().add(2);
+        check(n.contains(2)).isTrue();
+        l.verifyCalledOnce;
+      });
+    });
+
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = SetNotifier<int>([1])..dispose();
