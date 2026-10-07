@@ -28,4 +28,4 @@
 .packages
 build/
 .vscode/
-coverage/
+coverage/plans/
