@@ -31,7 +31,7 @@ void main() {
           ..add(1)
           ..remove(2);
       });
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('a body that throws after a change notifies once', () {
@@ -45,7 +45,7 @@ void main() {
         }),
       ).throws<StateError>();
       check(n.toList()).deepEquals([1]);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('nested batches notify once', () {
@@ -60,13 +60,43 @@ void main() {
         n['c'] = 3;
       });
       check(n).deepEquals({'a': 1, 'b': 2, 'c': 3});
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
-    test('an async body fails the synchronous assertion', () {
-      final n = ListNotifier<int>();
+    test('an async body throws ArgumentError before it runs', () {
+      final l = VoidListener();
+      final n = ListNotifier<int>([1])..addListener(l.call);
       addTearDown(n.dispose);
-      check(() => n.batch(() async {})).throws<AssertionError>();
+      var ran = false;
+      check(
+        () => n.batch(() async {
+          ran = true;
+          n.add(2);
+        }),
+      ).throws<ArgumentError>().has((e) => e.name, 'name').equals('body');
+      check(ran).isFalse();
+      check(n).deepEquals([1]);
+      l.verifyNotCalled();
+    });
+
+    test('a body returning a Future at runtime throws ArgumentError after '
+        'notifying its synchronous changes once', () {
+      final l = VoidListener();
+      final n = ListNotifier<int>([1])..addListener(l.call);
+      addTearDown(n.dispose);
+      dynamic body() {
+        n
+          ..add(2)
+          ..add(3);
+        return Future<void>.value();
+      }
+
+      check(() => n.batch(body))
+          .throws<ArgumentError>()
+          .has((e) => e.name, 'name')
+          .equals('body');
+      check(n).deepEquals([1, 2, 3]);
+      l.verifyCalledOnce();
     });
 
     test('an explicit notifyListeners inside notifies once', () {
@@ -74,14 +104,35 @@ void main() {
       final n = ListNotifier<int>()..addListener(l.call);
       addTearDown(n.dispose);
       n.batch(n.notifyListeners);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('throws after dispose without running the body', () {
       final n = ListNotifier<int>()..dispose();
       var ran = false;
-      check(() => n.batch(() => ran = true)).throws<Error>();
+      check(() => n.batch(() => ran = true)).throws<StateError>();
       check(ran).isFalse();
+    });
+
+    test('notifyListeners on a disposed notifier inside batch throws', () {
+      final n = ListNotifier<int>();
+      check(
+        () => n.batch(() {
+          n
+            ..dispose()
+            ..notifyListeners();
+        }),
+      ).throws<StateError>();
+    });
+
+    test('disposing inside batch after a mutation does not notify on exit', () {
+      final n = ListNotifier<int>();
+      n.batch(() {
+        n
+          ..add(1)
+          ..dispose();
+      });
+      check(n).deepEquals([1]);
     });
   });
 
@@ -105,7 +156,7 @@ void main() {
         ..assignAll([const Entity(1, 'B')]);
       addTearDown(n.dispose);
       check(n.single.label).equals('B');
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('different contents notify once', () {
@@ -115,7 +166,7 @@ void main() {
         ..assignAll([2, 1]);
       addTearDown(n.dispose);
       check(n.toList()).deepEquals([2, 1]);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('assigning itself is silent', () {
@@ -124,7 +175,7 @@ void main() {
       addTearDown(n.dispose);
       n.assignAll(n);
       check(n).deepEquals([1, 2, 3]);
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('a set with duplicate input that dedupes to the same is silent', () {
@@ -134,7 +185,7 @@ void main() {
         ..assignAll([1, 1, 2]);
       addTearDown(n.dispose);
       check(n).deepEquals({1, 2});
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('a map order change notifies once', () {
@@ -144,7 +195,7 @@ void main() {
         ..assignAll({'b': 2, 'a': 1});
       addTearDown(n.dispose);
       check(n.keys).deepEquals(['b', 'a']);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('throws after dispose before mutating', () {
@@ -152,10 +203,10 @@ void main() {
       final set = SetNotifier<int>({1})..dispose();
       final queue = QueueNotifier<int>([1])..dispose();
       final map = MapNotifier<String, int>({'a': 1})..dispose();
-      check(() => list.assignAll([2])).throws<Error>();
-      check(() => set.assignAll([2])).throws<Error>();
-      check(() => queue.assignAll([2])).throws<Error>();
-      check(() => map.assignAll({'b': 2})).throws<Error>();
+      check(() => list.assignAll([2])).throws<StateError>();
+      check(() => set.assignAll([2])).throws<StateError>();
+      check(() => queue.assignAll([2])).throws<StateError>();
+      check(() => map.assignAll({'b': 2})).throws<StateError>();
       check(list).deepEquals([1]);
       check(set).deepEquals({1});
       check(queue.toList()).deepEquals([1]);
@@ -171,7 +222,7 @@ void main() {
         ..move(0, 2);
       addTearDown(n.dispose);
       check(n).deepEquals(['b', 'c', 'a']);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('moving to the same index is silent', () {
@@ -181,7 +232,7 @@ void main() {
         ..move(1, 1);
       addTearDown(n.dispose);
       check(n).deepEquals(['a', 'b', 'c']);
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('moving across only equal elements is silent', () {
@@ -197,7 +248,7 @@ void main() {
       addTearDown(triple.dispose);
       check(pair).deepEquals([1, 1]);
       check(triple).deepEquals([1, 1, 1]);
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test(
@@ -212,7 +263,7 @@ void main() {
         addTearDown(n.dispose);
         check(identical(n[0], b)).isTrue();
         check(identical(n[1], a)).isTrue();
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       },
     );
 
@@ -223,11 +274,11 @@ void main() {
         ..move(0, 2);
       addTearDown(n.dispose);
       check(n).deepEquals([2, 1, 1]);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
 
       n.move(2, 0);
       check(n).deepEquals([1, 2, 1]);
-      l.verifyCalledOnce;
+      l.verifyCalledOnce();
     });
 
     test('an out-of-range index throws before mutating', () {
@@ -236,12 +287,12 @@ void main() {
       addTearDown(n.dispose);
       check(() => n.move(0, 3)).throws<RangeError>();
       check(n).deepEquals(['a', 'b', 'c']);
-      l.verifyNotCalled;
+      l.verifyNotCalled();
     });
 
     test('throws after dispose before mutating', () {
       final n = ListNotifier<String>(['a', 'b'])..dispose();
-      check(() => n.move(0, 1)).throws<Error>();
+      check(() => n.move(0, 1)).throws<StateError>();
       check(n).deepEquals(['a', 'b']);
     });
   });

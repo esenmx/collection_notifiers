@@ -53,7 +53,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   set length(int newLength) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (newLength == super.length) {
       return;
     }
@@ -63,7 +63,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   set first(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.isEmpty) {
       throw StateError('No element');
     }
@@ -72,7 +72,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   set last(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.isEmpty) {
       throw StateError('No element');
     }
@@ -81,7 +81,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void operator []=(int index, E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _write(index, value);
   }
 
@@ -95,14 +95,14 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void add(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     super.add(value);
     notifyListeners();
   }
 
   @override
   void addAll(Iterable<E> iterable) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (identical(iterable, this) && super.isNotEmpty) {
       throw ConcurrentModificationError(this);
     }
@@ -111,7 +111,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void clear() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -120,7 +120,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void fillRange(int start, int end, [E? fillValue]) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     RangeError.checkValidRange(start, end, length);
     if (start == end) {
       return;
@@ -140,20 +140,24 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void insert(int index, E element) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     super.insert(index, element);
     notifyListeners();
   }
 
   @override
   void insertAll(int index, Iterable<E> iterable) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
+    RangeError.checkValueInInterval(index, 0, length, 'index');
+    if (identical(iterable, this) && index > 0 && super.isNotEmpty) {
+      throw ConcurrentModificationError(this);
+    }
     _notifyOnLengthChange(() => super.insertAll(index, iterable));
   }
 
   @override
   bool remove(Object? value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.remove(value)) {
       notifyListeners();
       return true;
@@ -163,7 +167,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeAt(int index) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final removed = super.removeAt(index);
     notifyListeners();
     return removed;
@@ -171,7 +175,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeRange(int start, int end) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final length = super.length;
     super.removeRange(start, end);
     if (length != super.length) {
@@ -181,7 +185,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeLast() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final last = super.removeLast();
     notifyListeners();
     return last;
@@ -189,15 +193,15 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeWhere(bool Function(E element) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void replaceRange(int start, int end, Iterable<E> iterable) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     RangeError.checkValidRange(start, end, length);
-    final list = iterable is List<E> ? iterable : iterable.toList();
+    final list = List<E>.of(iterable);
     if (start == end && list.isEmpty) {
       return;
     }
@@ -220,14 +224,15 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void retainWhere(bool Function(E element) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
   @override
   void setAll(int index, Iterable<E> iterable) {
-    _debugAssertNotDisposed();
-    final list = iterable is List<E> ? iterable : iterable.toList();
+    _checkNotDisposed();
+    RangeError.checkValueInInterval(index, 0, length, 'index');
+    final list = List<E>.of(iterable);
     RangeError.checkValidRange(index, index + list.length, length);
     var shouldNotify = false;
     for (var i = 0; i < list.length; i++) {
@@ -243,7 +248,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
 
   @override
   void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     RangeError.checkValidRange(start, end, length);
     if (start == end) {
       return;
@@ -283,7 +288,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// would cost O(n) per call and defeats the optimisation budget.
   @override
   void shuffle([math.Random? random]) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (length > 1) {
       super.shuffle(random);
       notifyListeners();
@@ -296,7 +301,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// pass before the sort), which includes every list of length < 2.
   @override
   void sort([int Function(E a, E b)? compare]) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (length < 2 || isSorted(compare ?? _compareComparables)) {
       return;
     }
@@ -315,7 +320,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// Replaces the contents with [elements], notifying once only when the
   /// resulting sequence differs by `==`.
   void assignAll(Iterable<E> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final next = List<E>.of(elements);
     final before = List<E>.of(this);
     super.clear();
@@ -333,7 +338,7 @@ class ListNotifier<E>([Iterable<E> base = const []])
   /// is `==` to the moved one, the element still moves but listeners are
   /// not notified, since the contents are unchanged by `==`.
   void move(int from, int to) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     RangeError.checkValidIndex(from, this, 'from');
     RangeError.checkValidIndex(to, this, 'to');
     if (from == to) {

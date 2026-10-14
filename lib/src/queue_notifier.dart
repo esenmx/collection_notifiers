@@ -29,10 +29,10 @@ class QueueNotifier<E>([Iterable<E> base = const []])
   ///
   /// [base] is copied **shallowly**. Changes to the source iterable do
   /// not affect this notifier, but element references are shared —
-  /// mutating an element in place will bypass the "no-rebuild on no-op"
-  /// check because the element's identity didn't change. Use `freezed`
-  /// / `equatable` or otherwise immutable element types for reliable
-  /// smart-notification.
+  /// additive operations (`add`, `addFirst`, `addLast`, `addAll`)
+  /// append unconditionally, while `remove` and `assignAll` compare
+  /// elements with `==`. Use `freezed` / `equatable` or otherwise
+  /// immutable element types so those comparisons see real changes.
   this : super(Queue<E>.of(base)) {
     if (kFlutterMemoryAllocationsEnabled) {
       ChangeNotifier.maybeDispatchObjectCreation(this);
@@ -48,34 +48,34 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void add(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     super.add(value);
     notifyListeners();
   }
 
   @override
   void addAll(Iterable<E> iterable) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.addAll(iterable));
   }
 
   @override
   void addFirst(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     super.addFirst(value);
     notifyListeners();
   }
 
   @override
   void addLast(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     super.addLast(value);
     notifyListeners();
   }
 
   @override
   void clear() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -84,7 +84,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool remove(Object? object) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.remove(object)) {
       notifyListeners();
       return true;
@@ -94,7 +94,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeFirst() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final element = super.removeFirst();
     notifyListeners();
     return element;
@@ -102,7 +102,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   E removeLast() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final element = super.removeLast();
     notifyListeners();
     return element;
@@ -110,13 +110,13 @@ class QueueNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeWhere(bool Function(E element) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainWhere(bool Function(E element) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
@@ -126,7 +126,7 @@ class QueueNotifier<E>([Iterable<E> base = const []])
   /// Replaces the contents with [elements], notifying once only when the
   /// resulting sequence differs by `==`.
   void assignAll(Iterable<E> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final next = List<E>.of(elements);
     final before = List<E>.of(this);
     super.clear();

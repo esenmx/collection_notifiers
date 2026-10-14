@@ -20,7 +20,7 @@ void main() {
       test('creates empty map by default', () {
         check(notifier).isEmpty();
         check(notifier.value).isEmpty();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('copies initial entries', () {
@@ -37,36 +37,36 @@ void main() {
     group('operator[]=', () {
       test('notifies when adding new key', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier['a']).equals(1);
       });
 
       test('notifies when updating value', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier['a'] = 2;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier['a']).equals(2);
       });
 
       test('does not notify when value is same', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier['a'] = 1;
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('handles null values correctly', () {
         notifier['a'] = null;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier['a'] = null;
-        listener.verifyNotCalled; // No change
+        listener.verifyNotCalled(); // No change
 
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
     });
 
@@ -78,68 +78,68 @@ void main() {
         addTearDown(n.dispose);
         n['k'] = const Entity(1, 'B');
         check(n['k']?.label).equals('B');
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       });
     });
 
     group('addAll', () {
       test('notifies when adding new entries', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': 1, 'b': 2});
       });
 
       test('notifies when updating existing values', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addAll({'a': 2, 'b': 3});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': 2, 'b': 3});
       });
 
       test('does not notify when all values are same', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies when adding a new key whose value is null', () {
         notifier.addAll({'a': null});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': null});
       });
 
       test('does not notify on empty input', () {
         notifier.addAll(<String, int?>{});
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('addEntries', () {
       test('notifies when adding new entries', () {
         notifier.addEntries([const MapEntry('a', 1), const MapEntry('b', 2)]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': 1, 'b': 2});
       });
 
       test('notifies when updating existing value', () {
         notifier.addEntries([const MapEntry('a', 1)]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addEntries([const MapEntry('a', 2)]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier['a']).equals(2);
       });
 
       test('does not notify when entries already exist with same value', () {
         notifier.addEntries([const MapEntry('a', 1)]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addEntries([const MapEntry('a', 1)]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the iterable throws after a change', () {
@@ -150,40 +150,40 @@ void main() {
 
         check(() => notifier.addEntries(partial())).throws<StateError>();
         check(notifier.containsKey('a')).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
     });
 
     group('clear', () {
       test('notifies when clearing non-empty map', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.clear();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).isEmpty();
       });
 
       test('does not notify when clearing empty map', () {
         notifier.clear();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('putIfAbsent', () {
       test('notifies when key is absent', () {
         final result = notifier.putIfAbsent('a', () => 1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(result).equals(1);
         check(notifier['a']).equals(1);
       });
 
       test('does not notify when key exists', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         final result = notifier.putIfAbsent('a', () => 2);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(result).equals(1);
       });
     });
@@ -191,26 +191,26 @@ void main() {
     group('remove', () {
       test('notifies when key is removed', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         final result = notifier.remove('a');
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(result).equals(1);
         check(notifier.containsKey('a')).isFalse();
       });
 
       test('does not notify when key does not exist', () {
         final result = notifier.remove('a');
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(result).isNull();
       });
 
       test('removes null values correctly', () {
         notifier['a'] = null;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         final result = notifier.remove('a');
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(result).isNull();
         check(notifier.containsKey('a')).isFalse();
       });
@@ -219,24 +219,24 @@ void main() {
     group('removeWhere', () {
       test('notifies when entries are removed', () {
         notifier.addAll({'a': 1, 'b': 2, 'c': 3});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((key, value) => (value ?? 0) > 1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': 1});
       });
 
       test('does not notify when no entries match', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((key, value) => (value ?? 0) > 10);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll({'a': 2, 'b': 3, 'c': 4});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.removeWhere(
@@ -251,19 +251,19 @@ void main() {
     group('update', () {
       test('notifies when value changes', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         final result = notifier.update('a', (v) => (v ?? 0) + 1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(result).equals(2);
       });
 
       test('does not notify when value is same', () {
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.update('a', (v) => v);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('uses ifAbsent when key missing', () {
@@ -272,7 +272,7 @@ void main() {
           (v) => (v ?? 0) + 1,
           ifAbsent: () => 5,
         );
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(result).equals(5);
       });
 
@@ -284,36 +284,36 @@ void main() {
       test('notifies once when ifAbsent adds a null value', () {
         notifier.update('a', (v) => v, ifAbsent: () => null);
         check(notifier.containsKey('a')).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
     });
 
     group('updateAll', () {
       test('notifies when values change', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.updateAll((key, value) => (value ?? 0) * 2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals({'a': 2, 'b': 4});
       });
 
       test('does not notify when no values change', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.updateAll((key, value) => value);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify on empty map', () {
         notifier.updateAll((key, value) => (value ?? 0) * 2);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the callback throws after a change', () {
         notifier.addAll({'a': 1, 'b': 2});
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         var calls = 0;
         check(
@@ -322,7 +322,7 @@ void main() {
           ),
         ).throws<StateError>();
         check(notifier['a']).equals(10);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
     });
 
@@ -332,13 +332,13 @@ void main() {
         notifier.addListener(second.call);
 
         notifier['a'] = 1;
-        listener.verifyCalledOnce;
-        second.verifyCalledOnce;
+        listener.verifyCalledOnce();
+        second.verifyCalledOnce();
 
         notifier.removeListener(second.call);
         notifier['b'] = 2;
-        listener.verifyCalledOnce;
-        second.verifyNotCalled;
+        listener.verifyCalledOnce();
+        second.verifyNotCalled();
       });
 
       test('re-entrant mutation inside a listener does not throw', () {
@@ -360,21 +360,35 @@ void main() {
         addTearDown(n.dispose);
         n.cast<String, int>()['b'] = 2;
         check(n['b']).equals(2);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
 
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = MapNotifier<String, int>({'a': 1})..dispose();
-        check(() => n['b'] = 2).throws<Error>();
+        check(() => n['b'] = 2).throws<StateError>();
+      });
+
+      test('no-op mutators after dispose throw', () {
+        final empty = MapNotifier<String, int>()..dispose();
+        check(empty.clear).throws<StateError>();
+        check(() => empty.remove('a')).throws<StateError>();
+        check(() => empty.addAll(const <String, int>{})).throws<StateError>();
+        check(() => empty.assignAll(const <String, int>{}))
+            .throws<StateError>();
       });
     });
 
     group('notifyListeners', () {
       test('can be called publicly', () {
         notifier.notifyListeners();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
+      });
+
+      test('throws after dispose', () {
+        final n = MapNotifier<String, int>()..dispose();
+        check(n.notifyListeners).throws<StateError>();
       });
     });
   });

@@ -102,8 +102,10 @@ class JobQueueView extends HookWidget {
 ## Hard rules
 
 - **Mutate, never reassign.** `notifier.assignAll([...])` (one notification), never `notifier = ListNotifier(...)`.
-- **Coalesce.** Group mutations in `notifier.batch(() { ... })`; reorder with `ReorderableListView(onReorderItem: list.move)`.
+- **Coalesce.** Group mutations in `notifier.batch(() { ... })` — the body must be synchronous (an `async` body throws `ArgumentError`); reorder with `ReorderableListView(onReorderItem: list.move)`.
+- **Never touch a disposed notifier.** Mutators, `batch`, `notifyListeners`, `addListener` and a second `dispose()` throw `StateError` in every build mode. A hook disposes its notifier on unmount — don't dispose it yourself.
 - **`initial` is consumed once (unless keys are provided).** To reset, either pass a dependency array `keys` parameter (e.g. `useListNotifier(initial, [dependency])`), or change the host widget's `key` so the hook re-mounts.
+- **The base is copied like `Map.of` / `Set.of`.** `MapNotifier` / `SetNotifier` always store a `LinkedHashMap` / `LinkedHashSet` (insertion order, `==` equality); a `SplayTreeMap`'s order or an identity set's equality is not kept.
 - **Element equality is the optimisation contract.** Use `freezed` / `equatable` on custom element types so `==` / `hashCode` are correct.
 - **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is public on all notifiers, call it to trigger UI updates if you mutate properties of collection elements in-place (the `==` check cannot see in-place field changes).
 

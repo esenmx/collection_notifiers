@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:checks/checks.dart';
+import 'package:collection/collection.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,7 +23,7 @@ void main() {
       test('creates empty list by default', () {
         check(notifier).isEmpty();
         check(notifier.value).isEmpty();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('copies initial elements', () {
@@ -39,19 +40,19 @@ void main() {
     group('operator[]=', () {
       test('notifies when value changes', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier[0] = 2;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier[0]).equals(2);
       });
 
       test('does not notify when value is same', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier[0] = 1;
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('throws RangeError for invalid index', () {
@@ -62,11 +63,11 @@ void main() {
     group('add', () {
       test('notifies on add', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1]);
 
         notifier.add(1); // Duplicates allowed
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 1]);
       });
     });
@@ -74,13 +75,13 @@ void main() {
     group('addAll', () {
       test('notifies when adding non-empty iterable', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('does not notify when adding empty iterable', () {
         notifier.addAll([]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('reads a lazy iterable once', () {
@@ -92,19 +93,19 @@ void main() {
           }),
         );
         check(reads).equals(3);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('adding itself throws before mutating, like a plain list', () {
         final plain = [1, 2, 3];
         check(() => plain.addAll(plain)).throws<ConcurrentModificationError>();
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(() => notifier.addAll(notifier))
             .throws<ConcurrentModificationError>();
         check(notifier).deepEquals(plain);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('adding itself when empty is a silent no-op, like a plain list', () {
@@ -112,7 +113,7 @@ void main() {
         check(() => plain.addAll(plain)).returnsNormally();
         notifier.addAll(notifier);
         check(notifier).isEmpty();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the iterable throws after a change', () {
@@ -129,63 +130,63 @@ void main() {
     group('clear', () {
       test('notifies when clearing non-empty list', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.clear();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).isEmpty();
       });
 
       test('does not notify when clearing empty list', () {
         notifier.clear();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('fillRange', () {
       test('notifies when values change', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.fillRange(0, 3, 0);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([0, 0, 0]);
       });
 
       test('does not notify when filling with same values', () {
         notifier.addAll([1, 1, 1]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.fillRange(0, 3, 1);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('empty range is no-op and does not require fillValue', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.fillRange(1, 1);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('throws RangeError before cast on invalid range', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(() => notifier.fillRange(0, 99, 0)).throws<RangeError>();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('insert', () {
       test('notifies on insert', () {
         notifier.insert(0, 1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1]);
 
         notifier.insert(0, 2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([2, 1]);
       });
     });
@@ -193,27 +194,27 @@ void main() {
     group('insertAll', () {
       test('notifies when inserting non-empty iterable', () {
         notifier.insertAll(0, [1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 2]);
       });
 
       test('does not notify when inserting empty iterable', () {
         notifier.insertAll(0, []);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once for a lazy iterable that empties itself', () {
         notifier.add(0);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.insertAll(0, [1, 2].where((e) => !notifier.contains(e)));
         check(notifier).deepEquals([1, 2, 0]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('reads a lazy iterable once', () {
         notifier.add(0);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         var reads = 0;
         notifier.insertAll(
@@ -224,12 +225,12 @@ void main() {
           }),
         );
         check(reads).equals(3);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('notifies once when the iterable throws after a change', () {
         notifier.add(0);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         Iterable<int> partial() sync* {
           yield 1;
@@ -239,34 +240,57 @@ void main() {
         check(() => notifier.insertAll(0, partial())).throws<StateError>();
         listener.called(notifier.length != 1 ? 1 : 0);
       });
+
+      test('inserting itself at index > 0 throws before mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        for (final index in [1, 2, notifier.length]) {
+          check(() => notifier.insertAll(index, notifier))
+              .throws<ConcurrentModificationError>();
+          check(notifier).deepEquals([1, 2, 3]);
+          listener.verifyNotCalled();
+        }
+      });
+
+      test('inserting itself at 0 inserts a copy and notifies once', () {
+        final plain = [1, 2, 3];
+        plain.insertAll(0, plain);
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        notifier.insertAll(0, notifier);
+        listener.verifyCalledOnce();
+        check(notifier).deepEquals(plain);
+      });
     });
 
     group('remove', () {
       test('notifies when element is removed', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(2)).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
 
       test('does not notify when element not found', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(4)).isFalse();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('removeAt', () {
       test('notifies on removeAt', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.removeAt(1)).equals(2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
 
@@ -278,29 +302,29 @@ void main() {
     group('removeRange', () {
       test('notifies when range is removed', () {
         notifier.addAll([1, 2, 3, 4, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeRange(1, 4);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 5]);
       });
 
       test('does not notify for empty range', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeRange(1, 1);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('removeLast', () {
       test('notifies on removeLast', () {
         notifier.addAll([1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.removeLast()).equals(2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1]);
       });
 
@@ -312,24 +336,24 @@ void main() {
     group('removeWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
 
       test('does not notify when no elements match', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll([2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.removeWhere(
@@ -343,60 +367,60 @@ void main() {
     group('replaceRange', () {
       test('notifies when range is replaced', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 2, [4, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 4, 5, 3]);
       });
 
       test('notifies when replacing with empty (deletion)', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 2, []);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
 
       test('notifies when inserting via empty range', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 1, [4, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 4, 5, 2, 3]);
       });
 
       test('does not notify for empty range with empty replacement', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 1, []);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify when replacing range with same values', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 2, [2]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('notifies once when a same-length replacement changes a value', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.replaceRange(1, 2, [9]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 9, 3]);
       });
 
       test('reads a lazy iterable once on an empty range', () {
         notifier.add(0);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         var reads = 0;
         notifier.replaceRange(
@@ -408,133 +432,215 @@ void main() {
           }),
         );
         check(reads).equals(3);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
+      });
+
+      test(
+        'self-aliasing at start == length appends copy and notifies once',
+        () {
+          notifier.addAll([1, 2, 3]);
+          listener.verifyCalledOnce();
+
+          notifier.replaceRange(notifier.length, notifier.length, notifier);
+          listener.verifyCalledOnce();
+          check(notifier).deepEquals([1, 2, 3, 1, 2, 3]);
+        },
+      );
+
+      test(
+        'overlapping live List view matches plain List and notifies once',
+        () {
+          final plain = [1, 2, 3];
+          plain.replaceRange(1, 3, plain.slice(0, 2));
+          notifier.addAll([1, 2, 3]);
+          listener.verifyCalledOnce();
+
+          notifier.replaceRange(1, 3, notifier.slice(0, 2));
+          listener.verifyCalledOnce();
+          check(notifier).deepEquals(plain);
+        },
+      );
+
+      test('throwing CastList throws TypeError before mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        check(() => notifier.replaceRange(0, 2, <Object>[9, 'bad'].cast<int>()))
+            .throws<TypeError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled();
       });
     });
 
     group('retainWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
 
       test('does not notify when all elements retained', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('setAll', () {
       test('notifies when setting elements', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setAll(0, [4, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([4, 5, 3]);
       });
 
       test('does not notify for empty iterable', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setAll(0, []);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify when setting same values', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setAll(0, [1, 2]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('throws RangeError past the end without mutating', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(() => notifier.setAll(2, [9, 9])).throws<RangeError>();
         check(notifier).deepEquals([1, 2, 3]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
+      });
+
+      test(
+        'overlapping live List view matches plain List and notifies once',
+        () {
+          final plain = [1, 2, 3];
+          plain.setAll(1, plain.slice(0, 2));
+          notifier.addAll([1, 2, 3]);
+          listener.verifyCalledOnce();
+
+          notifier.setAll(1, notifier.slice(0, 2));
+          listener.verifyCalledOnce();
+          check(notifier).deepEquals(plain);
+        },
+      );
+
+      test('throwing CastList throws TypeError before mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        check(() => notifier.setAll(0, <Object>[9, 'bad'].cast<int>()))
+            .throws<TypeError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled();
+      });
+
+      test('throws RangeError for negative index before iterating', () {
+        var iterated = false;
+        final throwingIterable = Iterable<int>.generate(1, (_) {
+          iterated = true;
+          throw StateError('should not iterate');
+        });
+
+        check(() => notifier.setAll(-1, throwingIterable)).throws<RangeError>();
+        check(iterated).isFalse();
+        listener.verifyNotCalled();
       });
     });
 
     group('setRange', () {
       test('notifies when range is set', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setRange(0, 2, [4, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([4, 5, 3]);
       });
 
       test('does not notify for empty range', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setRange(1, 1, [4, 5]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify when range is set with same values', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.setRange(0, 2, [1, 2]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('throws StateError on too few elements without mutating', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(() => notifier.setRange(0, 3, [9, 9])).throws<StateError>();
         check(() => notifier.setRange(0, 1, [9], 1)).throws<StateError>();
         check(notifier).deepEquals([1, 2, 3]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('throws RangeError on a negative skipCount', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(() => notifier.setRange(0, 1, [9, 8], -1)).throws<RangeError>();
         check(notifier).deepEquals([1, 2, 3]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
+      });
+
+      test('throwing CastList throws TypeError before mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        check(() => notifier.setRange(0, 2, <Object>[9, 'bad'].cast<int>()))
+            .throws<TypeError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled();
       });
     });
 
     group('shuffle', () {
       test('notifies when shuffling list with multiple elements', () {
         notifier.addAll(List.generate(100, (i) => i));
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.shuffle(Random(42));
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('does not notify for single element list', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.shuffle();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify for empty list', () {
         notifier.shuffle();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
@@ -546,44 +652,44 @@ void main() {
         addTearDown(n.dispose);
 
         n.length = 3;
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
         check(n).deepEquals([null, null, null]);
       });
 
       test('notifies when length shrinks', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.length = 1;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1]);
       });
 
       test('does not notify when length is unchanged', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.length = 3;
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('first setter', () {
       test('notifies when first changes', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.first = 99;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([99, 2, 3]);
       });
 
       test('does not notify when first is the same', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.first = 1;
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('throws StateError on empty list', () {
@@ -594,19 +700,19 @@ void main() {
     group('last setter', () {
       test('notifies when last changes', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.last = 99;
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 2, 99]);
       });
 
       test('does not notify when last is the same', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.last = 3;
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('throws StateError on empty list', () {
@@ -627,21 +733,21 @@ void main() {
         final n = entities(l);
         n[0] = const Entity(1, 'B');
         check(n[0].label).equals('B');
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       });
 
       test('first= stores the new value without notifying', () {
         final l = VoidListener();
         final n = entities(l)..first = const Entity(1, 'B');
         check(n.first.label).equals('B');
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       });
 
       test('last= stores the new value without notifying', () {
         final l = VoidListener();
         final n = entities(l)..last = const Entity(1, 'B');
         check(n.last.label).equals('B');
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       });
 
       test('-0.0 over 0.0 is stored without notifying', () {
@@ -650,42 +756,42 @@ void main() {
         addTearDown(n.dispose);
         n[0] = -0.0;
         check(n[0].isNegative).isTrue();
-        l.verifyNotCalled;
+        l.verifyNotCalled();
       });
     });
 
     group('sort', () {
       test('notifies when sorting', () {
         notifier.addAll([3, 1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.sort();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 2, 3]);
       });
 
       test('does not notify for single element list', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.sort();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify when already sorted', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.sort();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify when already sorted by the comparator', () {
         notifier.addAll([3, 2, 1]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.sort((a, b) => b - a);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
         check(notifier).deepEquals([3, 2, 1]);
       });
     });
@@ -696,14 +802,14 @@ void main() {
         notifier
           ..addListener(second.call)
           ..add(1);
-        listener.verifyCalledOnce;
-        second.verifyCalledOnce;
+        listener.verifyCalledOnce();
+        second.verifyCalledOnce();
 
         notifier
           ..removeListener(second.call)
           ..add(2);
-        listener.verifyCalledOnce;
-        second.verifyNotCalled;
+        listener.verifyCalledOnce();
+        second.verifyNotCalled();
       });
 
       test('re-entrant mutation inside a listener does not throw', () {
@@ -729,32 +835,40 @@ void main() {
         addTearDown(n.dispose);
         n.cast<int>()[0] = 5;
         check(n[0]).equals(5);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
 
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = ListNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<Error>();
+        check(() => n.add(2)).throws<StateError>();
       });
 
       test('add after dispose throws before mutating', () {
         final n = ListNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<Error>();
+        check(() => n.add(2)).throws<StateError>();
         check(n.length).equals(1);
       });
 
-      test('a no-op clear after dispose throws', () {
-        final n = ListNotifier<int>()..dispose();
-        check(n.clear).throws<Error>();
+      test('no-op mutators after dispose throw', () {
+        final empty = ListNotifier<int>()..dispose();
+        check(empty.clear).throws<StateError>();
+        check(() => empty.remove(1)).throws<StateError>();
+        check(() => empty.addAll(const <int>[])).throws<StateError>();
+        check(() => empty.assignAll(const <int>[])).throws<StateError>();
       });
     });
 
     group('notifyListeners', () {
       test('can be called publicly', () {
         notifier.notifyListeners();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
+      });
+
+      test('throws after dispose', () {
+        final n = ListNotifier<int>()..dispose();
+        check(n.notifyListeners).throws<StateError>();
       });
     });
 
@@ -766,16 +880,16 @@ void main() {
         addTearDown(n.dispose);
 
         n.add(null);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
         check(n).deepEquals([null]);
 
         n[0] = null;
-        l.verifyNotCalled;
+        l.verifyNotCalled();
 
         n[0] = 1;
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
         check(n.remove(1)).isTrue();
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
   });

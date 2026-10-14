@@ -29,6 +29,11 @@ class SetNotifier<E>([Iterable<E> base = const []])
     implements ValueListenable<Set<E>> {
   /// Creates a [SetNotifier] optionally initialized with [base] elements.
   ///
+  /// [base] is copied like [Set.of]: the notifier always stores a
+  /// [LinkedHashSet], so iteration follows insertion order and elements
+  /// compare with `==`/`hashCode`. A [SplayTreeSet]'s sort order or an
+  /// identity set's equality is not kept.
+  ///
   /// [base] is copied **shallowly**. Changes to the source iterable's
   /// membership do not affect this notifier, but element references are
   /// shared — mutating an element in place will bypass the "no-rebuild
@@ -50,7 +55,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool add(E value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.add(value)) {
       notifyListeners();
       return true;
@@ -60,13 +65,13 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void addAll(Iterable<E> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.addAll(elements));
   }
 
   @override
   void clear() {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
@@ -75,7 +80,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   bool remove(Object? value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.remove(value)) {
       notifyListeners();
       return true;
@@ -85,25 +90,25 @@ class SetNotifier<E>([Iterable<E> base = const []])
 
   @override
   void removeAll(Iterable<Object?> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.removeAll(elements));
   }
 
   @override
   void removeWhere(bool Function(E e) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   void retainAll(Iterable<Object?> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.retainAll(elements));
   }
 
   @override
   void retainWhere(bool Function(E e) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.retainWhere(test));
   }
 
@@ -125,11 +130,13 @@ class SetNotifier<E>([Iterable<E> base = const []])
   ///
   /// Returns `true` if the element was added, `false` if removed.
   bool invert(E element) {
-    if (contains(element)) {
-      remove(element);
+    _checkNotDisposed();
+    if (super.remove(element)) {
+      notifyListeners();
       return false;
     }
-    add(element);
+    super.add(element);
+    notifyListeners();
     return true;
   }
 
@@ -139,7 +146,7 @@ class SetNotifier<E>([Iterable<E> base = const []])
   /// Replaces the contents with [elements], notifying once only when the
   /// resulting sequence differs by `==`.
   void assignAll(Iterable<E> elements) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final next = List<E>.of(elements);
     final before = List<E>.of(this);
     super.clear();

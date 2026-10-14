@@ -20,7 +20,7 @@ void main() {
       test('creates empty queue by default', () {
         check(notifier.length).equals(0);
         check(notifier.value.length).equals(0);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('copies initial elements', () {
@@ -37,11 +37,11 @@ void main() {
     group('add', () {
       test('notifies on add', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1]);
 
         notifier.add(2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 2]);
       });
     });
@@ -49,19 +49,19 @@ void main() {
     group('addAll', () {
       test('notifies when adding non-empty iterable', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 2, 3]);
       });
 
       test('does not notify when adding empty iterable', () {
         notifier.addAll(<int>[]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once for a lazy iterable that empties itself', () {
         notifier.addAll([1, 2].where((e) => !notifier.contains(e)));
         check(notifier.toList()).deepEquals([1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('reads a lazy iterable once', () {
@@ -73,7 +73,7 @@ void main() {
           }),
         );
         check(reads).equals(3);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
       });
 
       test('notifies once when the iterable throws after a change', () {
@@ -90,11 +90,11 @@ void main() {
     group('addFirst', () {
       test('notifies on addFirst', () {
         notifier.addFirst(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1]);
 
         notifier.addFirst(2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([2, 1]);
       });
     });
@@ -102,11 +102,11 @@ void main() {
     group('addLast', () {
       test('notifies on addLast', () {
         notifier.addLast(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1]);
 
         notifier.addLast(2);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 2]);
       });
     });
@@ -114,45 +114,45 @@ void main() {
     group('clear', () {
       test('notifies when clearing non-empty queue', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.clear();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.length).equals(0);
       });
 
       test('does not notify when clearing empty queue', () {
         notifier.clear();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('remove', () {
       test('notifies when element is removed', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(2)).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 3]);
       });
 
       test('does not notify when element not found', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(4)).isFalse();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('removeFirst', () {
       test('notifies on removeFirst', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.removeFirst()).equals(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([2, 3]);
       });
 
@@ -164,10 +164,10 @@ void main() {
     group('removeLast', () {
       test('notifies on removeLast', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.removeLast()).equals(3);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 2]);
       });
 
@@ -179,24 +179,24 @@ void main() {
     group('removeWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 3]);
       });
 
       test('does not notify when no elements match', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll([2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.removeWhere(
@@ -210,24 +210,24 @@ void main() {
     group('retainWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 3]);
       });
 
       test('does not notify when all elements retained', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll([2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.retainWhere(
@@ -244,14 +244,14 @@ void main() {
         notifier
           ..addListener(second.call)
           ..add(1);
-        listener.verifyCalledOnce;
-        second.verifyCalledOnce;
+        listener.verifyCalledOnce();
+        second.verifyCalledOnce();
 
         notifier
           ..removeListener(second.call)
           ..add(2);
-        listener.verifyCalledOnce;
-        second.verifyNotCalled;
+        listener.verifyCalledOnce();
+        second.verifyNotCalled();
       });
 
       test('re-entrant mutation inside a listener does not throw', () {
@@ -276,14 +276,34 @@ void main() {
         addTearDown(n.dispose);
         n.cast<int>().addLast(2);
         check(n.length).equals(2);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
 
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = QueueNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<Error>();
+        check(() => n.add(2)).throws<StateError>();
+      });
+
+      test('no-op mutators after dispose throw', () {
+        final empty = QueueNotifier<int>()..dispose();
+        check(empty.clear).throws<StateError>();
+        check(() => empty.remove(1)).throws<StateError>();
+        check(() => empty.addAll(const <int>[])).throws<StateError>();
+        check(() => empty.assignAll(const <int>[])).throws<StateError>();
+      });
+    });
+
+    group('notifyListeners', () {
+      test('can be called publicly', () {
+        notifier.notifyListeners();
+        listener.verifyCalledOnce();
+      });
+
+      test('throws after dispose', () {
+        final n = QueueNotifier<int>()..dispose();
+        check(n.notifyListeners).throws<StateError>();
       });
     });
 
@@ -295,15 +315,15 @@ void main() {
         addTearDown(n.dispose);
 
         n.addLast(null);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
         check(n.toList()).deepEquals([null]);
 
         n.addFirst(null);
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
         check(n.length).equals(2);
 
         check(n.remove(null)).isTrue();
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
   });

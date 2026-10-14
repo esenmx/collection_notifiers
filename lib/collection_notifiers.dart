@@ -61,9 +61,10 @@
 /// - `map['key'] = sameValue` — stores the value, no notification
 /// - `list.clear()` on an empty list — no notification (nothing to clear)
 ///
-/// [ListNotifier.batch] and [ListNotifier.assignAll] coalesce several
-/// changes into one notification; [ListNotifier.shuffle] on a list of
-/// length > 1 always notifies. See each method's dartdoc.
+/// `batch` and `assignAll` on [ListNotifier], [SetNotifier],
+/// [MapNotifier], and [QueueNotifier] coalesce several changes into one
+/// notification; [ListNotifier.shuffle] on a list of length > 1 always
+/// notifies. See each method's dartdoc.
 library;
 
 import 'dart:collection';
@@ -71,7 +72,11 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart'
-    show ChangeNotifier, ValueListenable, kFlutterMemoryAllocationsEnabled;
+    show
+        ChangeNotifier,
+        ValueListenable,
+        VoidCallback,
+        kFlutterMemoryAllocationsEnabled;
 import 'package:flutter/widgets.dart' show BuildContext, ValueListenableBuilder;
 import 'package:flutter_hooks/flutter_hooks.dart' show Hook, HookState, use;
 

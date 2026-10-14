@@ -38,7 +38,7 @@ ListNotifier<E> useListNotifier<E>([
   return use(_ListNotifierHook<E>(initial, keys));
 }
 
-class const _ListNotifierHook<E>(
+final class const _ListNotifierHook<E>(
   final Iterable<E> initial, [
   List<Object?>? keys,
 ]) extends Hook<ListNotifier<E>> {
@@ -48,9 +48,11 @@ class const _ListNotifierHook<E>(
   _ListNotifierHookState<E> createState() => _ListNotifierHookState<E>();
 }
 
-class _ListNotifierHookState<E>
+final class _ListNotifierHookState<E>
     extends HookState<ListNotifier<E>, _ListNotifierHook<E>> {
-  late final ListNotifier<E> _notifier = ListNotifier<E>(hook.initial);
+  ListNotifier<E>? _notifier;
+
+  ListNotifier<E> get _active => _notifier ??= ListNotifier<E>(hook.initial);
 
   void _listener() {
     setState(() {});
@@ -59,16 +61,16 @@ class _ListNotifierHookState<E>
   @override
   void initHook() {
     super.initHook();
-    _notifier.addListener(_listener);
+    _active.addListener(_listener);
   }
 
   @override
-  ListNotifier<E> build(BuildContext context) => _notifier;
+  ListNotifier<E> build(BuildContext context) => _active;
 
   @override
   void dispose() {
     _notifier
-      ..removeListener(_listener)
+      ?..removeListener(_listener)
       ..dispose();
   }
 
