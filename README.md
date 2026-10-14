@@ -57,7 +57,10 @@ todos.clear();           // silent — already empty
 Each class extends `package:collection`'s `DelegatingX` and mixes in
 `ChangeNotifier` — implements `List`/`Set`/`Map` (`dart:core`) or
 `Queue` (`dart:collection`), plus `ValueListenable<…>`; the constructor
-copies its argument.
+copies its argument like `List.of` / `Set.of` / `Map.of` / `Queue.of`. A
+`MapNotifier` always stores a `LinkedHashMap` and a `SetNotifier` a
+`LinkedHashSet` — insertion order, `==`/`hashCode` equality — so a
+`SplayTreeMap`'s sort order or an identity set's equality is not kept.
 
 ---
 
@@ -142,14 +145,26 @@ config['bass'] = 30;    // notifies — new key
 ```
 
 Single-slot writes (`[]=`, `first=`, `last=`, Map `[]=`) always store
-the value and notify only when it changed; `batch` and `assignAll`
-coalesce several changes into one notification.
+the value and notify only when it changed; `batch` coalesces notifications
+and notifies once if any mutation (or explicit `notifyListeners()`) inside
+it would have notified; `assignAll` replaces the contents with
+one notification when they differ.
 
 ### Exceptions
 
 - `ListNotifier.shuffle` on `length > 1` **always** notifies, even
   when the order happens to stay the same.
 - `ListNotifier.sort` is silent when the list is already sorted.
+
+### Misuse throws
+
+In every build mode, before anything changes:
+
+- A disposed notifier throws `StateError` from every mutator, `batch`,
+  `notifyListeners`, `addListener`, and a second `dispose()`. Reads and
+  `removeListener` still work.
+- `batch` with an `async` body throws `ArgumentError` without running
+  it — changes made after an `await` can't be coalesced.
 
 ---
 
@@ -204,8 +219,9 @@ todos.sort((a, b) => a.priority.compareTo(b.priority));
 
 ### Batch and replace
 
-`batch` runs several mutations with one notification; `assignAll`
-replaces the contents with one notification, silent when equal.
+`batch` runs several synchronous mutations with one notification;
+`assignAll` replaces the contents with one notification, silent when
+equal.
 
 ```dart
 final cart = useListNotifier<String>();
@@ -251,6 +267,9 @@ class TodoList extends ConsumerWidget {
 |Custom element types with default `==` / `hashCode`|`freezed` / `equatable` so equality checks can see real changes|
 |`useListNotifier(seed)` with a fresh `seed` per rebuild expecting a reset|pass `keys`, or change the host widget's `key`|
 |`StatefulWidget` holding a notifier without disposing|Use the matching hook, or override `dispose` and call `notifier.dispose()`|
+|Calling `dispose()` on a hook's notifier|Let the hook dispose it on unmount — a second `dispose()` throws `StateError`|
+|`batch(() async { ... })`|Keep the body synchronous; `await` before or after `batch`|
+|`MapNotifier(SplayTreeMap(...))` expecting sorted keys|The copy is a `LinkedHashMap` (like `Map.of`); sort when reading, or insert in order|
 
 ---
 

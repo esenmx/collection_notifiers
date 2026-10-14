@@ -34,7 +34,7 @@ MapNotifier<K, V> useMapNotifier<K, V>([
   return use(_MapNotifierHook<K, V>(initial, keys));
 }
 
-class const _MapNotifierHook<K, V>(
+final class const _MapNotifierHook<K, V>(
   final Map<K, V> initial, [
   List<Object?>? keys,
 ]) extends Hook<MapNotifier<K, V>> {
@@ -44,9 +44,12 @@ class const _MapNotifierHook<K, V>(
   _MapNotifierHookState<K, V> createState() => _MapNotifierHookState<K, V>();
 }
 
-class _MapNotifierHookState<K, V>
+final class _MapNotifierHookState<K, V>
     extends HookState<MapNotifier<K, V>, _MapNotifierHook<K, V>> {
-  late final MapNotifier<K, V> _notifier = MapNotifier<K, V>(hook.initial);
+  MapNotifier<K, V>? _notifier;
+
+  MapNotifier<K, V> get _active =>
+      _notifier ??= MapNotifier<K, V>(hook.initial);
 
   void _listener() {
     setState(() {});
@@ -55,16 +58,16 @@ class _MapNotifierHookState<K, V>
   @override
   void initHook() {
     super.initHook();
-    _notifier.addListener(_listener);
+    _active.addListener(_listener);
   }
 
   @override
-  MapNotifier<K, V> build(BuildContext context) => _notifier;
+  MapNotifier<K, V> build(BuildContext context) => _active;
 
   @override
   void dispose() {
     _notifier
-      ..removeListener(_listener)
+      ?..removeListener(_listener)
       ..dispose();
   }
 

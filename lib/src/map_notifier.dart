@@ -27,6 +27,11 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
     implements ValueListenable<Map<K, V>> {
   /// Creates a [MapNotifier] optionally initialized with [base] entries.
   ///
+  /// [base] is copied like [Map.of]: the notifier always stores a
+  /// [LinkedHashMap], so iteration follows insertion order and keys compare
+  /// with `==`/`hashCode`. A [SplayTreeMap]'s sort order or an identity map's
+  /// equality is not kept.
+  ///
   /// [base] is copied **shallowly**. Changes to the source map's entries
   /// do not affect this notifier, but key and value references are
   /// shared — mutating a value in place will bypass the "no-rebuild on
@@ -48,7 +53,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void operator []=(K key, V value) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final changed = !super.containsKey(key) || super[key] != value;
     super[key] = value;
     if (changed) {
@@ -65,7 +70,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   /// notifying listeners if a change is found.
   @override
   void addEntries(Iterable<MapEntry<K, V>> entries) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     var changed = false;
     try {
       for (final MapEntry(:key, :value) in entries) {
@@ -81,8 +86,8 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void clear() {
-    _debugAssertNotDisposed();
-    if (isNotEmpty) {
+    _checkNotDisposed();
+    if (super.isNotEmpty) {
       super.clear();
       notifyListeners();
     }
@@ -90,7 +95,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   V putIfAbsent(K key, V Function() ifAbsent) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final hadKey = super.containsKey(key);
     final value = super.putIfAbsent(key, ifAbsent);
     if (!hadKey) {
@@ -101,7 +106,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   V? remove(Object? key) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     if (super.containsKey(key)) {
       final value = super.remove(key);
       notifyListeners();
@@ -112,13 +117,13 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     _notifyOnLengthChange(() => super.removeWhere(test));
   }
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final hadKey = super.containsKey(key);
     final value = super[key];
     final newValue = super.update(key, update, ifAbsent: ifAbsent);
@@ -130,7 +135,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
 
   @override
   void updateAll(V Function(K key, V value) update) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     var shouldNotify = false;
     try {
       for (final entry in super.entries) {
@@ -151,7 +156,7 @@ class MapNotifier<K, V>([Map<K, V> base = const {}])
   /// Replaces the contents with [other], notifying once only when the
   /// resulting key or value sequence differs by `==`.
   void assignAll(Map<K, V> other) {
-    _debugAssertNotDisposed();
+    _checkNotDisposed();
     final next = Map<K, V>.of(other);
     final keys = List<K>.of(super.keys);
     final values = List<V>.of(super.values);

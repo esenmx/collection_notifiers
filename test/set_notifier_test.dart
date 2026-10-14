@@ -20,7 +20,7 @@ void main() {
       test('creates empty set by default', () {
         check(notifier.length).equals(0);
         check(notifier.value.length).equals(0);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('copies initial elements', () {
@@ -35,40 +35,40 @@ void main() {
     group('add', () {
       test('notifies when element is added', () {
         check(notifier.add(1)).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1]);
       });
 
       test('does not notify when element already exists', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.add(1)).isFalse();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('addAll', () {
       test('notifies when new elements are added', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 2, 3]);
       });
 
       test('does not notify when all elements exist', () {
         notifier.addAll([1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addAll([1, 2]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies when at least one new element', () {
         notifier.addAll([1, 2]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.addAll([2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 2, 3]);
       });
 
@@ -86,59 +86,59 @@ void main() {
     group('clear', () {
       test('notifies when clearing non-empty set', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.clear();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.length).equals(0);
       });
 
       test('does not notify when clearing empty set', () {
         notifier.clear();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('remove', () {
       test('notifies when element is removed', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(2)).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
 
       test('does not notify when element not found', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(notifier.remove(4)).isFalse();
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
     });
 
     group('removeAll', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeAll([2, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
 
       test('does not notify when no elements match', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeAll([4, 5]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the iterable throws after a change', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         Iterable<int> partial() sync* {
           yield 1;
@@ -153,24 +153,24 @@ void main() {
     group('removeWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
 
       test('does not notify when no elements match', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.removeWhere((e) => e.isEven);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll([2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.removeWhere(
@@ -184,29 +184,29 @@ void main() {
     group('retainAll', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainAll([1, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
 
       test('does not notify when all elements retained', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainAll([1, 2, 3, 4]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('does not notify on empty set', () {
         notifier.retainAll([1, 2, 3]);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the iterable throws after a change', () {
         notifier.addAll([1, 2, 3]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         Iterable<int> partial() sync* {
           yield 1;
@@ -221,24 +221,24 @@ void main() {
     group('retainWhere', () {
       test('notifies when elements are removed', () {
         notifier.addAll([1, 2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
 
       test('does not notify when all elements retained', () {
         notifier.addAll([1, 3, 5]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         notifier.retainWhere((e) => e.isOdd);
-        listener.verifyNotCalled;
+        listener.verifyNotCalled();
       });
 
       test('notifies once when the predicate throws after a change', () {
         notifier.addAll([2, 3, 4]);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         check(
           () => notifier.retainWhere(
@@ -253,17 +253,17 @@ void main() {
       test('adds element if not present and returns true', () {
         final result = notifier.invert(1);
         check(result).isTrue();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1]);
       });
 
       test('removes element if present and returns false', () {
         notifier.add(1);
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
 
         final result = notifier.invert(1);
         check(result).isFalse();
-        listener.verifyCalledOnce;
+        listener.verifyCalledOnce();
         check(notifier.length).equals(0);
       });
 
@@ -272,8 +272,15 @@ void main() {
           ..invert(1) // Add
           ..invert(1) // Remove
           ..invert(1); // Add
-        listener.verifyCalledThrice;
+        listener.verifyCalledThrice();
         check(notifier).unorderedEquals([1]);
+      });
+
+      test('throws after dispose before mutating', () {
+        final n = SetNotifier<int>({1})..dispose();
+        check(() => n.invert(1)).throws<StateError>();
+        check(() => n.invert(2)).throws<StateError>();
+        check(n).unorderedEquals([1]);
       });
     });
 
@@ -283,14 +290,14 @@ void main() {
         notifier
           ..addListener(second.call)
           ..add(1);
-        listener.verifyCalledOnce;
-        second.verifyCalledOnce;
+        listener.verifyCalledOnce();
+        second.verifyCalledOnce();
 
         notifier
           ..removeListener(second.call)
           ..add(2);
-        listener.verifyCalledOnce;
-        second.verifyNotCalled;
+        listener.verifyCalledOnce();
+        second.verifyNotCalled();
       });
 
       test('re-entrant mutation inside a listener does not throw', () {
@@ -312,14 +319,62 @@ void main() {
         addTearDown(n.dispose);
         n.cast<int>().add(2);
         check(n.contains(2)).isTrue();
-        l.verifyCalledOnce;
+        l.verifyCalledOnce();
       });
     });
 
     group('dispose', () {
       test('mutating after dispose throws', () {
         final n = SetNotifier<int>([1])..dispose();
-        check(() => n.add(2)).throws<Error>();
+        check(() => n.add(2)).throws<StateError>();
+      });
+
+      test('no-op mutators after dispose throw', () {
+        final empty = SetNotifier<int>()..dispose();
+        check(empty.clear).throws<StateError>();
+        check(() => empty.remove(1)).throws<StateError>();
+        check(() => empty.addAll(const <int>[])).throws<StateError>();
+        check(() => empty.assignAll(const <int>{})).throws<StateError>();
+      });
+    });
+
+    group('notifyListeners', () {
+      test('can be called publicly', () {
+        notifier.notifyListeners();
+        listener.verifyCalledOnce();
+      });
+
+      test('throws after dispose', () {
+        final n = SetNotifier<int>()..dispose();
+        check(n.notifyListeners).throws<StateError>();
+      });
+    });
+
+    group('null elements', () {
+      test('add/invert/remove work with null values', () {
+        final n = SetNotifier<int?>();
+        final l = VoidListener();
+        n.addListener(l.call);
+        addTearDown(n.dispose);
+
+        check(n.add(null)).isTrue();
+        l.verifyCalledOnce();
+        check(n).unorderedEquals([null]);
+
+        check(n.add(null)).isFalse();
+        l.verifyNotCalled();
+
+        check(n.invert(null)).isFalse();
+        l.verifyCalledOnce();
+        check(n).isEmpty();
+
+        check(n.invert(null)).isTrue();
+        l.verifyCalledOnce();
+        check(n.contains(null)).isTrue();
+
+        check(n.remove(null)).isTrue();
+        l.verifyCalledOnce();
+        check(n).isEmpty();
       });
     });
   });

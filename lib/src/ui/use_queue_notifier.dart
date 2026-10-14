@@ -38,7 +38,7 @@ QueueNotifier<E> useQueueNotifier<E>([
   return use(_QueueNotifierHook<E>(initial, keys));
 }
 
-class const _QueueNotifierHook<E>(
+final class const _QueueNotifierHook<E>(
   final Iterable<E> initial, [
   List<Object?>? keys,
 ]) extends Hook<QueueNotifier<E>> {
@@ -48,9 +48,11 @@ class const _QueueNotifierHook<E>(
   _QueueNotifierHookState<E> createState() => _QueueNotifierHookState<E>();
 }
 
-class _QueueNotifierHookState<E>
+final class _QueueNotifierHookState<E>
     extends HookState<QueueNotifier<E>, _QueueNotifierHook<E>> {
-  late final QueueNotifier<E> _notifier = QueueNotifier<E>(hook.initial);
+  QueueNotifier<E>? _notifier;
+
+  QueueNotifier<E> get _active => _notifier ??= QueueNotifier<E>(hook.initial);
 
   void _listener() {
     setState(() {});
@@ -59,16 +61,16 @@ class _QueueNotifierHookState<E>
   @override
   void initHook() {
     super.initHook();
-    _notifier.addListener(_listener);
+    _active.addListener(_listener);
   }
 
   @override
-  QueueNotifier<E> build(BuildContext context) => _notifier;
+  QueueNotifier<E> build(BuildContext context) => _active;
 
   @override
   void dispose() {
     _notifier
-      ..removeListener(_listener)
+      ?..removeListener(_listener)
       ..dispose();
   }
 
