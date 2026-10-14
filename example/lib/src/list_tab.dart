@@ -1,10 +1,9 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:example/src/panel_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'panel_header.dart';
-
-class const ListTab({super.key}) extends StatelessWidget {
+final class const ListTab({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
@@ -17,9 +16,7 @@ class const ListTab({super.key}) extends StatelessWidget {
   }
 }
 
-class _HooksPanel extends HookWidget {
-  const _HooksPanel();
-
+final class const _HooksPanel() extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final notifier = useListNotifier<String>(['Apple', 'Banana', 'Cherry']);
@@ -34,14 +31,12 @@ class _HooksPanel extends HookWidget {
   }
 }
 
-class _VlbPanel extends StatefulWidget {
-  const _VlbPanel();
-
+final class const _VlbPanel() extends StatefulWidget {
   @override
   State<_VlbPanel> createState() => _VlbPanelState();
 }
 
-class _VlbPanelState extends State<_VlbPanel> {
+final class _VlbPanelState extends State<_VlbPanel> {
   final notifier = ListNotifier<String>(['Apple', 'Banana', 'Cherry']);
 
   @override
@@ -66,7 +61,7 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class const _Controls({required final ListNotifier<String> notifier})
+final class const _Controls({required final ListNotifier<String> notifier})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -96,7 +91,7 @@ class const _Controls({required final ListNotifier<String> notifier})
   }
 }
 
-class const _ListBody({required final ListNotifier<String> notifier})
+final class const _ListBody({required final ListNotifier<String> notifier})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

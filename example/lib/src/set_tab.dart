@@ -1,10 +1,9 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:example/src/panel_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'panel_header.dart';
-
-class const SetTab({super.key}) extends StatelessWidget {
+final class const SetTab({super.key}) extends StatelessWidget {
   static const _items = 10;
 
   @override
@@ -19,7 +18,7 @@ class const SetTab({super.key}) extends StatelessWidget {
   }
 }
 
-class const _HooksPanel({required final int total}) extends HookWidget {
+final class const _HooksPanel({required final int total}) extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final notifier = useSetNotifier<int>();
@@ -38,12 +37,12 @@ class const _HooksPanel({required final int total}) extends HookWidget {
   }
 }
 
-class const _VlbPanel({required final int total}) extends StatefulWidget {
+final class const _VlbPanel({required final int total}) extends StatefulWidget {
   @override
   State<_VlbPanel> createState() => _VlbPanelState();
 }
 
-class _VlbPanelState extends State<_VlbPanel> {
+final class _VlbPanelState extends State<_VlbPanel> {
   final notifier = SetNotifier<int>();
 
   @override
@@ -72,7 +71,7 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class const _Controls({required final SetNotifier<int> notifier})
+final class const _Controls({required final SetNotifier<int> notifier})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -86,7 +85,7 @@ class const _Controls({required final SetNotifier<int> notifier})
   }
 }
 
-class const _SetBody({
+final class const _SetBody({
   required final SetNotifier<int> notifier,
   required final int total,
 }) extends StatelessWidget {
