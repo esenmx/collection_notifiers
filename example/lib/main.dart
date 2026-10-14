@@ -1,15 +1,15 @@
+import 'package:example/src/list_tab.dart';
+import 'package:example/src/map_tab.dart';
+import 'package:example/src/queue_tab.dart';
+import 'package:example/src/set_tab.dart';
 import 'package:flutter/material.dart';
-
-import 'src/list_tab.dart';
-import 'src/map_tab.dart';
-import 'src/queue_tab.dart';
-import 'src/set_tab.dart';
 
 void main() {
   runApp(const CollectionNotifiersExample());
 }
 
-class const CollectionNotifiersExample({super.key}) extends StatelessWidget {
+final class const CollectionNotifiersExample({super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,9 +23,7 @@ class const CollectionNotifiersExample({super.key}) extends StatelessWidget {
   }
 }
 
-class _HomePage extends StatelessWidget {
-  const _HomePage();
-
+final class const _HomePage() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

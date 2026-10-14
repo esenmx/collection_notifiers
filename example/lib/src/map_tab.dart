@@ -1,12 +1,11 @@
 import 'package:collection_notifiers/collection_notifiers.dart';
+import 'package:example/src/panel_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'panel_header.dart';
-
 const _seed = <String, int>{'Apples': 5, 'Oranges': 3, 'Bananas': 7};
 
-class const MapTab({super.key}) extends StatelessWidget {
+final class const MapTab({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
@@ -19,9 +18,7 @@ class const MapTab({super.key}) extends StatelessWidget {
   }
 }
 
-class _HooksPanel extends HookWidget {
-  const _HooksPanel();
-
+final class const _HooksPanel() extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final notifier = useMapNotifier<String, int>(_seed);
@@ -36,14 +33,12 @@ class _HooksPanel extends HookWidget {
   }
 }
 
-class _VlbPanel extends StatefulWidget {
-  const _VlbPanel();
-
+final class const _VlbPanel() extends StatefulWidget {
   @override
   State<_VlbPanel> createState() => _VlbPanelState();
 }
 
-class _VlbPanelState extends State<_VlbPanel> {
+final class _VlbPanelState extends State<_VlbPanel> {
   final notifier = MapNotifier<String, int>(_seed);
 
   @override
@@ -70,7 +65,7 @@ class _VlbPanelState extends State<_VlbPanel> {
   }
 }
 
-class const _Controls({required final MapNotifier<String, int> notifier})
+final class const _Controls({required final MapNotifier<String, int> notifier})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -91,7 +86,7 @@ class const _Controls({required final MapNotifier<String, int> notifier})
   }
 }
 
-class const _MapBody({required final MapNotifier<String, int> notifier})
+final class const _MapBody({required final MapNotifier<String, int> notifier})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
