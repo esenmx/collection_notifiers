@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class const PanelHeader({super.key, required final String label})
+final class const PanelHeader({required final String label, super.key})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
