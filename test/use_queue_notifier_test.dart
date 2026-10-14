@@ -1,6 +1,6 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,13 +21,14 @@ void main() {
     testWidgets('recreates notifier and disposes old one when keys change', (
       tester,
     ) async {
-      late QueueNotifier<int> captured;
+      final notifiers = <QueueNotifier<int>>[];
 
       Widget build(int keyVal) {
-        return MaterialApp(
-          home: HookBuilder(
+        return Directionality(
+          textDirection: .ltr,
+          child: HookBuilder(
             builder: (context) {
-              captured = useQueueNotifier<int>([1, 2, 3], [keyVal]);
+              notifiers.add(useQueueNotifier<int>([1, 2, 3], [keyVal]));
               return const SizedBox.shrink();
             },
           ),
@@ -35,13 +36,13 @@ void main() {
       }
 
       await tester.pumpWidget(build(1));
-      final firstNotifier = captured;
+      final firstNotifier = notifiers.single;
 
       await tester.pumpWidget(build(2));
-      final secondNotifier = captured;
+      final secondNotifier = notifiers.last;
 
       check(identical(firstNotifier, secondNotifier)).isFalse();
-      check(() => firstNotifier.addLast(4)).throws<Error>();
+      check(() => firstNotifier.addLast(4)).throws<StateError>();
     });
   });
 }

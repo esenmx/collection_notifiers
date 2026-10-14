@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.0.0
+
+### Breaking
+
+- Using a disposed notifier throws `StateError` (`'<Type> used after dispose()'`) in every build mode, before any change: every mutator, `batch`, `notifyListeners`, `addListener`, and a second `dispose()`. Before, only debug builds failed (`FlutterError`); release builds applied the mutation and notified nobody. Reads and `removeListener` still work.
+- `batch` with an `async` body throws `ArgumentError` in every build mode, without running it. A body that returns a `Future` at runtime despite a non-`Future` type throws `ArgumentError` after it returns, once its synchronous changes have been notified. Before, only a debug assert caught it, after the body ran; release builds notified each change made after the first `await` separately.
+
+### Changed
+
+- The constructor docs (and README) state that `MapNotifier` / `SetNotifier` copy their base like `Map.of` / `Set.of`: they always store a `LinkedHashMap` / `LinkedHashSet`, so a `SplayTreeMap`'s sort order or an identity set's equality is not kept. Behaviour is unchanged.
+
+### Fixed
+
+- `ListNotifier.replaceRange` copies `newContents` eagerly (`List<E>.of`) so passing the notifier itself or a sub-range view (`getRange`, `sublist`, `where`) does not corrupt elements or throw `ConcurrentModificationError`.
+- `ListNotifier.setAll` copies `iterable` eagerly and validates bounds before mutating, matching `List.setAll` on self-aliasing, views, and out-of-bounds calls.
+- `ListNotifier.insertAll` at `index > 0` with `iterable` aliasing the notifier itself throws `ConcurrentModificationError` before mutating, matching `addAll`.
+- `batch()` skips its `finally` notification if the callback disposes the notifier.
+- `SetNotifier.invert` performs a single hash-set lookup (`super.remove`) instead of `contains` followed by `remove`/`add`.
+
 ## 2.4.0 - 2026-10-04
 
 ### Added

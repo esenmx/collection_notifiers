@@ -1,6 +1,6 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,12 +11,13 @@ void main() {
       var buildCount = 0;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: ValueListenableBuilder<List<String>>(
+        Directionality(
+          textDirection: .ltr,
+          child: ValueListenableBuilder<List<String>>(
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: .ltr);
+              return Text(items.join(','));
             },
           ),
         ),
@@ -38,12 +39,13 @@ void main() {
       var buildCount = 0;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: ValueListenableBuilder<List<String>>(
+        Directionality(
+          textDirection: .ltr,
+          child: ValueListenableBuilder<List<String>>(
             valueListenable: notifier,
             builder: (context, items, _) {
               buildCount++;
-              return Text(items.join(','), textDirection: .ltr);
+              return Text(items.join(','));
             },
           ),
         ),
@@ -65,12 +67,13 @@ void main() {
       var buildCount = 0;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: ValueListenableBuilder<Map<String, int?>>(
+        Directionality(
+          textDirection: .ltr,
+          child: ValueListenableBuilder<Map<String, int?>>(
             valueListenable: notifier,
             builder: (context, map, _) {
               buildCount++;
-              return Text('${map.length}', textDirection: .ltr);
+              return Text('${map.length}');
             },
           ),
         ),

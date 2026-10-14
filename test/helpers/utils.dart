@@ -9,9 +9,9 @@ import 'package:flutter/foundation.dart' show immutable;
 /// notifier
 ///   ..addListener(listener)
 ///   ..add(1);
-/// listener.verifyCalledOnce;
+/// listener.verifyCalledOnce();
 /// ```
-class VoidListener {
+final class VoidListener {
   int callCount = 0;
 
   void call() {
@@ -26,17 +26,17 @@ class VoidListener {
     callCount = 0;
   }
 
-  void get verifyNotCalled => called(0);
+  void verifyNotCalled() => called(0);
 
-  void get verifyCalledOnce => called(1);
+  void verifyCalledOnce() => called(1);
 
-  void get verifyCalledTwice => called(2);
+  void verifyCalledTwice() => called(2);
 
-  void get verifyCalledThrice => called(3);
+  void verifyCalledThrice() => called(3);
 }
 
 @immutable
-class const Entity(final int id, final String label) {
+final class const Entity(final int id, final String label) {
   @override
   bool operator ==(Object other) => other is Entity && other.id == id;
 
