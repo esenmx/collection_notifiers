@@ -100,7 +100,17 @@ If the notifier is owned upstream (Riverpod, parent widget), subscribe
 without recreating it:
 
 ```dart
-useListenable(notifier);
+class TodoCount extends HookWidget {
+  const TodoCount(this.todos, {super.key});
+
+  final ListNotifier<String> todos;
+
+  @override
+  Widget build(BuildContext context) {
+    useListenable(todos);
+    return Text('${todos.length} todos');
+  }
+}
 ```
 
 ---
@@ -177,10 +187,15 @@ In every build mode, before anything changes:
 ```dart
 final selected = useSetNotifier<int>();
 
-CheckboxListTile(
-  value: selected.contains(id),
-  onChanged: (_) => selected.invert(id),
-  title: Text('Item $id'),
+ListView(
+  children: [
+    for (final id in [1, 2, 3])
+      CheckboxListTile(
+        value: selected.contains(id),
+        onChanged: (_) => selected.invert(id),
+        title: Text('Item $id'),
+      ),
+  ],
 );
 ```
 
@@ -202,6 +217,14 @@ settings['fontSize'] = 14;   // silent — already 14
 ### Todos with `ListNotifier`
 
 ```dart
+class Todo {
+  Todo({required this.title, this.completed = false, this.priority = 0});
+
+  final String title;
+  final bool completed;
+  final int priority;
+}
+
 final todos = useListNotifier<Todo>();
 
 todos.add(Todo(title: 'learn Flutter'));
@@ -281,9 +304,10 @@ class TodoList extends ConsumerWidget {
 **Breaking:** `SetNotifier.invert(e)` return value:
 
 ```dart
+final selected = SetNotifier<int>();
 // v1.x — returned whichever of add()/remove() ran
 // v2.x — true if element was added, false if removed
-selected.invert(1);
+final added = selected.invert(1);
 ```
 
 ---
