@@ -26,7 +26,7 @@ part of '../collection_notifiers.dart';
 /// todos[0] = 'Walk dog';      // No notification (value unchanged)
 /// todos[0] = 'Feed dog';      // Notifies: [Feed dog, Call mom]
 /// ```
-class ListNotifier<E>([Iterable<E> base = const []])
+final class ListNotifier<E>([Iterable<E> base = const []])
     extends DelegatingList<E>
     with ChangeNotifier, _NotifierMixin
     implements ValueListenable<List<E>> {

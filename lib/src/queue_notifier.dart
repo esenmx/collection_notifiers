@@ -21,7 +21,7 @@ part of '../collection_notifiers.dart';
 /// tasks.addFirst('Urgent');  // Notifies: [Urgent, Task 1, Task 2]
 /// tasks.removeFirst();       // Notifies: [Task 1, Task 2]
 /// ```
-class QueueNotifier<E>([Iterable<E> base = const []])
+final class QueueNotifier<E>([Iterable<E> base = const []])
     extends DelegatingQueue<E>
     with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Queue<E>> {
