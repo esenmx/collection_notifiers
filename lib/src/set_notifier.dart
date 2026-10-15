@@ -23,7 +23,7 @@ part of '../collection_notifiers.dart';
 /// selectedIds.invert(2);     // Notifies: {} (toggles off)
 /// selectedIds.invert(3);     // Notifies: {3} (toggles on)
 /// ```
-class SetNotifier<E>([Iterable<E> base = const []])
+final class SetNotifier<E>([Iterable<E> base = const []])
     extends DelegatingSet<E>
     with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Set<E>> {

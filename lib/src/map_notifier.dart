@@ -21,7 +21,7 @@ part of '../collection_notifiers.dart';
 /// settings['sound'] = true;      // Notifies: {darkMode: true, sound: true}
 /// settings.remove('sound');      // Notifies: {darkMode: true}
 /// ```
-class MapNotifier<K, V>([Map<K, V> base = const {}])
+final class MapNotifier<K, V>([Map<K, V> base = const {}])
     extends DelegatingMap<K, V>
     with ChangeNotifier, _NotifierMixin
     implements ValueListenable<Map<K, V>> {

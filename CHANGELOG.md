@@ -5,6 +5,7 @@
 ### Breaking
 
 - Using a disposed notifier throws `StateError` (`'<Type> used after dispose()'`) in every build mode, before any change: every mutator, `batch`, `notifyListeners`, `addListener`, and a second `dispose()`. Before, only debug builds failed (`FlutterError`); release builds applied the mutation and notified nobody. Reads and `removeListener` still work.
+- `ListNotifier`, `SetNotifier`, `MapNotifier` and `QueueNotifier` are `final` classes: they can no longer be extended or implemented outside the package, so adding members stops being a breaking change. Migration: wrap a notifier in your own class instead of subclassing it, and use a real notifier instead of an `implements` fake in tests.
 - `batch` with an `async` body throws `ArgumentError` in every build mode, without running it. A body that returns a `Future` at runtime despite a non-`Future` type throws `ArgumentError` after it returns, once its synchronous changes have been notified. Before, only a debug assert caught it, after the body ran; release builds notified each change made after the first `await` separately.
 
 ### Changed
