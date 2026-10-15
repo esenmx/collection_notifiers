@@ -61,6 +61,8 @@ copies its argument like `List.of` / `Set.of` / `Map.of` / `Queue.of`. A
 `MapNotifier` always stores a `LinkedHashMap` and a `SetNotifier` a
 `LinkedHashSet` — insertion order, `==`/`hashCode` equality — so a
 `SplayTreeMap`'s sort order or an identity set's equality is not kept.
+The classes are `final`: hold a notifier in a field instead of
+extending or implementing one.
 
 ---
 
@@ -270,6 +272,7 @@ class TodoList extends ConsumerWidget {
 |Calling `dispose()` on a hook's notifier|Let the hook dispose it on unmount — a second `dispose()` throws `StateError`|
 |`batch(() async { ... })`|Keep the body synchronous; `await` before or after `batch`|
 |`MapNotifier(SplayTreeMap(...))` expecting sorted keys|The copy is a `LinkedHashMap` (like `Map.of`); sort when reading, or insert in order|
+|`class Todos extends ListNotifier<Todo>` or a fake that `implements` it|The notifiers are `final`: wrap one in your own class, and use a real notifier in tests|
 
 ---
 
