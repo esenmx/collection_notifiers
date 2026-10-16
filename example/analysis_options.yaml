@@ -1,4 +1,4 @@
-include: package:very_good_analysis/analysis_options.yaml
+include: ../analysis_options.yaml
 
 analyzer:
   exclude:
@@ -8,5 +8,3 @@ analyzer:
 linter:
   rules:
     public_member_api_docs: false
-    unawaited_futures: false
-    discarded_futures: false
