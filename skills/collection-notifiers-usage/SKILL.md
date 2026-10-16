@@ -9,21 +9,20 @@ metadata: {version: "1"}
 
 ## Pick the hook
 
-|Need|Hook|
-|---|---|
-|Ordered, indexable, reorderable|`useListNotifier<E>`|
-|Unique elements, selection toggles|`useSetNotifier<E>`|
-|Key → value lookup|`useMapNotifier<K, V>`|
-|FIFO/LIFO head-or-tail mutation|`useQueueNotifier<E>`|
+| Need | Hook |
+| --- | --- |
+| Ordered, indexable, reorderable | `useListNotifier<E>` |
+| Unique elements, selection toggles | `useSetNotifier<E>` |
+| Key → value lookup | `useMapNotifier<K, V>` |
+| FIFO/LIFO head-or-tail mutation | `useQueueNotifier<E>` |
 
-Each hook creates the notifier, disposes it on unmount, and rebuilds the host widget on every real change.
+Each hook creates the notifier, disposes it on unmount, and rebuilds the host
+widget on every real change.
 
 ## Snippets
 
 ```dart
-class TodoList extends HookWidget {
-  const TodoList({super.key});
-
+class const TodoList({super.key}) extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final todos = useListNotifier<String>(['Buy milk']);
@@ -41,11 +40,8 @@ class TodoList extends HookWidget {
 ```
 
 ```dart
-class FilterChips extends HookWidget {
-  const FilterChips({super.key, required this.tags});
-
-  final List<String> tags;
-
+class const FilterChips({required final List<String> tags, super.key})
+    extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selected = useSetNotifier<String>();
@@ -64,9 +60,7 @@ class FilterChips extends HookWidget {
 ```
 
 ```dart
-class SettingsPage extends HookWidget {
-  const SettingsPage({super.key});
-
+class const SettingsPage({super.key}) extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final settings = useMapNotifier<String, bool>({'darkMode': false});
@@ -80,9 +74,7 @@ class SettingsPage extends HookWidget {
 ```
 
 ```dart
-class JobQueueView extends HookWidget {
-  const JobQueueView({super.key});
-
+class const JobQueueView({super.key}) extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final jobs = useQueueNotifier<String>();
@@ -101,14 +93,29 @@ class JobQueueView extends HookWidget {
 
 ## Hard rules
 
-- **Mutate, never reassign.** `notifier.assignAll([...])` (one notification), never `notifier = ListNotifier(...)`.
-- **Coalesce.** Group mutations in `notifier.batch(() { ... })` — the body must be synchronous (an `async` body throws `ArgumentError`); reorder with `ReorderableListView(onReorderItem: list.move)`.
-- **Never touch a disposed notifier.** Mutators, `batch`, `notifyListeners`, `addListener` and a second `dispose()` throw `StateError` in every build mode. A hook disposes its notifier on unmount — don't dispose it yourself.
-- **`initial` is consumed once (unless keys are provided).** To reset, either pass a dependency array `keys` parameter (e.g. `useListNotifier(initial, [dependency])`), or change the host widget's `key` so the hook re-mounts.
-- **The base is copied like `Map.of` / `Set.of`.** `MapNotifier` / `SetNotifier` always store a `LinkedHashMap` / `LinkedHashSet` (insertion order, `==` equality); a `SplayTreeMap`'s order or an identity set's equality is not kept.
-- **Compose, don't subclass.** The notifiers are `final` classes: hold one in a field, never `extends` / `implements` it (tests use a real notifier).
-- **Element equality is the optimisation contract.** Use `freezed` / `equatable` on custom element types so `==` / `hashCode` are correct.
-- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is public on all notifiers, call it to trigger UI updates if you mutate properties of collection elements in-place (the `==` check cannot see in-place field changes).
+- **Mutate, never reassign.** `notifier.assignAll([...])` (one notification),
+  never `notifier = ListNotifier(...)`.
+- **Coalesce.** Group mutations in `notifier.batch(() { ... })` — the body must
+  be synchronous (an `async` body throws `ArgumentError`); reorder with
+  `ReorderableListView(onReorderItem: list.move)`.
+- **Never touch a disposed notifier.** Mutators, `batch`, `notifyListeners`,
+  `addListener` and a second `dispose()` throw `StateError` in every build mode.
+  A hook disposes its notifier on unmount — don't dispose it yourself.
+- **`initial` is consumed once (unless keys are provided).** To reset, either
+  pass a dependency array `keys` parameter (e.g.
+  `useListNotifier(initial, [dependency])`), or change the host widget's `key`
+  so the hook re-mounts.
+- **The base is copied like `Map.of` / `Set.of`.** `MapNotifier` / `SetNotifier`
+  always store a `LinkedHashMap` / `LinkedHashSet` (insertion order, `==`
+  equality); a `SplayTreeMap`'s order or an identity set's equality is not kept.
+- **Compose, don't subclass.** The notifiers are `final` classes: hold one in a
+  field, never `extends` / `implements` it (tests use a real notifier).
+- **Element equality is the optimisation contract.** Use `freezed` / `equatable`
+  on custom element types so `==` / `hashCode` are correct.
+- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is
+  public on all notifiers, call it to trigger UI updates if you mutate
+  properties of collection elements in-place (the `==` check cannot see in-place
+  field changes).
 
 ## When not to use
 
