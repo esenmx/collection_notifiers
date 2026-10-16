@@ -32,7 +32,7 @@ body:
     id: package-version
     attributes:
       label: collection_notifiers version
-      placeholder: 3.0.0
+      placeholder: 3.0.1
     validations:
       required: true
   - type: textarea
