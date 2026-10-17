@@ -11,7 +11,7 @@ void main() {
       final n = ListNotifier<int>([1, 2]);
       addTearDown(n.dispose);
       n
-        ..addListener(() => seen.add(List.of(n)))
+        ..addListener(() => seen.add(.of(n)))
         ..batch(() {
           n
             ..clear()
@@ -142,7 +142,7 @@ void main() {
       final n = ListNotifier<int>([1, 2]);
       addTearDown(n.dispose);
       n
-        ..addListener(() => seen.add(List.of(n)))
+        ..addListener(() => seen.add(.of(n)))
         ..assignAll([3]);
       check(seen).deepEquals([
         [3],
