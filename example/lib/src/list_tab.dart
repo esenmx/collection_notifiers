@@ -66,7 +66,7 @@ final class const _Controls({required final ListNotifier<String> notifier})
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const .all(12),
       child: Wrap(
         spacing: 8,
         children: [
