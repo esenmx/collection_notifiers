@@ -70,7 +70,7 @@ final class const _Controls({required final MapNotifier<String, int> notifier})
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const .all(12),
       child: FilledButton.icon(
         onPressed: () {
           var i = notifier.length + 1;
