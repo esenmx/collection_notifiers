@@ -886,7 +886,7 @@ void main() {
         final nan = VoidListener();
         n
           ..addListener(nan.call)
-          ..shuffle();
+          ..sort();
         nan.verifyNotCalled();
       });
 
