@@ -1,5 +1,37 @@
 # Changelog
 
+## Unreleased
+
+### Breaking
+
+- BREAKING: `dispose()` during a notification throws `StateError` in every build
+  mode and leaves the notifier alive. From a listener, `ChangeNotifier` reports
+  it through `FlutterError.onError` and the mutation that notified returns
+  normally, so a listener that disposes its own notifier must defer the call.
+  Before, debug builds reported an `AssertionError`, kept notifying and left the
+  notifier unusable with its listeners still attached; release builds disposed
+  it, skipped the remaining listeners and reported a `RangeError`.
+
+- BREAKING: `ListNotifier.shuffle` notifies only when the resulting order differs
+  by `==`. Before, it always notified on `length > 1`, including
+  `[1, 1].shuffle()`. A shuffle that keeps the order, or only swaps
+  equal-but-distinct elements, is now silent, so don't use it to force a rebuild.
+
+### Fixed
+
+- `batch` accepts a body typed `Never Function()`, so a body that always throws
+  runs and its error reaches the caller. Before, it threw `ArgumentError` ("must
+  be synchronous") without running the body. An `async` body that only throws is
+  still rejected.
+- `ListNotifier.insertAll` copies `iterable` eagerly (`List<E>.of`), like
+  `replaceRange` and `setAll`, so inserting a live view of the notifier
+  (`getRange`, `cast`) no longer writes wrong elements or leaves `null` holes,
+  and a failing iterable changes nothing. This replaces the 3.0.0
+  `ConcurrentModificationError` on inserting the notifier itself at `index > 0`:
+  it now inserts a copy.
+- The README and the agent skill state that `batch(() => load())` runs `load`
+  and throws after it returns, rather than before anything changes.
+
 ## 3.0.1 - 2026-10-16
 
 ### Changed

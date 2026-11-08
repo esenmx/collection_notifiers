@@ -96,11 +96,17 @@ class const JobQueueView({super.key}) extends HookWidget {
 - **Mutate, never reassign.** `notifier.assignAll([...])` (one notification),
   never `notifier = ListNotifier(...)`.
 - **Coalesce.** Group mutations in `notifier.batch(() { ... })` — the body must
-  be synchronous (an `async` body throws `ArgumentError`); reorder with
+  be synchronous. An `async` closure throws `ArgumentError` before it runs. A
+  forwarding arrow, `batch(() => load())`, is typed `void`: `load` runs, its
+  changes before the first `await` notify once, `ArgumentError` follows, and
+  later changes notify one by one. Reorder with
   `ReorderableListView(onReorderItem: list.move)`.
 - **Never touch a disposed notifier.** Mutators, `batch`, `notifyListeners`,
   `addListener` and a second `dispose()` throw `StateError` in every build mode.
   A hook disposes its notifier on unmount — don't dispose it yourself.
+- **Never dispose from a listener.** `dispose()` during a notification throws
+  `StateError` and leaves the notifier alive; from a listener it reaches
+  `FlutterError.onError`, not the mutation's caller.
 - **`initial` is consumed once (unless keys are provided).** To reset, either
   pass a dependency array `keys` parameter (e.g.
   `useListNotifier(initial, [dependency])`), or change the host widget's `key`
