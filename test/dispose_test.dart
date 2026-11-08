@@ -13,6 +13,14 @@ extension on Subject<void Function()> {
   }
 }
 
+extension on Subject<List<Object>> {
+  void reportsDisposedDuringNotification(ChangeNotifier n) {
+    single.isA<StateError>().has((e) => e.message, 'message')
+      ..contains('${n.runtimeType}')
+      ..contains('during a notification');
+  }
+}
+
 void main() {
   group('ListNotifier use after dispose throws StateError', () {
     for (final (name, use) in <(String, void Function(ListNotifier<int>))>[
@@ -139,15 +147,6 @@ void main() {
       return errors;
     }
 
-    void checkDisposedDuringNotification(
-      List<Object> errors,
-      ListNotifier<int> n,
-    ) {
-      check(errors).single.isA<StateError>().has((e) => e.message, 'message')
-        ..contains('${n.runtimeType}')
-        ..contains('during a notification');
-    }
-
     test(
       'from a listener reports StateError and leaves the notifier alive',
       () {
@@ -158,7 +157,7 @@ void main() {
           ..addListener(n.dispose)
           ..addListener(other.call)
           ..add(1);
-        checkDisposedDuringNotification(errors, n);
+        check(errors).reportsDisposedDuringNotification(n);
         other.verifyCalledOnce();
 
         n
@@ -178,7 +177,7 @@ void main() {
       n
         ..addListener(n.dispose)
         ..batch(() => n.add(1));
-      checkDisposedDuringNotification(errors, n);
+      check(errors).reportsDisposedDuringNotification(n);
 
       n
         ..removeListener(n.dispose)
@@ -193,7 +192,7 @@ void main() {
       n
         ..addListener(disposeInBatch)
         ..add(1);
-      checkDisposedDuringNotification(errors, n);
+      check(errors).reportsDisposedDuringNotification(n);
 
       n
         ..removeListener(disposeInBatch)
@@ -215,7 +214,7 @@ void main() {
       n
         ..addListener(mutateThenDispose)
         ..add(1);
-      checkDisposedDuringNotification(errors, n);
+      check(errors).reportsDisposedDuringNotification(n);
 
       n
         ..removeListener(mutateThenDispose)
