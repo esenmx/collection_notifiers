@@ -151,7 +151,7 @@ final class MapNotifier<K, V>([Map<K, V> base = const {}])
   }
 
   @override
-  Map<RK, RV> cast<RK, RV>() => Map.castFrom<K, V, RK, RV>(this);
+  Map<RK, RV> cast<RK, RV>() => .castFrom(this);
 
   /// Replaces the contents with [other], notifying once only when the
   /// resulting key or value sequence differs by `==`.
