@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -97,6 +99,82 @@ void main() {
           .equals('body');
       check(n).deepEquals([1, 2, 3]);
       l.verifyCalledOnce();
+    });
+
+    test(
+      'a forwarding arrow runs its future, throws ArgumentError after the '
+      'synchronous changes notify once, and later changes notify singly',
+      () async {
+        final l = VoidListener();
+        final n = ListNotifier<int>()..addListener(l.call);
+        addTearDown(n.dispose);
+        final resume = Completer<void>();
+        final done = Completer<void>();
+        Future<void> load(int first) async {
+          n.add(first);
+          await resume.future;
+          n
+            ..add(2)
+            ..add(3);
+          done.complete();
+        }
+
+        check(() => n.batch(() => load(1)))
+            .throws<ArgumentError>()
+            .has((e) => e.name, 'name')
+            .equals('body');
+        check(n).deepEquals([1]);
+        l.verifyCalledOnce();
+
+        resume.complete();
+        await done.future;
+        check(n).deepEquals([1, 2, 3]);
+        l.verifyCalledTwice();
+      },
+    );
+
+    test('a body typed to never return runs and its error propagates', () {
+      final l = VoidListener();
+      final n = ListNotifier<int>()..addListener(l.call);
+      addTearDown(n.dispose);
+      Never fail() {
+        n.add(1);
+        throw StateError('x');
+      }
+
+      check(() => n.batch(fail))
+          .throws<StateError>()
+          .has((e) => e.message, 'message')
+          .equals('x');
+      check(n).deepEquals([1]);
+      l.verifyCalledOnce();
+    });
+
+    test(
+      'a closure inferred to never return runs and its error propagates',
+      () {
+        final n = ListNotifier<int>();
+        addTearDown(n.dispose);
+        final bodies = [() => throw StateError('x')];
+        check(bodies.single).isA<Never Function()>();
+        check(() => n.batch(bodies.single))
+            .throws<StateError>()
+            .has((e) => e.message, 'message')
+            .equals('x');
+      },
+    );
+
+    test('an async body that only throws is still rejected before it runs', () {
+      final n = ListNotifier<int>();
+      addTearDown(n.dispose);
+      var ran = false;
+      check(
+        () => n.batch(() async {
+          ran = true;
+          throw StateError('x');
+        }),
+      ).throws<ArgumentError>();
+      check(ran).isFalse();
     });
 
     test('an explicit notifyListeners inside notifies once', () {
