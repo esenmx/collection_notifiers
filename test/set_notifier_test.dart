@@ -204,7 +204,7 @@ void main() {
         listener.verifyNotCalled();
       });
 
-      test('notifies once when the iterable throws after a change', () {
+      test('an iterable that throws leaves the set unchanged and silent', () {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
@@ -214,7 +214,8 @@ void main() {
         }
 
         check(() => notifier.retainAll(partial())).throws<StateError>();
-        listener.called(notifier.length != 3 ? 1 : 0);
+        check(notifier).deepEquals({1, 2, 3});
+        listener.verifyNotCalled();
       });
     });
 
