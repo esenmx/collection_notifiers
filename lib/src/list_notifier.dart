@@ -149,10 +149,8 @@ final class ListNotifier<E>([Iterable<E> base = const []])
   void insertAll(int index, Iterable<E> iterable) {
     _checkNotDisposed();
     RangeError.checkValueInInterval(index, 0, length, 'index');
-    if (identical(iterable, this) && index > 0 && super.isNotEmpty) {
-      throw ConcurrentModificationError(this);
-    }
-    _notifyOnLengthChange(() => super.insertAll(index, iterable));
+    final list = List<E>.of(iterable);
+    _notifyOnLengthChange(() => super.insertAll(index, list));
   }
 
   @override
@@ -280,17 +278,17 @@ final class ListNotifier<E>([Iterable<E> base = const []])
     }
   }
 
-  /// Shuffles the list and notifies listeners.
-  ///
-  /// Skips notification when [length] ≤ 1 (nothing can move). On a list
-  /// of length > 1 this **always** notifies, even when the shuffle
-  /// happens to produce the same ordering — verifying order-preservation
-  /// would cost O(n) per call and defeats the optimisation budget.
+  /// Shuffles the list, notifying once only when the resulting sequence
+  /// differs by `==`.
   @override
   void shuffle([math.Random? random]) {
     _checkNotDisposed();
-    if (length > 1) {
-      super.shuffle(random);
+    if (length < 2) {
+      return;
+    }
+    final before = List<E>.of(this);
+    super.shuffle(random);
+    if (!const IterableEquality<Object?>().equals(before, this)) {
       notifyListeners();
     }
   }
@@ -315,7 +313,7 @@ final class ListNotifier<E>([Iterable<E> base = const []])
   };
 
   @override
-  List<R> cast<R>() => List.castFrom<E, R>(this);
+  List<R> cast<R>() => .castFrom(this);
 
   /// Replaces the contents with [elements], notifying once only when the
   /// resulting sequence differs by `==`.

@@ -63,8 +63,7 @@
 ///
 /// `batch` and `assignAll` on [ListNotifier], [SetNotifier],
 /// [MapNotifier], and [QueueNotifier] coalesce several changes into one
-/// notification; [ListNotifier.shuffle] on a list of length > 1 always
-/// notifies. See each method's dartdoc.
+/// notification. See each method's dartdoc.
 library;
 
 import 'dart:collection';

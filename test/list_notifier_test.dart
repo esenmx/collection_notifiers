@@ -7,6 +7,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/utils.dart';
 
+final class const _ScriptedRandom({required final bool keepOrder})
+    implements Random {
+  @override
+  int nextInt(int max) => keepOrder ? max - 1 : 0;
+
+  @override
+  bool nextBool() => throw UnsupportedError('nextBool');
+
+  @override
+  double nextDouble() => throw UnsupportedError('nextDouble');
+}
+
 void main() {
   group('ListNotifier', () {
     late VoidListener listener;
@@ -106,6 +118,21 @@ void main() {
             .throws<ConcurrentModificationError>();
         check(notifier).deepEquals(plain);
         listener.verifyNotCalled();
+      });
+
+      test('a live view of itself throws after a partial write, like a plain '
+          'list, and notifies once', () {
+        final plain = [1, 2, 3];
+        check(() => plain.addAll(plain.where((_) => true)))
+            .throws<ConcurrentModificationError>();
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        check(() => notifier.addAll(notifier.where((_) => true)))
+            .throws<ConcurrentModificationError>();
+        check(notifier).deepEquals(plain);
+        check(notifier.length).equals(4);
+        listener.verifyCalledOnce();
       });
 
       test('adding itself when empty is a silent no-op, like a plain list', () {
@@ -228,7 +255,7 @@ void main() {
         listener.verifyCalledOnce();
       });
 
-      test('notifies once when the iterable throws after a change', () {
+      test('an iterable that throws leaves the list unchanged and silent', () {
         notifier.add(0);
         listener.verifyCalledOnce();
 
@@ -238,19 +265,51 @@ void main() {
         }
 
         check(() => notifier.insertAll(0, partial())).throws<StateError>();
-        listener.called(notifier.length != 1 ? 1 : 0);
+        check(notifier).deepEquals([0]);
+        listener.verifyNotCalled();
       });
 
-      test('inserting itself at index > 0 throws before mutating', () {
+      for (final (index, want) in [
+        (1, [1, 1, 2, 3, 2, 3]),
+        (2, [1, 2, 1, 2, 3, 3]),
+        (3, [1, 2, 3, 1, 2, 3]),
+      ]) {
+        test('inserting itself at $index inserts a copy and notifies once', () {
+          notifier.addAll([1, 2, 3]);
+          listener.verifyCalledOnce();
+
+          notifier.insertAll(index, notifier);
+          check(notifier).deepEquals(want);
+          listener.verifyCalledOnce();
+        });
+      }
+
+      test('a live getRange view is read before inserting', () {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        for (final index in [1, 2, notifier.length]) {
-          check(() => notifier.insertAll(index, notifier))
-              .throws<ConcurrentModificationError>();
-          check(notifier).deepEquals([1, 2, 3]);
-          listener.verifyNotCalled();
-        }
+        notifier.insertAll(1, notifier.getRange(0, 2));
+        check(notifier).deepEquals([1, 1, 2, 2, 3]);
+        listener.verifyCalledOnce();
+      });
+
+      test('a live cast view is read before inserting', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        notifier.insertAll(1, notifier.cast<int>());
+        check(notifier).deepEquals([1, 1, 2, 3, 2, 3]);
+        listener.verifyCalledOnce();
+      });
+
+      test('throwing CastList throws TypeError before mutating', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        check(() => notifier.insertAll(1, <Object>[9, 'bad'].cast<int>()))
+            .throws<TypeError>();
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled();
       });
 
       test('inserting itself at 0 inserts a copy and notifies once', () {
@@ -351,7 +410,7 @@ void main() {
         listener.verifyNotCalled();
       });
 
-      test('notifies once when the predicate throws after a change', () {
+      test('a predicate that throws leaves the list unchanged and silent', () {
         notifier.addAll([2, 3, 4]);
         listener.verifyCalledOnce();
 
@@ -360,7 +419,8 @@ void main() {
             (e) => e == 3 ? throw StateError('x') : e.isEven,
           ),
         ).throws<StateError>();
-        listener.called(notifier.length != 3 ? 1 : 0);
+        check(notifier).deepEquals([2, 3, 4]);
+        listener.verifyNotCalled();
       });
     });
 
@@ -630,12 +690,62 @@ void main() {
         listener.verifyCalledOnce();
       });
 
+      test('does not notify for a lone NaN, which never equals itself', () {
+        final n = ListNotifier<double>([.nan]);
+        addTearDown(n.dispose);
+        final nan = VoidListener();
+        n
+          ..addListener(nan.call)
+          ..shuffle();
+        nan.verifyNotCalled();
+      });
+
       test('does not notify for single element list', () {
         notifier.add(1);
         listener.verifyCalledOnce();
 
         notifier.shuffle();
         listener.verifyNotCalled();
+      });
+
+      test('does not notify when every element is equal', () {
+        notifier.addAll([1, 1]);
+        listener.verifyCalledOnce();
+
+        notifier.shuffle();
+        check(notifier).deepEquals([1, 1]);
+        listener.verifyNotCalled();
+      });
+
+      test('does not notify when the order comes out the same', () {
+        notifier.addAll([1, 2, 3]);
+        listener.verifyCalledOnce();
+
+        notifier.shuffle(const _ScriptedRandom(keepOrder: true));
+        check(notifier).deepEquals([1, 2, 3]);
+        listener.verifyNotCalled();
+      });
+
+      test('notifies once when the order changes', () {
+        notifier.addAll([1, 2]);
+        listener.verifyCalledOnce();
+
+        notifier.shuffle(const _ScriptedRandom(keepOrder: false));
+        check(notifier).deepEquals([2, 1]);
+        listener.verifyCalledOnce();
+      });
+
+      test('swaps equal-but-distinct elements without notifying', () {
+        const a = Entity(1, 'A');
+        const b = Entity(1, 'B');
+        final l = VoidListener();
+        final n = ListNotifier<Entity>([a, b])..addListener(l.call);
+        addTearDown(n.dispose);
+
+        n.shuffle(const _ScriptedRandom(keepOrder: false));
+        check(identical(n[0], b)).isTrue();
+        check(identical(n[1], a)).isTrue();
+        l.verifyNotCalled();
       });
 
       test('does not notify for empty list', () {
@@ -768,6 +878,16 @@ void main() {
         notifier.sort();
         listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 2, 3]);
+      });
+
+      test('does not notify for a lone NaN, which never equals itself', () {
+        final n = ListNotifier<double>([.nan]);
+        addTearDown(n.dispose);
+        final nan = VoidListener();
+        n
+          ..addListener(nan.call)
+          ..shuffle();
+        nan.verifyNotCalled();
       });
 
       test('does not notify for single element list', () {
