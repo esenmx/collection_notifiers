@@ -2,6 +2,7 @@ part of '../collection_notifiers.dart';
 
 mixin _NotifierMixin on ChangeNotifier {
   int _batchDepth = 0;
+  int _notificationDepth = 0;
   bool _batchDirty = false;
   bool _disposed = false;
 
@@ -20,7 +21,7 @@ mixin _NotifierMixin on ChangeNotifier {
   /// notified once first, as for a [body] that throws.
   void batch(void Function() body) {
     _checkNotDisposed();
-    if (body is Future<Object?> Function()) {
+    if (body is Future<Object?> Function() && body is! Never Function()) {
       throw ArgumentError.value(body, 'body', 'must be synchronous');
     }
     _batchDepth++;
@@ -32,7 +33,7 @@ mixin _NotifierMixin on ChangeNotifier {
       if (_batchDepth == 0 && _batchDirty) {
         _batchDirty = false;
         if (!_disposed) {
-          super.notifyListeners();
+          _dispatch();
         }
       }
     }
@@ -71,12 +72,28 @@ mixin _NotifierMixin on ChangeNotifier {
       _batchDirty = true;
       return;
     }
-    super.notifyListeners();
+    _dispatch();
   }
 
+  void _dispatch() {
+    _notificationDepth++;
+    try {
+      super.notifyListeners();
+    } finally {
+      _notificationDepth--;
+    }
+  }
+
+  /// Throws [StateError] during a notification, leaving the notifier alive.
+  /// From a listener, [ChangeNotifier] reports it through
+  /// `FlutterError.onError`, like anything else a listener throws, and the
+  /// mutation that notified returns normally.
   @override
   void dispose() {
     _checkNotDisposed();
+    if (_notificationDepth > 0) {
+      throw StateError('$runtimeType disposed during a notification');
+    }
     _disposed = true;
     _batchDirty = false;
     super.dispose();

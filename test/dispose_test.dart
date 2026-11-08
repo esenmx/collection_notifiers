@@ -1,7 +1,9 @@
 import 'package:checks/checks.dart';
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/foundation.dart' show ChangeNotifier;
+import 'package:flutter/foundation.dart' show ChangeNotifier, FlutterError;
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers/utils.dart';
 
 extension on Subject<void Function()> {
   void throwsUsedAfterDispose(ChangeNotifier n) {
@@ -125,6 +127,112 @@ void main() {
         check(n.toList()).deepEquals([1]);
       });
     }
+  });
+
+  group('dispose during a notification', () {
+    List<Object> capturedFlutterErrors() {
+      final errors = <Object>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = (details) => errors.add(details.exception);
+      addTearDown(() => FlutterError.onError = previous);
+      return errors;
+    }
+
+    void checkDisposedDuringNotification(
+      List<Object> errors,
+      ListNotifier<int> n,
+    ) {
+      check(errors).single.isA<StateError>().has((e) => e.message, 'message')
+        ..contains('${n.runtimeType}')
+        ..contains('during a notification');
+    }
+
+    test(
+      'from a listener reports StateError and leaves the notifier alive',
+      () {
+        final errors = capturedFlutterErrors();
+        final other = VoidListener();
+        final n = ListNotifier<int>();
+        n
+          ..addListener(n.dispose)
+          ..addListener(other.call)
+          ..add(1);
+        checkDisposedDuringNotification(errors, n);
+        other.verifyCalledOnce();
+
+        n
+          ..removeListener(n.dispose)
+          ..add(2);
+        check(n).deepEquals([1, 2]);
+        other.verifyCalledOnce();
+
+        n.dispose();
+        check(() => n.add(3)).throwsUsedAfterDispose(n);
+      },
+    );
+
+    test('from the notification a batch sends on exit reports StateError', () {
+      final errors = capturedFlutterErrors();
+      final n = ListNotifier<int>();
+      n
+        ..addListener(n.dispose)
+        ..batch(() => n.add(1));
+      checkDisposedDuringNotification(errors, n);
+
+      n
+        ..removeListener(n.dispose)
+        ..add(2)
+        ..dispose();
+    });
+
+    test('from a batch body inside a listener reports StateError', () {
+      final errors = capturedFlutterErrors();
+      final n = ListNotifier<int>();
+      void disposeInBatch() => n.batch(n.dispose);
+      n
+        ..addListener(disposeInBatch)
+        ..add(1);
+      checkDisposedDuringNotification(errors, n);
+
+      n
+        ..removeListener(disposeInBatch)
+        ..add(2)
+        ..dispose();
+    });
+
+    test('after a nested notification returns still reports StateError', () {
+      final errors = capturedFlutterErrors();
+      final n = ListNotifier<int>();
+      void mutateThenDispose() {
+        if (n.length == 1) {
+          n
+            ..add(2)
+            ..dispose();
+        }
+      }
+
+      n
+        ..addListener(mutateThenDispose)
+        ..add(1);
+      checkDisposedDuringNotification(errors, n);
+
+      n
+        ..removeListener(mutateThenDispose)
+        ..dispose();
+    });
+
+    test('after a re-entrant notification finishes succeeds', () {
+      final n = ListNotifier<int>();
+      n
+        ..addListener(() {
+          if (n.length < 3) {
+            n.add(n.length);
+          }
+        })
+        ..add(0)
+        ..dispose();
+      check(() => n.add(9)).throwsUsedAfterDispose(n);
+    });
   });
 
   test('reads and removeListener stay allowed after dispose', () {
