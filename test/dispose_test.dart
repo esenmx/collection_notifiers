@@ -131,6 +131,7 @@ void main() {
 
   group('dispose during a notification', () {
     List<Object> capturedFlutterErrors() {
+      TestWidgetsFlutterBinding.ensureInitialized();
       final errors = <Object>[];
       final previous = FlutterError.onError;
       FlutterError.onError = (details) => errors.add(details.exception);
