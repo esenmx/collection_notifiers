@@ -121,7 +121,7 @@ final class QueueNotifier<E>([Iterable<E> base = const []])
   }
 
   @override
-  Queue<R> cast<R>() => Queue.castFrom<E, R>(this);
+  Queue<R> cast<R>() => .castFrom(this);
 
   /// Replaces the contents with [elements], notifying once only when the
   /// resulting sequence differs by `==`.
