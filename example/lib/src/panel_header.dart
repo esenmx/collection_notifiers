@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 final class const PanelHeader({required final String label, super.key})
     extends StatelessWidget {

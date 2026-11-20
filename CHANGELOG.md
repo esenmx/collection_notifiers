@@ -31,6 +31,9 @@
   it now inserts a copy.
 - The README and the agent skill state that `batch(() => load())` runs `load`
   and throws after it returns, rather than before anything changes.
+- README: Quick start imports `package:material_ui/material_ui.dart` instead
+  of the deprecated `package:flutter/material.dart`, and the install line adds
+  `material_ui`.
 
 ## 3.0.1 - 2026-10-16
 

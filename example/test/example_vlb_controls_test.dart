@@ -3,8 +3,8 @@ import 'package:example/src/list_tab.dart';
 import 'package:example/src/map_tab.dart';
 import 'package:example/src/queue_tab.dart';
 import 'package:example/src/set_tab.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 const hooksPanel = 0;
 const vlbPanel = 1;

@@ -29,12 +29,12 @@ With `collection_notifiers`:
 ## Quick start
 
 ```sh
-flutter pub add collection_notifiers flutter_hooks
+flutter pub add collection_notifiers flutter_hooks material_ui
 ```
 
 ```dart
 import 'package:collection_notifiers/collection_notifiers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class const TodoList({super.key}) extends HookWidget {

@@ -2,7 +2,7 @@ import 'package:example/src/list_tab.dart';
 import 'package:example/src/map_tab.dart';
 import 'package:example/src/queue_tab.dart';
 import 'package:example/src/set_tab.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   runApp(const CollectionNotifiersExample());

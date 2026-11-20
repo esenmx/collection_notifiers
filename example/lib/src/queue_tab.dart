@@ -2,8 +2,8 @@ import 'dart:collection';
 
 import 'package:collection_notifiers/collection_notifiers.dart';
 import 'package:example/src/panel_header.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 
 final class const QueueTab({super.key}) extends StatelessWidget {
   @override

@@ -11,9 +11,10 @@
    npx --yes markdownlint-cli2@0.23.3
    dart run tool/check_snippets.dart \
      --import package:collection_notifiers/collection_notifiers.dart \
-     --import package:flutter/material.dart \
+     --import package:material_ui/material_ui.dart \
      --import package:flutter_hooks/flutter_hooks.dart \
-     --dep flutter_riverpod
+     --dep flutter_riverpod \
+     --dep material_ui
    flutter pub publish --dry-run
    cd example
    flutter pub get

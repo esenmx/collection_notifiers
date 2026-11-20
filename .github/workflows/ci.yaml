@@ -68,7 +68,7 @@ jobs:
         with: { channel: stable, cache: true }
       - run: flutter pub get
       - name: README and skill snippets compile
-        run: dart run tool/check_snippets.dart --import package:collection_notifiers/collection_notifiers.dart --import package:flutter/material.dart --import package:flutter_hooks/flutter_hooks.dart --dep flutter_riverpod
+        run: dart run tool/check_snippets.dart --import package:collection_notifiers/collection_notifiers.dart --import package:material_ui/material_ui.dart --import package:flutter_hooks/flutter_hooks.dart --dep flutter_riverpod --dep material_ui
       - run: flutter analyze --fatal-infos --fatal-warnings
       - run: flutter pub get
         working-directory: example
