@@ -38,7 +38,7 @@ void main() {
         await tester.tap(find.text('Remove last').at(vlbPanel));
         await tester.pump();
       }
-      check(panelButton(tester, 'Remove last', vlbPanel).onPressed).isNull();
+      check(panelButton(tester, 'Remove last', vlbPanel).onPressed).isNull;
     });
   });
 
@@ -62,7 +62,7 @@ void main() {
         await tester.tap(find.text('Clear selection').at(vlbPanel));
         await tester.pump();
         check(panelButton(tester, 'Clear selection', vlbPanel).onPressed)
-            .isNull();
+            .isNull;
       },
     );
   });
@@ -108,13 +108,13 @@ void main() {
 
       await tester.tap(find.text('Add first').at(hooksPanel));
       await tester.pump();
-      check(find.textContaining('First ').evaluate()).isNotEmpty();
+      check(find.textContaining('First ').evaluate()).isNotEmpty;
       check(panelButton(tester, 'Remove first', hooksPanel).onPressed)
           .isNotNull();
 
       await tester.tap(find.text('Add last').at(vlbPanel));
       await tester.pump();
-      check(find.textContaining('Last ').evaluate()).isNotEmpty();
+      check(find.textContaining('Last ').evaluate()).isNotEmpty;
       check(panelButton(tester, 'Remove first', vlbPanel).onPressed)
           .isNotNull();
     });

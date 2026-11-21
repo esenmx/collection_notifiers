@@ -41,7 +41,7 @@ void main() {
       await tester.pumpWidget(build(2));
       final secondNotifier = notifiers.last;
 
-      check(identical(firstNotifier, secondNotifier)).isFalse();
+      check(identical(firstNotifier, secondNotifier)).isFalse;
       check(() => firstNotifier.addLast(4)).throws<StateError>();
     });
   });

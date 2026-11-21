@@ -18,8 +18,8 @@ void main() {
 
     group('constructor', () {
       test('creates empty map by default', () {
-        check(notifier).isEmpty();
-        check(notifier.value).isEmpty();
+        check(notifier).isEmpty;
+        check(notifier.value).isEmpty;
         listener.verifyNotCalled();
       });
 
@@ -149,7 +149,7 @@ void main() {
         }
 
         check(() => notifier.addEntries(partial())).throws<StateError>();
-        check(notifier.containsKey('a')).isTrue();
+        check(notifier.containsKey('a')).isTrue;
         listener.verifyCalledOnce();
       });
     });
@@ -161,7 +161,7 @@ void main() {
 
         notifier.clear();
         listener.verifyCalledOnce();
-        check(notifier).isEmpty();
+        check(notifier).isEmpty;
       });
 
       test('does not notify when clearing empty map', () {
@@ -196,13 +196,13 @@ void main() {
         final result = notifier.remove('a');
         listener.verifyCalledOnce();
         check(result).equals(1);
-        check(notifier.containsKey('a')).isFalse();
+        check(notifier.containsKey('a')).isFalse;
       });
 
       test('does not notify when key does not exist', () {
         final result = notifier.remove('a');
         listener.verifyNotCalled();
-        check(result).isNull();
+        check(result).isNull;
       });
 
       test('removes null values correctly', () {
@@ -211,8 +211,8 @@ void main() {
 
         final result = notifier.remove('a');
         listener.verifyCalledOnce();
-        check(result).isNull();
-        check(notifier.containsKey('a')).isFalse();
+        check(result).isNull;
+        check(notifier.containsKey('a')).isFalse;
       });
     });
 
@@ -283,7 +283,7 @@ void main() {
 
       test('notifies once when ifAbsent adds a null value', () {
         notifier.update('a', (v) => v, ifAbsent: () => null);
-        check(notifier.containsKey('a')).isTrue();
+        check(notifier.containsKey('a')).isTrue;
         listener.verifyCalledOnce();
       });
     });

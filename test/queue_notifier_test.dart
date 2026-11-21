@@ -132,7 +132,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(2)).isTrue();
+        check(notifier.remove(2)).isTrue;
         listener.verifyCalledOnce();
         check(notifier.toList()).deepEquals([1, 3]);
       });
@@ -141,7 +141,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(4)).isFalse();
+        check(notifier.remove(4)).isFalse;
         listener.verifyNotCalled();
       });
     });
@@ -322,7 +322,7 @@ void main() {
         l.verifyCalledOnce();
         check(n.length).equals(2);
 
-        check(n.remove(null)).isTrue();
+        check(n.remove(null)).isTrue;
         l.verifyCalledOnce();
       });
     });

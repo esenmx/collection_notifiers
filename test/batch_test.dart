@@ -75,8 +75,8 @@ void main() {
           ran = true;
           n.add(2);
         }),
-      ).throws<ArgumentError>().has((e) => e.name, 'name').equals('body');
-      check(ran).isFalse();
+      ).throws<ArgumentError>().has('name', (e) => e.name).equals('body');
+      check(ran).isFalse;
       check(n).deepEquals([1]);
       l.verifyNotCalled();
     });
@@ -95,7 +95,7 @@ void main() {
 
       check(() => n.batch(body))
           .throws<ArgumentError>()
-          .has((e) => e.name, 'name')
+          .has('name', (e) => e.name)
           .equals('body');
       check(n).deepEquals([1, 2, 3]);
       l.verifyCalledOnce();
@@ -121,7 +121,7 @@ void main() {
 
         check(() => n.batch(() => load(1)))
             .throws<ArgumentError>()
-            .has((e) => e.name, 'name')
+            .has('name', (e) => e.name)
             .equals('body');
         check(n).deepEquals([1]);
         l.verifyCalledOnce();
@@ -144,7 +144,7 @@ void main() {
 
       check(() => n.batch(fail))
           .throws<StateError>()
-          .has((e) => e.message, 'message')
+          .has('message', (e) => e.message)
           .equals('x');
       check(n).deepEquals([1]);
       l.verifyCalledOnce();
@@ -159,7 +159,7 @@ void main() {
         check(bodies.single).isA<Never Function()>();
         check(() => n.batch(bodies.single))
             .throws<StateError>()
-            .has((e) => e.message, 'message')
+            .has('message', (e) => e.message)
             .equals('x');
       },
     );
@@ -174,7 +174,7 @@ void main() {
           throw StateError('x');
         }),
       ).throws<ArgumentError>();
-      check(ran).isFalse();
+      check(ran).isFalse;
     });
 
     test('an explicit notifyListeners inside notifies once', () {
@@ -189,7 +189,7 @@ void main() {
       final n = ListNotifier<int>()..dispose();
       var ran = false;
       check(() => n.batch(() => ran = true)).throws<StateError>();
-      check(ran).isFalse();
+      check(ran).isFalse;
     });
 
     test('notifyListeners on a disposed notifier inside batch throws', () {
@@ -339,8 +339,8 @@ void main() {
           ..addListener(l.call)
           ..move(0, 1);
         addTearDown(n.dispose);
-        check(identical(n[0], b)).isTrue();
-        check(identical(n[1], a)).isTrue();
+        check(identical(n[0], b)).isTrue;
+        check(identical(n[1], a)).isTrue;
         l.verifyNotCalled();
       },
     );

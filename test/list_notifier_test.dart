@@ -33,8 +33,8 @@ void main() {
 
     group('constructor', () {
       test('creates empty list by default', () {
-        check(notifier).isEmpty();
-        check(notifier.value).isEmpty();
+        check(notifier).isEmpty;
+        check(notifier.value).isEmpty;
         listener.verifyNotCalled();
       });
 
@@ -139,7 +139,7 @@ void main() {
         final plain = <int>[];
         check(() => plain.addAll(plain)).returnsNormally();
         notifier.addAll(notifier);
-        check(notifier).isEmpty();
+        check(notifier).isEmpty;
         listener.verifyNotCalled();
       });
 
@@ -161,7 +161,7 @@ void main() {
 
         notifier.clear();
         listener.verifyCalledOnce();
-        check(notifier).isEmpty();
+        check(notifier).isEmpty;
       });
 
       test('does not notify when clearing empty list', () {
@@ -329,7 +329,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(2)).isTrue();
+        check(notifier.remove(2)).isTrue;
         listener.verifyCalledOnce();
         check(notifier).deepEquals([1, 3]);
       });
@@ -338,7 +338,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(4)).isFalse();
+        check(notifier.remove(4)).isFalse;
         listener.verifyNotCalled();
       });
     });
@@ -619,7 +619,7 @@ void main() {
         });
 
         check(() => notifier.setAll(-1, throwingIterable)).throws<RangeError>();
-        check(iterated).isFalse();
+        check(iterated).isFalse;
         listener.verifyNotCalled();
       });
     });
@@ -743,8 +743,8 @@ void main() {
         addTearDown(n.dispose);
 
         n.shuffle(const _ScriptedRandom(keepOrder: false));
-        check(identical(n[0], b)).isTrue();
-        check(identical(n[1], a)).isTrue();
+        check(identical(n[0], b)).isTrue;
+        check(identical(n[1], a)).isTrue;
         l.verifyNotCalled();
       });
 
@@ -865,7 +865,7 @@ void main() {
         final n = ListNotifier<double>([0])..addListener(l.call);
         addTearDown(n.dispose);
         n[0] = -0.0;
-        check(n[0].isNegative).isTrue();
+        check(n[0].isNegative).isTrue;
         l.verifyNotCalled();
       });
     });
@@ -1008,7 +1008,7 @@ void main() {
 
         n[0] = 1;
         l.verifyCalledOnce();
-        check(n.remove(1)).isTrue();
+        check(n.remove(1)).isTrue;
         l.verifyCalledOnce();
       });
     });

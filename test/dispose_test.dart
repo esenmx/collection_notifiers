@@ -7,7 +7,7 @@ import 'helpers/utils.dart';
 
 extension on Subject<void Function()> {
   void throwsUsedAfterDispose(ChangeNotifier n) {
-    this.throws<StateError>().has((e) => e.message, 'message')
+    this.throws<StateError>().has('message', (e) => e.message)
       ..contains('used after dispose()')
       ..contains('${n.runtimeType}');
   }
@@ -15,7 +15,7 @@ extension on Subject<void Function()> {
 
 extension on Subject<List<Object>> {
   void reportsDisposedDuringNotification(ChangeNotifier n) {
-    single.isA<StateError>().has((e) => e.message, 'message')
+    single.isA<StateError>().has('message', (e) => e.message)
       ..contains('${n.runtimeType}')
       ..contains('during a notification');
   }
@@ -242,6 +242,6 @@ void main() {
       ..dispose()
       ..removeListener(listener);
     check(n.value).deepEquals([1]);
-    check(n.contains(1)).isTrue();
+    check(n.contains(1)).isTrue;
   });
 }

@@ -34,7 +34,7 @@ void main() {
 
     group('add', () {
       test('notifies when element is added', () {
-        check(notifier.add(1)).isTrue();
+        check(notifier.add(1)).isTrue;
         listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1]);
       });
@@ -43,7 +43,7 @@ void main() {
         notifier.add(1);
         listener.verifyCalledOnce();
 
-        check(notifier.add(1)).isFalse();
+        check(notifier.add(1)).isFalse;
         listener.verifyNotCalled();
       });
     });
@@ -104,7 +104,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(2)).isTrue();
+        check(notifier.remove(2)).isTrue;
         listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1, 3]);
       });
@@ -113,7 +113,7 @@ void main() {
         notifier.addAll([1, 2, 3]);
         listener.verifyCalledOnce();
 
-        check(notifier.remove(4)).isFalse();
+        check(notifier.remove(4)).isFalse;
         listener.verifyNotCalled();
       });
     });
@@ -253,7 +253,7 @@ void main() {
     group('invert', () {
       test('adds element if not present and returns true', () {
         final result = notifier.invert(1);
-        check(result).isTrue();
+        check(result).isTrue;
         listener.verifyCalledOnce();
         check(notifier).unorderedEquals([1]);
       });
@@ -263,7 +263,7 @@ void main() {
         listener.verifyCalledOnce();
 
         final result = notifier.invert(1);
-        check(result).isFalse();
+        check(result).isFalse;
         listener.verifyCalledOnce();
         check(notifier.length).equals(0);
       });
@@ -309,7 +309,7 @@ void main() {
             }
           })
           ..add(1);
-        check(notifier.contains(-1)).isTrue();
+        check(notifier.contains(-1)).isTrue;
       });
     });
 
@@ -319,7 +319,7 @@ void main() {
         final n = SetNotifier<num>({1})..addListener(l.call);
         addTearDown(n.dispose);
         n.cast<int>().add(2);
-        check(n.contains(2)).isTrue();
+        check(n.contains(2)).isTrue;
         l.verifyCalledOnce();
       });
     });
@@ -358,24 +358,24 @@ void main() {
         n.addListener(l.call);
         addTearDown(n.dispose);
 
-        check(n.add(null)).isTrue();
+        check(n.add(null)).isTrue;
         l.verifyCalledOnce();
         check(n).unorderedEquals([null]);
 
-        check(n.add(null)).isFalse();
+        check(n.add(null)).isFalse;
         l.verifyNotCalled();
 
-        check(n.invert(null)).isFalse();
+        check(n.invert(null)).isFalse;
         l.verifyCalledOnce();
-        check(n).isEmpty();
+        check(n).isEmpty;
 
-        check(n.invert(null)).isTrue();
+        check(n.invert(null)).isTrue;
         l.verifyCalledOnce();
-        check(n.contains(null)).isTrue();
+        check(n.contains(null)).isTrue;
 
-        check(n.remove(null)).isTrue();
+        check(n.remove(null)).isTrue;
         l.verifyCalledOnce();
-        check(n).isEmpty();
+        check(n).isEmpty;
       });
     });
   });

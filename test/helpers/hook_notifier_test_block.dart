@@ -76,8 +76,8 @@ runHookNotifierTests<N extends ValueListenable<Object?>, I extends Object>({
         await tester.pumpWidget(build(3));
 
         check(notifiers).length.equals(3);
-        check(identical(notifiers[0], notifiers[1])).isTrue();
-        check(identical(notifiers[1], notifiers[2])).isTrue();
+        check(identical(notifiers[0], notifiers[1])).isTrue;
+        check(identical(notifiers[1], notifiers[2])).isTrue;
       },
     );
 
@@ -259,7 +259,7 @@ runHookNotifierTests<N extends ValueListenable<Object?>, I extends Object>({
 
         await tester.pumpWidget(build(initialB, 2));
 
-        check(tester.takeException()).isNull();
+        check(tester.takeException()).isNull;
         check(find.text('len:${_expectedLength(initialB)}').evaluate()).length
             .equals(1);
       },
