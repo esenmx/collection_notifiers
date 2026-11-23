@@ -7,37 +7,14 @@ metadata: {version: "1"}
 
 # collection-notifiers-usage
 
-## Pick the hook
+|Need|Hook|Ops|
+|-|-|-|
+|Ordered, indexable, reorderable|`useListNotifier<E>([initial])`|`add`, `assignAll`, `move`, `removeAt`|
+|Unique elements, selection toggles|`useSetNotifier<E>([initial])`|`invert(x)`, `add`, `remove`|
+|Key -> value lookup|`useMapNotifier<K, V>([initial])`|`m[k] = v`, `remove(k)`|
+|FIFO/LIFO head-or-tail mutation|`useQueueNotifier<E>([initial])`|`addLast`, `removeFirst`|
 
-| Need | Hook |
-| --- | --- |
-| Ordered, indexable, reorderable | `useListNotifier<E>` |
-| Unique elements, selection toggles | `useSetNotifier<E>` |
-| Key → value lookup | `useMapNotifier<K, V>` |
-| FIFO/LIFO head-or-tail mutation | `useQueueNotifier<E>` |
-
-Each hook creates the notifier, disposes it on unmount, and rebuilds the host
-widget on every real change.
-
-## Snippets
-
-```dart
-class const TodoList({super.key}) extends HookWidget {
-  @override
-  Widget build(BuildContext context) {
-    final todos = useListNotifier<String>(['Buy milk']);
-    return Column(
-      children: [
-        FilledButton(
-          onPressed: () => todos.add('New'),
-          child: const Text('Add'),
-        ),
-        for (final t in todos) Text(t),
-      ],
-    );
-  }
-}
-```
+Each hook creates the notifier, disposes on unmount, and rebuilds the host on real changes.
 
 ```dart
 class const FilterChips({required final List<String> tags, super.key})
@@ -59,72 +36,13 @@ class const FilterChips({required final List<String> tags, super.key})
 }
 ```
 
-```dart
-class const SettingsPage({super.key}) extends HookWidget {
-  @override
-  Widget build(BuildContext context) {
-    final settings = useMapNotifier<String, bool>({'darkMode': false});
-    return SwitchListTile(
-      value: settings['darkMode'] ?? false,
-      onChanged: (v) => settings['darkMode'] = v,
-      title: const Text('Dark mode'),
-    );
-  }
-}
-```
-
-```dart
-class const JobQueueView({super.key}) extends HookWidget {
-  @override
-  Widget build(BuildContext context) {
-    final jobs = useQueueNotifier<String>();
-    return Column(
-      children: [
-        FilledButton(
-          onPressed: () => jobs.addLast('Job ${jobs.length + 1}'),
-          child: const Text('Enqueue'),
-        ),
-        for (final j in jobs) Text(j),
-      ],
-    );
-  }
-}
-```
-
 ## Hard rules
 
-- **Mutate, never reassign.** `notifier.assignAll([...])` (one notification),
-  never `notifier = ListNotifier(...)`.
-- **Coalesce.** Group mutations in `notifier.batch(() { ... })` — the body must
-  be synchronous. An `async` closure throws `ArgumentError` before it runs. A
-  forwarding arrow, `batch(() => load())`, is typed `void`: `load` runs, its
-  changes before the first `await` notify once, `ArgumentError` follows, and
-  later changes notify one by one. Reorder with
-  `ReorderableListView(onReorderItem: list.move)`.
-- **Never touch a disposed notifier.** Mutators, `batch`, `notifyListeners`,
-  `addListener` and a second `dispose()` throw `StateError` in every build mode.
-  A hook disposes its notifier on unmount — don't dispose it yourself.
-- **Never dispose from a listener.** `dispose()` during a notification throws
-  `StateError` and leaves the notifier alive; from a listener it reaches
-  `FlutterError.onError`, not the mutation's caller.
-- **`initial` is consumed once (unless keys are provided).** To reset, either
-  pass a dependency array `keys` parameter (e.g.
-  `useListNotifier(initial, [dependency])`), or change the host widget's `key`
-  so the hook re-mounts.
-- **The base is copied like `Map.of` / `Set.of`.** `MapNotifier` / `SetNotifier`
-  always store a `LinkedHashMap` / `LinkedHashSet` (insertion order, `==`
-  equality); a `SplayTreeMap`'s order or an identity set's equality is not kept.
-- **Compose, don't subclass.** The notifiers are `final` classes: hold one in a
-  field, never `extends` / `implements` it (tests use a real notifier).
-- **Element equality is the optimisation contract.** Use `freezed` / `equatable`
-  on custom element types so `==` / `hashCode` are correct.
-- **Force rebuilds using `notifyListeners()`.** Since `notifyListeners()` is
-  public on all notifiers, call it to trigger UI updates if you mutate
-  properties of collection elements in-place (the `==` check cannot see in-place
-  field changes).
-
-## When not to use
-
-- **Single immutable value** — use `ValueNotifier<T>` from the SDK.
-- **Persisted / undoable state** — pair `drift` with a snapshot table.
-- **Cross-isolate state** — `Isolate` + `SendPort`.
+- **Mutate, never reassign**: `notifier.assignAll([...])` (1 notification), never `notifier = ListNotifier(...)`. Reorder with `ReorderableListView(onReorderItem: list.move)`.
+- **Coalesce with `batch(() { ... })`**: body must be sync; an `async` closure throws `ArgumentError` up front. A `void` arrow forwarding `batch(() => load())` runs until first `await` (notifies once), then throws `ArgumentError`, and later writes notify individually.
+- **Disposal**: mutators, `batch`, `notifyListeners`, `addListener`, and double `dispose()` throw `StateError` in every build mode. Hooks auto-dispose. `dispose()` during notification throws `StateError` leaving notifier alive (from a listener it reaches `FlutterError.onError`).
+- **`initial` consumed once**: pass hook `keys` (`useListNotifier(initial, [dep])`) or change widget `key` to reset.
+- **Backing copy**: copied like `Map.of`/`Set.of` (`LinkedHashMap`/`LinkedHashSet`, insertion order, `==` equality — `SplayTreeMap` order / identity sets are not preserved).
+- **Compose, don't subclass**: notifiers are `final` (hold in a field; use real notifiers in tests).
+- **Equality**: `==`/`hashCode` gate notifications (use `freezed`/`equatable` on custom elements); call public `notifyListeners()` after in-place element mutation.
+- **Skip for**: single immutable value (`ValueNotifier`), persisted/undoable state (`drift`), cross-isolate state (`Isolate`+`SendPort`).
