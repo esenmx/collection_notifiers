@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- The agent skill is shorter: one hook table lists each hook's main operations,
+  a single example replaces the per-hook snippets, and "When not to use" folds
+  into the rules. It also says that a notifier you construct is yours to
+  dispose, and that a listener must defer disposing its own notifier.
+
 ## 4.0.0 - 2026-11-20
 
 ### Breaking
@@ -12,10 +21,11 @@
   notifier unusable with its listeners still attached; release builds disposed
   it, skipped the remaining listeners and reported a `RangeError`.
 
-- BREAKING: `ListNotifier.shuffle` notifies only when the resulting order differs
-  by `==`. Before, it always notified on `length > 1`, including
+- BREAKING: `ListNotifier.shuffle` notifies only when the resulting order
+  differs by `==`. Before, it always notified on `length > 1`, including
   `[1, 1].shuffle()`. A shuffle that keeps the order, or only swaps
-  equal-but-distinct elements, is now silent, so don't use it to force a rebuild.
+  equal-but-distinct elements, is now silent, so don't use it to force a
+  rebuild.
 
 ### Fixed
 
