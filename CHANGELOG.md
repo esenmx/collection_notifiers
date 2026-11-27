@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.2 - 2026-11-27
+
+### Changed
+
+- Shortened the README, moved detailed guides into `doc/`, and added a
+  lossless animated demo (`doc/demo.webp`).
+
 ## 4.0.1 - 2026-11-26
 
 ### Changed
